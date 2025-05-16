@@ -1,6 +1,7 @@
 import jwt from 'jsonwebtoken';
+import type { IUser } from '../src/models/user.model.ts';
 
-export const generateToken = (id, type) => {
+export const generateToken = (id: string, type: 'access' | 'refresh') => {
     const secret =
         type === 'access'
             ? process.env.ACCESS_TOKEN_SECRET
@@ -12,7 +13,7 @@ export const generateToken = (id, type) => {
     });
 };
 
-export const buildUserResponse =  (user) => {
+export const buildUserResponse =  (user: IUser) => {
     return {
         _id: user._id,
         fullName: user.fullName,
