@@ -115,6 +115,9 @@ export const login = async (req: Request, res: Response) => {
             return;
         }
 
+        if (!user.password)
+            throw new Error('사용자 비밀번호가 설정되어 있지 않습니다.');
+
         const isPasswordValid = await bcrypt.compare(password, user.password);
         if (!isPasswordValid) {
             res.status(401).json({
@@ -184,10 +187,12 @@ export const refreshAccessToken = async (
             return;
         }
 
-        const decoded = jwt.verify(
-            refreshToken,
-            process.env.REFRESH_TOKEN_SECRET
-        );
+        const secret = process.env.REFRESH_TOKEN_SECRET;
+        if (!secret) {
+            throw new Error('Refresh token secret is not defined');
+        }
+
+        const decoded = jwt.verify(refreshToken, secret);
 
         if (typeof decoded === 'string' || !('id' in decoded)) {
             res.status(403).json({

@@ -36,8 +36,13 @@ export const followUnfollowUser = async (
 ): Promise<void> => {
     try {
         const { id } = req.params;
+        if (!req.user) throw new Error('사용자를 찾을 수 없습니다.');
+
         const userToModify = await User.findById(id);
         const currentUser = await User.findById(req.user._id);
+
+        if (!userToModify || !currentUser)
+            throw new Error('사용자를 찾을 수 없습니다.');
 
         if (id === req.user._id.toString()) {
             res.status(400).json({
