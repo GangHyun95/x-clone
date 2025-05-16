@@ -14,7 +14,11 @@ export const protectRoute = async (
         if (authHeader && typeof authHeader === 'string' && authHeader.startsWith('Bearer')) {
             token = authHeader.split(' ')[1];
 
-            const decoded = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
+            const secret = process.env.ACCESS_TOKEN_SECRET;
+            if (!secret) {
+                throw new Error('Access token secret is not defined');
+            }
+            const decoded = jwt.verify(token, secret);
 
             if (!decoded || typeof decoded === 'string' || !('id' in decoded)) {
                 res.status(401).json({
