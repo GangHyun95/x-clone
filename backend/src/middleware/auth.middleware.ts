@@ -1,16 +1,22 @@
+import type { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
-import User from '../models/user.model.js';
+import User from '../models/user.model.ts';
 
-export const protectRoute = async (req, res, next) => {
+export const protectRoute = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+) => {
     let token;
 
     try {
-        if (req.headers.authrization?.startsWith('Bearer')) {
-            token = req.headers.authrization.split(' ')[1];
+        const authHeader = req.headers.authorization;
+        if (authHeader && typeof authHeader === 'string' && authHeader.startsWith('Bearer')) {
+            token = authHeader.split(' ')[1];
 
             const decoded = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
 
-            if (!decoded) {
+            if (!decoded || typeof decoded === 'string' || !('id' in decoded)) {
                 return res.status(401).json({
                     success: false,
                     message: '로그인이 필요합니다.',
