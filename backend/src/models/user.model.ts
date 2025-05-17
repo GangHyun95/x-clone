@@ -16,6 +16,7 @@ export interface IUser {
     following: mongoose.Types.ObjectId[];
     createdAt?: Date;
     updatedAt?: Date;
+    likedPosts: mongoose.Types.ObjectId[];
 }
 
 const userSchema = new mongoose.Schema<IUser>(
@@ -77,6 +78,14 @@ const userSchema = new mongoose.Schema<IUser>(
             {
                 type: mongoose.Schema.Types.ObjectId,
                 ref: 'User',
+                default: [],
+            },
+        ],
+
+        likedPosts: [
+            {
+                type: mongoose.Schema.Types.ObjectId,
+                ref: 'Post',
                 default: [],
             },
         ],
