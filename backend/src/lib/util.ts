@@ -1,6 +1,6 @@
 import jwt from 'jsonwebtoken';
-import type { IUser } from '../models/user.model.ts'
-import cloudinary from './cloudinary.ts'
+import type { IUser } from '../models/user.model.ts';
+import cloudinary from './cloudinary.ts';
 
 export const generateToken = (id: string, type: 'access' | 'refresh') => {
     const secret =
@@ -35,12 +35,23 @@ export const buildUserResponse = (user: IUser) => {
     };
 };
 
-export const uploadAndReplaceImage = async (currentUrl: string, newBase64: string) => {
-    if (currentUrl) {
-        const publicId = currentUrl.split('/').pop()?.split('.')[0] ?? '';
-        if (publicId) await cloudinary.uploader.destroy(publicId);
-    }
+export const uploadAndReplaceImage = async (
+    oldImageUrl: string | null,
+    newBase64: string
+) => {
+    if (oldImageUrl) await deleteImage(oldImageUrl);
+
     const uploaded = await cloudinary.uploader.upload(newBase64);
-    console.log('Uploaded image URL:', uploaded.secure_url);
     return uploaded.secure_url;
+};
+
+export const deleteImage = async (imageUrl: string): Promise<void> => {
+    const publicId = imageUrl.split('/').pop()?.split('.')[0] ?? '';
+    if (!publicId) return;
+    try {
+        await cloudinary.uploader.destroy(publicId);
+        console.log(`Cloudinary 이미지 삭제 완료: ${publicId}`);
+    } catch (error) {
+        console.error('Cloudinary 이미지 삭제 실패:', error);
+    }
 };

@@ -4,6 +4,7 @@ import cookieParser from 'cookie-parser';
 
 import authRoutes from './routes/auth.route.ts';
 import userRoutes from './routes/user.route.ts';
+import postRoutes from './routes/post.route.ts'
 import { connectDB } from './lib/db.ts';
 import { protectRoute } from './middleware/auth.middleware.ts';
 
@@ -17,7 +18,8 @@ app.use(cookieParser());
 app.use(express.urlencoded({ extended: true }));
 
 app.use('/api/auth', authRoutes);
-app.use('/api/user', protectRoute, userRoutes);
+app.use('/api/users', protectRoute, userRoutes);
+app.use('/api/posts', protectRoute, postRoutes);
 
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
