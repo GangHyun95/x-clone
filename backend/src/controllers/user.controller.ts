@@ -2,7 +2,7 @@ import bcrypt from 'bcryptjs';
 import type { Request, Response } from 'express';
 import Notification from '../models/notification.model.ts';
 import User from '../models/user.model.ts';
-import { buildUserResponse, uploadAndReplaceImage } from '../lib/util.ts'
+import { buildUserResponse, uploadAndReplaceImage } from '../lib/util.ts';
 
 export const getUserProfile = async (
     req: Request,
@@ -289,6 +289,46 @@ export const updateUserProfile = async (
         });
     } catch (error) {
         console.error('Error in updateUserProfile:', error);
+        res.status(500).json({
+            success: false,
+            message: '서버 오류가 발생했습니다.',
+        });
+    }
+};
+
+export const deleteAccount = async (
+    req: Request,
+    res: Response
+): Promise<void> => {
+    if (!req.user) throw new Error('사용자를 찾을 수 없습니다.');
+
+    try {
+        const user = await User.findById(req.user._id);
+        if (!user) {
+            res.status(404).json({
+                success: false,
+                message: '사용자를 찾을 수 없습니다.',
+            });
+            return;
+        }
+
+        await User.updateMany(
+            { followers: req.user._id },
+            { $pull: { followers: req.user._id } }
+        );
+
+        await User.updateMany(
+            { following: req.user._id },
+            { $pull: { following: req.user._id } }
+        );
+
+        await User.findByIdAndDelete(req.user._id);
+        res.status(200).json({
+            success: true,
+            message: '계정이 삭제되었습니다.',
+        });
+    } catch (error) {
+        console.error('Error in deleteAccount:', error);
         res.status(500).json({
             success: false,
             message: '서버 오류가 발생했습니다.',
