@@ -269,3 +269,140 @@ export const likeUnlikePost = async (
         });
     }
 };
+
+export const getAllPosts = async (
+    req: Request,
+    res: Response
+): Promise<void> => {
+    try {
+        const posts = await Post.find()
+            .sort({ createdAt: -1 })
+            .populate('user', '-password')
+            .populate('comments.user', '-password');
+
+        res.status(200).json({
+            success: true,
+            message: posts.length
+                ? '게시물 목록을 가져왔습니다.'
+                : '게시물이 없습니다.',
+            posts,
+        });
+    } catch (error) {
+        console.error('Error in getAllPosts controller:', error);
+        res.status(500).json({
+            success: false,
+            message: '서버 오류가 발생했습니다.',
+        });
+    }
+};
+
+export const getLikedPosts = async (
+    req: Request,
+    res: Response
+): Promise<void> => {
+    try {
+        const { id } = req.params;
+        const user = await User.findById(id);
+        if (!user) {
+            res.status(404).json({
+                success: false,
+                message: '사용자를 찾을 수 없습니다.',
+            });
+            return;
+        }
+        const likedPosts = await Post.find({
+            _id: { $in: user.likedPosts },
+        })
+            .populate('user', '-password')
+            .populate('comments.user', '-password');
+
+        res.status(200).json({
+            success: true,
+            message: likedPosts.length
+                ? '좋아요한 게시물을 가져왔습니다.'
+                : '좋아요한 게시물이 없습니다.',
+            posts: likedPosts,
+        });
+    } catch (error) {
+        console.error('Error in getLikedPosts controller:', error);
+        res.status(500).json({
+            success: false,
+            message: '서버 오류가 발생했습니다.',
+        });
+    }
+};
+
+export const getFollowingPosts = async (
+    req: Request,
+    res: Response
+): Promise<void> => {
+    try {
+        if (!req.user) throw new Error('사용자를 찾을 수 없습니다.');
+
+        const user = await User.findById(req.user._id).select('following');
+        if (!user) {
+            res.status(404).json({
+                success: false,
+                message: '사용자를 찾을 수 없습니다.',
+            });
+            return;
+        }
+
+        const following = user.following;
+
+        const feedPosts = await Post.find({ user: { $in: following } })
+            .sort({ createdAt: -1 })
+            .populate('user', '-password')
+            .populate('comments.user', '-password');
+
+        res.status(200).json({
+            success: true,
+            message: feedPosts.length
+                ? '피드를 가져왔습니다.'
+                : '팔로우한 사용자의 게시물이 없습니다.',
+            posts: feedPosts,
+        });
+    } catch (error) {
+        console.error('Error in getFollowingPosts controller:', error);
+        res.status(500).json({
+            success: false,
+            message: '서버 오류가 발생했습니다.',
+        });
+    }
+};
+
+export const getUserPosts = async (
+    req: Request,
+    res: Response
+): Promise<void> => {
+    try {
+        const { nickname } = req.params;
+
+        const user = await User.findOne({ nickname });
+        if (!user) {
+            res.status(404).json({
+                success: false,
+                message: '사용자를 찾을 수 없습니다.',
+            });
+            return;
+        }
+        const posts = await Post.find({ user: user._id })
+            .sort({ createdAt: -1 })
+            .populate('user', '-password')
+            .populate('comments.user', '-password');
+
+        res.status(200).json({
+            success: true,
+            message: posts.length
+                ? '게시물 목록을 가져왔습니다.'
+                : '게시물이 없습니다.',
+            posts,
+        });
+    } catch (error) {
+        console.error('Error in getUserPosts controller:', error);
+        res.status(500).json({
+            success: false,
+            message: '서버 오류가 발생했습니다.',
+        });
+    }
+};
