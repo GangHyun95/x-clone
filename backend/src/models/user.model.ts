@@ -18,7 +18,7 @@ export interface IUser {
     updatedAt?: Date,
 }
 
-const UserSchema = new mongoose.Schema<IUser>(
+const userSchema = new mongoose.Schema<IUser>(
     {
         nickname: {
             type: String,
@@ -86,6 +86,6 @@ const UserSchema = new mongoose.Schema<IUser>(
     }
 );
 
-const User = mongoose.model('User', UserSchema);
+const User = mongoose.model('User', userSchema);
 
 export default User;
