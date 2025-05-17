@@ -159,3 +159,113 @@ export const deletePost = async (
         });
     }
 };
+
+export const commentOnPost = async (
+    req: Request,
+    res: Response
+): Promise<void> => {
+    try {
+        if (!req.user) throw new Error('사용자를 찾을 수 없습니다.');
+        const { text } = req.body;
+        const { id } = req.params;
+
+        if (!text) {
+            res.status(400).json({
+                success: false,
+                message: '댓글을 입력해야 합니다.',
+            });
+            return;
+        }
+
+        const updatedPost = await Post.findByIdAndUpdate(
+            id,
+            { $push: { comments: { user: req.user._id, text } } },
+            { new: true }
+        );
+
+        if (!updatedPost) {
+            res.status(404).json({
+                success: false,
+                message: '게시물을 찾을 수 없습니다.',
+            });
+            return;
+        }
+
+        res.status(200).json({
+            success: true,
+            message: '댓글이 작성되었습니다.',
+            post: updatedPost,
+        });
+    } catch (error) {
+        console.error('Error in commentOnPost controller:', error);
+        res.status(500).json({
+            success: false,
+            message: '서버 오류가 발생했습니다.',
+        });
+    }
+};
+
+export const likeUnlikePost = async (
+    req: Request,
+    res: Response
+): Promise<void> => {
+    try {
+        const { id } = req.params;
+        if (!req.user) throw new Error('사용자를 찾을 수 없습니다.');
+
+        const post = await Post.findById(id);
+        if (!post) {
+            res.status(404).json({
+                success: false,
+                message: '게시물을 찾을 수 없습니다.',
+            });
+            return;
+        }
+
+        const userLikedPost = post.likes.some((likeId) =>
+            likeId.equals(req.user?._id)
+        );
+
+        if (userLikedPost) {
+            await Promise.all([
+                Post.updateOne({ _id: id }, { $pull: { likes: req.user._id } }),
+                User.updateOne(
+                    { _id: req.user._id },
+                    { $pull: { likedPosts: id } }
+                ),
+            ]);
+
+            res.status(200).json({
+                success: true,
+                message: '게시물의 좋아요가 취소되었습니다.',
+            });
+        } else {
+            await Promise.all([
+                Post.updateOne({ _id: id }, { $push: { likes: req.user._id } }),
+                User.updateOne(
+                    { _id: req.user._id },
+                    { $push: { likedPosts: id } }
+                ),
+            ]);
+
+            const notification = new Notification({
+                from: req.user._id,
+                to: post.user,
+                type: 'like',
+            });
+
+            await notification.save();
+
+            res.status(200).json({
+                success: true,
+                message: '게시물에 좋아요가 추가되었습니다.',
+            });
+        }
+    } catch (error) {
+        console.error('Error in likeUnlikePost controller:', error);
+        res.status(500).json({
+            success: false,
+            message: '서버 오류가 발생했습니다.',
+        });
+    }
+};
