@@ -2,7 +2,10 @@ import jwt from 'jsonwebtoken';
 import type { IUser } from '../models/user.model.ts';
 import cloudinary from './cloudinary.ts';
 
-export const generateToken = (id: string, type: 'access' | 'refresh') => {
+export const generateToken = (
+    id: string,
+    type: 'access' | 'refresh'
+): string => {
     const secret =
         type === 'access'
             ? process.env.ACCESS_TOKEN_SECRET
@@ -20,7 +23,7 @@ export const generateToken = (id: string, type: 'access' | 'refresh') => {
     });
 };
 
-export const buildUserResponse = (user: IUser) => {
+export const buildUserResponse = (user: IUser): IUser => {
     return {
         _id: user._id,
         fullName: user.fullName,
@@ -38,7 +41,7 @@ export const buildUserResponse = (user: IUser) => {
 export const uploadAndReplaceImage = async (
     oldImageUrl: string | null,
     newBase64: string
-) => {
+): Promise<string> => {
     if (oldImageUrl) await deleteImage(oldImageUrl);
 
     const uploaded = await cloudinary.uploader.upload(newBase64);
