@@ -9,6 +9,7 @@ export const getUserProfile = async (
     res: Response
 ): Promise<void> => {
     const { nickname } = req.params;
+
     try {
         const user = await User.findOne({ nickname });
         if (!user) {
@@ -65,43 +66,38 @@ export const followUnfollowUser = async (
                 message: '사용자를 찾을 수 없습니다.',
             });
         }
-        const isFollowing = currentUser.following.some(
-            (followedId) => followedId.toString() === id
+        const isFollowing = currentUser.following.some((followedId) =>
+            followedId.equals(id)
         );
 
         if (isFollowing) {
-            await User.findByIdAndUpdate(id, {
-                $pull: { followers: req.user._id },
-            });
-            await User.findByIdAndUpdate(req.user._id, {
-                $pull: { following: id },
-            });
-
-            const newNotification = new Notification({
-                type: 'follow',
-                from: req.user._id,
-                to: userToModify._id,
-            });
-            await newNotification.save();
+            await Promise.all([
+                User.findByIdAndUpdate(id, {
+                    $pull: { followers: req.user._id },
+                }),
+                User.findByIdAndUpdate(req.user._id, {
+                    $pull: { following: id },
+                }),
+            ]);
 
             res.status(200).json({
                 success: true,
                 message: '언팔로우 되었습니다.',
             });
         } else {
-            await User.findByIdAndUpdate(id, {
-                $push: { followers: req.user._id },
-            });
-            await User.findByIdAndUpdate(req.user._id, {
-                $push: { following: id },
-            });
-
-            const newNotification = new Notification({
-                type: 'follow',
-                from: req.user._id,
-                to: id,
-            });
-            await newNotification.save();
+            await Promise.all([
+                User.findByIdAndUpdate(id, {
+                    $push: { followers: req.user._id },
+                }),
+                User.findByIdAndUpdate(req.user._id, {
+                    $push: { following: id },
+                }),
+                new Notification({
+                    type: 'follow',
+                    from: req.user._id,
+                    to: id,
+                }).save(),
+            ]);
 
             res.status(200).json({
                 success: true,
@@ -159,7 +155,15 @@ export const checkNickname = async (
     req: Request,
     res: Response
 ): Promise<void> => {
-    const { nickname } = req.params;
+    const { nickname } = req.query;
+
+    if (!nickname || typeof nickname !== 'string') {
+        res.status(400).json({
+            success: false,
+            message: '닉네임을 입력해 주세요.',
+        });
+        return;
+    }
     try {
         const existingUser = await User.findOne({ nickname });
         if (existingUser) {
@@ -187,6 +191,8 @@ export const updateUserProfile = async (
     req: Request,
     res: Response
 ): Promise<void> => {
+    if (!req.user) throw new Error('사용자를 찾을 수 없습니다.');
+
     const {
         fullName,
         nickname,
@@ -197,8 +203,6 @@ export const updateUserProfile = async (
         bio,
         link,
     } = req.body;
-
-    if (!req.user) throw new Error('사용자를 찾을 수 없습니다.');
 
     try {
         const user = await User.findById(req.user._id);
@@ -212,7 +216,7 @@ export const updateUserProfile = async (
         }
 
         if (
-            (!newPassword && currentPassword) ||
+            (currentPassword && !newPassword) ||
             (!currentPassword && newPassword)
         ) {
             res.status(400).json({
@@ -273,16 +277,15 @@ export const updateUserProfile = async (
                 });
                 return;
             }
+            user.nickname = nickname;
         }
 
         user.fullName = fullName || user.fullName;
-        user.nickname = nickname || user.nickname;
         user.bio = bio || user.bio;
         user.link = link || user.link;
-        user.profileImg = profileImg || user.profileImg;
-        user.coverImg = coverImg || user.coverImg;
 
         await user.save();
+
         res.status(200).json({
             success: true,
             message: '프로필이 업데이트 되었습니다.',
@@ -313,17 +316,19 @@ export const deleteAccount = async (
             return;
         }
 
-        await User.updateMany(
-            { followers: req.user._id },
-            { $pull: { followers: req.user._id } }
-        );
-
-        await User.updateMany(
-            { following: req.user._id },
-            { $pull: { following: req.user._id } }
-        );
+        await Promise.all([
+            User.updateMany(
+                { followers: req.user._id },
+                { $pull: { followers: req.user._id } }
+            ),
+            User.updateMany(
+                { following: req.user._id },
+                { $pull: { following: req.user._id } }
+            ),
+        ]);
 
         await User.findByIdAndDelete(req.user._id);
+
         res.status(200).json({
             success: true,
             message: '계정이 삭제되었습니다.',

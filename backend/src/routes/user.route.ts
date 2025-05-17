@@ -12,9 +12,9 @@ const router = express.Router();
 
 router.get('/:nickname', getUserProfile);
 router.get('/suggested', getSuggestedUsers);
-router.post('/follow/:id', followUnfollowUser);
+router.post('/:id/:follow', followUnfollowUser);
 
-router.get('/check-nickname/:nickname', checkNickname);
+router.get('/check-nickname', checkNickname);
 
 router.patch('/me', updateUserProfile);
 router.delete('/me', deleteAccount);

@@ -14,8 +14,8 @@ export interface IUser {
     link?: string;
     followers: mongoose.Types.ObjectId[];
     following: mongoose.Types.ObjectId[];
-    createdAt?: Date,
-    updatedAt?: Date,
+    createdAt?: Date;
+    updatedAt?: Date;
 }
 
 const userSchema = new mongoose.Schema<IUser>(
