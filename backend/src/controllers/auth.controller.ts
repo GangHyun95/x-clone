@@ -1,7 +1,7 @@
 import type { Request, Response } from 'express';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
-import { buildUserResponse, generateToken } from '../lib/util.ts'
+import { buildUserResponse, generateToken } from '../lib/util.ts';
 import User from '../models/user.model.ts';
 
 export const signup = async (req: Request, res: Response): Promise<void> => {
@@ -107,16 +107,13 @@ export const login = async (req: Request, res: Response) => {
         }
 
         const user = await User.findOne({ email });
-        if (!user) {
+        if (!user || !user.password) {
             res.status(401).json({
                 success: false,
                 message: '이메일 또는 비밀번호가 올바르지 않습니다.',
             });
             return;
         }
-
-        if (!user.password)
-            throw new Error('사용자 비밀번호가 설정되어 있지 않습니다.');
 
         const isPasswordValid = await bcrypt.compare(password, user.password);
         if (!isPasswordValid) {
@@ -177,8 +174,8 @@ export const refreshAccessToken = async (
     req: Request,
     res: Response
 ): Promise<void> => {
-    const refreshToken = req.cookies.x_clone_refresh_token;
     try {
+        const refreshToken = req.cookies.x_clone_refresh_token;
         if (!refreshToken) {
             res.status(401).json({
                 success: false,
@@ -212,7 +209,7 @@ export const refreshAccessToken = async (
         }
 
         const newAccessToken = generateToken(user._id.toString(), 'access');
-        res.json({
+        res.status(200).json({
             accessToken: newAccessToken,
             user: buildUserResponse(user),
         });
