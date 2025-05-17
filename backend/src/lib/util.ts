@@ -1,5 +1,6 @@
 import jwt from 'jsonwebtoken';
-import type { IUser } from '../src/models/user.model.ts';
+import type { IUser } from '../models/user.model.ts'
+import cloudinary from './cloudinary.ts'
 
 export const generateToken = (id: string, type: 'access' | 'refresh') => {
     const secret =
@@ -32,4 +33,14 @@ export const buildUserResponse = (user: IUser) => {
         bio: user.bio,
         link: user.link,
     };
+};
+
+export const uploadAndReplaceImage = async (currentUrl: string, newBase64: string) => {
+    if (currentUrl) {
+        const publicId = currentUrl.split('/').pop()?.split('.')[0] ?? '';
+        if (publicId) await cloudinary.uploader.destroy(publicId);
+    }
+    const uploaded = await cloudinary.uploader.upload(newBase64);
+    console.log('Uploaded image URL:', uploaded.secure_url);
+    return uploaded.secure_url;
 };
