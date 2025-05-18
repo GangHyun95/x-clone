@@ -221,3 +221,149 @@ export const refreshAccessToken = async (
         });
     }
 };
+
+export const googleLogin = async (
+    req: Request,
+    res: Response
+): Promise<void> => {
+    const { code } = req.body;
+    if (!code) {
+        res.status(400).json({
+            success: false,
+            message: 'Google 로그인 코드가 필요합니다.',
+        });
+        return;
+    }
+
+    try {
+        const tokenRes = await fetch('https://oauth2.googleapis.com/token', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: new URLSearchParams({
+                code,
+                client_id: process.env.GOOGLE_CLIENT_ID || '',
+                client_secret: process.env.GOOGLE_CLIENT_SECRET || '',
+                redirect_uri: process.env.GOOGLE_REDIRECT_URI || '',
+                grant_type: 'authorization_code',
+            }).toString(),
+        });
+
+        if (!tokenRes.ok) {
+            res.status(400).json({
+                success: false,
+                message: 'Google 토큰 요청에 실패했습니다.',
+            });
+            return;
+        }
+
+        const tokenData = await tokenRes.json();
+        const { access_token } = tokenData;
+
+        if (!access_token) {
+            res.status(400).json({
+                success: false,
+                message: 'Google Access Token을 가져오지 못했습니다.',
+            });
+            return;
+        }
+
+        const userInfoRes = await fetch(
+            'https://www.googleapis.com/oauth2/v3/userinfo',
+            {
+                headers: {
+                    Authorization: `Bearer ${access_token}`,
+                },
+            }
+        );
+
+        if (!userInfoRes.ok) {
+            res.status(400).json({
+                success: false,
+                message: 'Google 사용자 정보 요청에 실패했습니다.',
+            });
+            return;
+        }
+
+        const userInfo = await userInfoRes.json();
+        const { sub: googleId, email, name, picture } = userInfo;
+
+        if (!googleId || !email) {
+            res.status(400).json({
+                success: false,
+                message: 'Google 사용자 정보가 유효하지 않습니다.',
+            });
+            return;
+        }
+
+        let user = await User.findOne({ googleId });
+
+        if (!user) {
+            const emailOwner = await User.findOne({ email });
+            if (emailOwner) {
+                res.status(400).json({
+                    success: false,
+                    message: '이미 해당 이메일로 가입된 계정이 있습니다.',
+                });
+                return;
+            }
+            user = new User({
+                googleId,
+                email,
+                fullName: name,
+                nickname: email.split('@')[0],
+                profileImage: picture,
+            });
+
+            await user.save();
+        }
+
+        const accessToken = generateToken(user._id.toString(), 'access');
+        const refreshToken = generateToken(user._id.toString(), 'refresh');
+
+        res.cookie('x_clone_refresh_token', refreshToken, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: 'strict',
+            maxAge: 2 * 24 * 60 * 60 * 1000, // 2 days
+        });
+
+        res.status(200).json({
+            success: true,
+            message: 'Google 로그인에 성공했습니다.',
+            user: buildUserResponse(user),
+            accessToken,
+        });
+    } catch (error) {
+        console.error('Google 로그인 오류:', error);
+        res.status(500).json({
+            success: false,
+            message: '서버 오류가 발생했습니다.',
+        });
+    }
+};
+
+export const getGoogleClientId = async (req: Request, res: Response) => {
+    try {
+        const googleClientId = process.env.GOOGLE_CLIENT_ID;
+        if (!googleClientId) {
+            res.status(500).json({
+                success: false,
+                message: 'Google Client ID가 설정되어 있지 않습니다.',
+            });
+            return;
+        }
+
+        res.status(200).json({
+            success: true,
+            googleClientId,
+        });
+    } catch (error) {
+        console.error('Google Client ID 가져오기 오류:', error);
+        res.status(500).json({
+            success: false,
+            message: '서버 오류가 발생했습니다.',
+        });
+    }
+};
