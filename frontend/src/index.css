@@ -2,8 +2,14 @@
 @plugin "daisyui";
 
 @plugin "daisyui/theme" {
-    name: 'black';
+    name: 'light';
     default: true;
     --color-primary: rgb(29, 155, 240);
     --color-secondary: rgb(24, 24, 24);
+}
+
+@import './styles//fonts.css';
+
+body {
+    font-family: 'Pretendard', sans-serif;
 }
