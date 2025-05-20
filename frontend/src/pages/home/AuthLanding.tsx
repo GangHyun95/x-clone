@@ -2,9 +2,9 @@ import { AppleSvg, GoogleSvg, XSvg } from '../../components/svgs';
 
 export default function AuthLanding() {
     return (
-        <section className='flex flex-1 lg:flex-row'>
-            <div className='flex flex-1 flex-col justify-center lg:self-auto'>
-                <XSvg className='hidden h-1/2 max-h-96 max-w-full lg:block' />
+        <section className='flex h-full'>
+            <div className='hidden flex-1 flex-col justify-center lg:flex'>
+                <XSvg className='h-1/2 max-h-96 max-w-full' />
             </div>
             <div className='mx-auto flex w-full min-w-[45vw] max-w-2xl flex-col p-9 lg:justify-center'>
                 <XSvg className='block h-12 max-w-full self-start lg:hidden' />
@@ -16,7 +16,7 @@ export default function AuthLanding() {
                     Join today.
                 </h2>
 
-                <div className='flex flex-col justify-center'>
+                <div className='flex flex-col'>
                     <button className='btn mb-4 w-[300px] rounded-full bg-transparent transition-colors duration-300 hover:bg-gray-200'>
                         <GoogleSvg className='mr-1 h-[18px] w-[18px]' />
                         <span>Sign up in with Google</span>
