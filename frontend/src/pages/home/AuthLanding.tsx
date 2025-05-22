@@ -1,54 +1,75 @@
+import { useRef } from 'react';
 import { AppleSvg, GoogleSvg, XSvg } from '../../components/svgs';
+import SignUpModal from '../../components/auth/SignUpModal';
+
+export type RefObj = {
+    inputRef: HTMLInputElement | null;
+    modalRef: HTMLDialogElement | null;
+};
 
 export default function AuthLanding() {
+    const refObj = useRef<RefObj>({
+        inputRef: null,
+        modalRef: null,
+    });
+    const openModal = () => {
+        refObj.current.modalRef?.showModal();
+        setTimeout(() => refObj.current.inputRef?.focus(), 50);
+    };
     return (
-        <section className='flex h-full'>
-            <div className='hidden flex-1 flex-col justify-center lg:flex'>
-                <XSvg className='h-1/2 max-h-96 max-w-full' />
-            </div>
-            <div className='mx-auto flex w-full min-w-[45vw] max-w-2xl flex-col p-9 lg:justify-center'>
-                <XSvg className='block h-12 max-w-full self-start lg:hidden' />
+        <>
+            <section className='flex h-full'>
+                <div className='hidden flex-1 flex-col justify-center lg:flex'>
+                    <XSvg className='h-1/2 max-h-96 max-w-full' />
+                </div>
+                <div className='mx-auto flex items-stretch min-w-[45vw] max-w-2xl flex-col p-9 lg:justify-center'>
+                    <XSvg className='block h-12 max-w-full self-start lg:hidden' />
 
-                <h1 className='font-pyeojin my-10 text-4xl font-bold sm:text-6xl lg:my-12'>
-                    Happening now
-                </h1>
-                <h2 className='font-pyeojin mb-5 text-2xl font-extrabold sm:text-3xl lg:mb-8'>
-                    Join today.
-                </h2>
+                    <h1 className='font-pyeojin my-10 text-4xl font-bold sm:text-6xl lg:my-12'>
+                        Happening now
+                    </h1>
+                    <h2 className='font-pyeojin mb-5 text-2xl font-extrabold sm:text-3xl lg:mb-8'>
+                        Join today.
+                    </h2>
 
-                <div className='flex flex-col'>
-                    <button className='btn mb-4 w-[300px] rounded-full bg-transparent transition-colors duration-300 hover:bg-gray-200'>
-                        <GoogleSvg className='mr-1 h-[18px] w-[18px]' />
-                        <span>Sign up in with Google</span>
-                    </button>
-
-                    <button className='btn flex w-[300px] rounded-full bg-transparent duration-300 hover:bg-gray-200'>
-                        <AppleSvg className='mr-1 h-5 w-5' />
-                        <span>Sign up with Apple</span>
-                    </button>
-
-                    <div className='my-2 flex w-[300px] items-center gap-4'>
-                        <div className='h-px flex-1 bg-gray-100'></div>
-                        <span className='text-sm text-muted-foreground'>
-                            OR
-                        </span>
-                        <div className='h-px flex-1 bg-gray-100'></div>
-                    </div>
-
-                    <button className='btn btn-primary w-[300px] rounded-full px-4 text-white'>
-                        <span>Create account</span>
-                    </button>
-
-                    <div className='mt-10'>
-                        <h2 className='mb-4 font-bold lg:mb-5'>
-                            Already have an account?
-                        </h2>
-                        <button className='btn w-[300px] rounded-full bg-transparent text-primary transition-colors duration-300 hover:bg-primary/10'>
-                            Sign in
+                    <div className='flex flex-col'>
+                        <button className='btn mb-4 w-[300px] rounded-full bg-transparent transition-colors duration-300 hover:bg-gray-200'>
+                            <GoogleSvg className='mr-1 h-[18px] w-[18px]' />
+                            <span>Sign up in with Google</span>
                         </button>
+
+                        <button className='btn flex w-[300px] rounded-full bg-transparent duration-300 hover:bg-gray-200'>
+                            <AppleSvg className='mr-1 h-5 w-5' />
+                            <span>Sign up with Apple</span>
+                        </button>
+
+                        <div className='my-2 flex w-[300px] items-center gap-4'>
+                            <div className='h-px flex-1 bg-gray-100'></div>
+                            <span className='text-sm text-muted-foreground'>
+                                OR
+                            </span>
+                            <div className='h-px flex-1 bg-gray-100'></div>
+                        </div>
+
+                        <button
+                            className='btn btn-primary w-[300px] rounded-full px-4 text-white'
+                            onClick={openModal}
+                        >
+                            <span>Create account</span>
+                        </button>
+
+                        <div className='mt-10'>
+                            <h2 className='mb-4 font-bold lg:mb-5'>
+                                Already have an account?
+                            </h2>
+                            <button className='btn w-[300px] rounded-full bg-transparent text-primary transition-colors duration-300 hover:bg-primary/10'>
+                                Sign in
+                            </button>
+                        </div>
                     </div>
                 </div>
-            </div>
-        </section>
+            </section>
+            <SignUpModal ref={refObj} />
+        </>
     );
 }

@@ -13,3 +13,8 @@
 body {
     font-family: 'Pretendard', sans-serif;
 }
+
+.floating-label input:focus + span,
+.floating-label input:not(:placeholder-shown) + span {
+    font-size: 1.125rem;
+}

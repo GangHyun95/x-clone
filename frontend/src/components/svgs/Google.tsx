@@ -1,4 +1,4 @@
-export default function Google(props: React.SVGProps<SVGSVGElement>) {
+export default function (props: React.SVGProps<SVGSVGElement>) {
     return (
         <svg
             version='1.1'
