@@ -70,3 +70,7 @@ export const deleteImage = async (imageUrl: string): Promise<void> => {
         console.error('Cloudinary 이미지 삭제 실패:', error);
     }
 };
+
+export const generateVerificationCode = (): string => {
+    return Math.floor(100000 + Math.random() * 900000).toString();
+};

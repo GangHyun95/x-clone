@@ -1,13 +1,25 @@
 import type { Request, Response } from 'express';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
-import { buildUserResponse, generateToken } from '../lib/util.ts';
+import nodemailer from 'nodemailer';
+import {
+    buildUserResponse,
+    generateToken,
+    generateVerificationCode,
+} from '../lib/util.ts';
 import User from '../models/user.model.ts';
 
+export const verificationStore = new Map<
+    string,
+    { code: string; expiresAt: number }
+>();
+export const verifiedEmails = new Set<string>();
+
+// signup, login, logout
 export const signup = async (req: Request, res: Response): Promise<void> => {
-    const { fullName, nickname, email, password } = req.body;
+    const { email, fullName, nickname, password } = req.body;
     try {
-        if (!fullName || !nickname || !email || !password) {
+        if (!email || !fullName || !nickname || !password) {
             res.status(400).json({
                 success: false,
                 message: '모든 필수 항목을 입력해 주세요.',
@@ -15,12 +27,10 @@ export const signup = async (req: Request, res: Response): Promise<void> => {
             return;
         }
 
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-        if (!emailRegex.test(email)) {
+        if (!verifiedEmails.has(email)) {
             res.status(400).json({
                 success: false,
-                message: '이메일 형식이 올바르지 않습니다.',
+                message: '이메일 인증이 필요합니다.',
             });
             return;
         }
@@ -33,17 +43,11 @@ export const signup = async (req: Request, res: Response): Promise<void> => {
             return;
         }
 
-        const existingUser = await User.findOne({
-            $or: [{ email }, { nickname }],
-        });
-
+        const existingUser = await User.findOne({ nickname });
         if (existingUser) {
             res.status(400).json({
                 success: false,
-                message:
-                    existingUser.email === email
-                        ? '이미 사용 중인 이메일입니다.'
-                        : '이미 사용 중인 닉네임입니다.',
+                message: '이미 사용 중인 닉네임입니다.',
             });
             return;
         }
@@ -58,34 +62,24 @@ export const signup = async (req: Request, res: Response): Promise<void> => {
             password: hashedPassword,
         });
 
-        if (newUser) {
-            const accessToken = generateToken(newUser._id.toString(), 'access');
-            const refreshToken = generateToken(
-                newUser._id.toString(),
-                'refresh'
-            );
+        await newUser.save();
 
-            res.cookie('x_clone_refresh_token', refreshToken, {
-                httpOnly: true,
-                secure: process.env.NODE_ENV === 'production',
-                sameSite: 'strict',
-                maxAge: 2 * 24 * 60 * 60 * 1000, // 2 days
-            });
+        const accessToken = generateToken(newUser._id.toString(), 'access');
+        const refreshToken = generateToken(newUser._id.toString(), 'refresh');
 
-            await newUser.save();
+        res.cookie('x_clone_refresh_token', refreshToken, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: 'strict',
+            maxAge: 2 * 24 * 60 * 60 * 1000, // 2 days
+        });
 
-            res.status(201).json({
-                success: true,
-                message: '회원가입이 완료되었습니다.',
-                user: buildUserResponse(newUser),
-                accessToken,
-            });
-        } else {
-            res.status(400).json({
-                success: false,
-                message: '회원가입에 실패했습니다.',
-            });
-        }
+        res.status(201).json({
+            success: true,
+            message: '회원가입이 완료되었습니다.',
+            user: buildUserResponse(newUser),
+            accessToken,
+        });
     } catch (error) {
         console.log('Error in signup controller:', error);
         res.status(500).json({
@@ -170,6 +164,7 @@ export const logout = async (req: Request, res: Response): Promise<void> => {
     }
 };
 
+// token
 export const refreshAccessToken = async (
     req: Request,
     res: Response
@@ -222,6 +217,7 @@ export const refreshAccessToken = async (
     }
 };
 
+// social login
 export const googleLogin = async (
     req: Request,
     res: Response
@@ -361,6 +357,130 @@ export const getGoogleClientId = async (req: Request, res: Response) => {
         });
     } catch (error) {
         console.error('Google Client ID 가져오기 오류:', error);
+        res.status(500).json({
+            success: false,
+            message: '서버 오류가 발생했습니다.',
+        });
+    }
+};
+
+// email verification
+export const requestEmailVerification = async (
+    req: Request,
+    res: Response
+): Promise<void> => {
+    const { email, fullName } = req.body;
+    try {
+        if (!email || !fullName) {
+            res.status(400).json({
+                success: false,
+                message: '이메일과 이름을 입력해 주세요.',
+            });
+            return;
+        }
+
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email)) {
+            res.status(400).json({
+                success: false,
+                message: '이메일 형식이 올바르지 않습니다.',
+            });
+            return;
+        }
+
+        const existingUser = await User.findOne({ email });
+        if (existingUser) {
+            res.status(400).json({
+                success: false,
+                message: '이미 사용 중인 이메일입니다.',
+            });
+            return;
+        }
+
+        const code = generateVerificationCode();
+        verificationStore.set(email, {
+            code,
+            expiresAt: Date.now() + 5 * 60 * 1000,
+        });
+
+        const transporter = nodemailer.createTransport({
+            service: 'gmail',
+            auth: {
+                user: process.env.SMTP_USER,
+                pass: process.env.SMTP_PASS,
+            },
+        });
+
+        await transporter.sendMail({
+            from: `"X Clone" <${process.env.SMTP_USER}>`,
+            to: email,
+            subject: '이메일 인증번호',
+            text: `인증번호는 ${code} 입니다.`,
+        });
+
+        res.status(200).json({
+            success: true,
+            message: '인증번호를 전송했습니다.',
+        });
+    } catch (error) {
+        console.error('Error in requestEmailVerification controller:', error);
+        res.status(500).json({
+            success: false,
+            message: '서버 오류가 발생했습니다.',
+        });
+    }
+};
+
+export const verifyEmailCode = async (
+    req: Request,
+    res: Response
+): Promise<void> => {
+    try {
+        const { email, code } = req.body;
+        const record = verificationStore.get(email);
+
+        if (!email || !code) {
+            res.status(400).json({
+                success: false,
+                message: '이메일과 인증번호를 입력해 주세요.',
+            });
+            return;
+        }
+
+        if (!record) {
+            res.status(400).json({
+                success: false,
+                message: '인증 요청을 먼저 해주세요.',
+            });
+            return;
+        }
+
+        if (Date.now() > record.expiresAt) {
+            verificationStore.delete(email);
+            res.status(400).json({
+                success: false,
+                message: '인증번호가 만료되었습니다.',
+            });
+            return;
+        }
+
+        if (record.code !== code) {
+            res.status(400).json({
+                success: false,
+                message: '인증번호가 일치하지 않습니다.',
+            });
+            return;
+        }
+
+        verifiedEmails.add(email);
+        verificationStore.delete(email);
+
+        res.status(200).json({
+            success: true,
+            message: '인증번호가 확인되었습니다.',
+        });
+    } catch (error) {
+        console.error('Error in verifyEmailCode controller:', error);
         res.status(500).json({
             success: false,
             message: '서버 오류가 발생했습니다.',
