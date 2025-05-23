@@ -1,26 +1,15 @@
-import { useRef } from 'react';
 import { AppleSvg, GoogleSvg, XSvg } from '../../components/svgs';
-import SignUpModal from '../../components/auth/SignUpModal';
-import LoginModal from '../../components/auth/LoginModal';
-
-export type RefObj = {
-    inputRef: HTMLInputElement | null;
-    modalRef: HTMLDialogElement | null;
-};
+import { useLocation, useNavigate } from 'react-router-dom';
 
 export default function AuthLanding() {
-    const signUpRef = useRef<RefObj>({
-        inputRef: null,
-        modalRef: null,
-    });
-    const loginModalRef = useRef<HTMLDialogElement | null>(null);
+    const navigate = useNavigate();
+    const location = useLocation();
 
-    const openSignupModal = () => {
-        signUpRef.current.modalRef?.showModal();
-        setTimeout(() => signUpRef.current.inputRef?.focus(), 50);
+    const openModal = (path: string) => {
+        navigate(path, {
+            state: { backgroundLocation: location },
+        });
     };
-
-    const openLoginModal = () => loginModalRef.current?.showModal();
 
     return (
         <>
@@ -59,7 +48,7 @@ export default function AuthLanding() {
 
                         <button
                             className='btn btn-primary w-[300px] rounded-full px-4 text-white'
-                            onClick={openSignupModal}
+                            onClick={() => openModal('/signup')}
                         >
                             <span>Create account</span>
                         </button>
@@ -70,7 +59,7 @@ export default function AuthLanding() {
                             </h2>
                             <button
                                 className='btn w-[300px] rounded-full bg-transparent text-primary transition-colors duration-300 hover:bg-primary/10'
-                                onClick={openLoginModal}
+                                onClick={() => openModal('/login')}
                             >
                                 Sign in
                             </button>
@@ -78,8 +67,6 @@ export default function AuthLanding() {
                     </div>
                 </div>
             </section>
-            <SignUpModal ref={signUpRef} />
-            <LoginModal ref={loginModalRef} />
         </>
     );
 }

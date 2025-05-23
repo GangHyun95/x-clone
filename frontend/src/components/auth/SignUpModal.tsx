@@ -1,18 +1,8 @@
-import { forwardRef, useImperativeHandle, useRef } from 'react';
 import ModalLayout from '../../layouts/ModalLayout';
-import type { RefObj } from '../../pages/home/AuthLanding';
 
-const SignUpModal = forwardRef<RefObj>((_, ref) => {
-    const modalRef = useRef<HTMLDialogElement | null>(null);
-    const inputRef = useRef<HTMLInputElement | null>(null);
-
-    useImperativeHandle(ref, () => ({
-        modalRef: modalRef.current,
-        inputRef: inputRef.current,
-    }));
-
+export default function SignUpModal() {
     return (
-        <ModalLayout modalRef={modalRef}>
+        <ModalLayout>
             <div className='flex-1 overflow-auto px-8 md:px-20'>
                 <h1 className='my-5 text-2xl md:text-4xl font-bold'>
                     Create your account
@@ -21,7 +11,6 @@ const SignUpModal = forwardRef<RefObj>((_, ref) => {
                 <div className='py-3'>
                     <label className='floating-label'>
                         <input
-                            ref={inputRef}
                             type='text'
                             placeholder='Name'
                             className='input input-xl w-full peer placeholder:text-base focus:outline-0 focus:border-primary focus:ring-primary'
@@ -63,6 +52,4 @@ const SignUpModal = forwardRef<RefObj>((_, ref) => {
             </div>
         </ModalLayout>
     );
-});
-
-export default SignUpModal;
+}

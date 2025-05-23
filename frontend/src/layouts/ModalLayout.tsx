@@ -1,12 +1,28 @@
 import { IoCloseOutline } from 'react-icons/io5';
 import { XSvg } from '../components/svgs';
+import { useEffect, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 
-type ModalLayoutProps = {
-    modalRef: React.Ref<HTMLDialogElement>;
+export default function ModalLayout({
+    children,
+}: {
     children: React.ReactNode;
-};
+}) {
+    const modalRef = useRef<HTMLDialogElement | null>(null);
+    const navigate = useNavigate();
 
-export default function ModalLayout({ modalRef, children }: ModalLayoutProps) {
+    useEffect(() => {
+        const modal = modalRef.current;
+        if (modal && !modal.open) {
+            modal.showModal();
+        }
+    }, []);
+
+    const handleClose = () => {
+        modalRef.current?.close();
+        navigate(-1);
+    };
+
     return (
         <dialog ref={modalRef} className='modal'>
             <div
@@ -19,7 +35,10 @@ export default function ModalLayout({ modalRef, children }: ModalLayoutProps) {
                         method='dialog'
                         className='flex flex-1 basis-1/2 items-center'
                     >
-                        <button className='btn btn-ghost btn-circle border-0'>
+                        <button
+                            className='btn btn-ghost btn-circle border-0'
+                            onClick={handleClose}
+                        >
                             <IoCloseOutline className='text-2xl' />
                         </button>
                     </form>

@@ -1,10 +1,9 @@
-import { forwardRef } from 'react';
 import ModalLayout from '../../layouts/ModalLayout';
 import { AppleSvg, GoogleSvg } from '../svgs';
 
-const LoginModal = forwardRef<HTMLDialogElement | null>((_, ref) => {
+export default function LoginModal() {
     return (
-        <ModalLayout modalRef={ref}>
+        <ModalLayout>
             <div className='flex-1 overflow-auto'>
                 <div className='flex flex-col justify-center items-stretch basis-auto shrink-0 max-w-96 h-full md:h-auto px-8 pb-12 mx-auto'>
                     <h1 className='font-pyeojin text-3xl font-bold my-5 '>
@@ -67,6 +66,4 @@ const LoginModal = forwardRef<HTMLDialogElement | null>((_, ref) => {
             </div>
         </ModalLayout>
     );
-});
-
-export default LoginModal;
+}
