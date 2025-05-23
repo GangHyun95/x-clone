@@ -5,8 +5,10 @@ import { useNavigate } from 'react-router-dom';
 
 export default function ModalLayout({
     children,
+    className = '',
 }: {
     children: React.ReactNode;
+    className?: string;
 }) {
     const modalRef = useRef<HTMLDialogElement | null>(null);
     const navigate = useNavigate();
@@ -26,8 +28,8 @@ export default function ModalLayout({
     return (
         <dialog ref={modalRef} className='modal'>
             <div
-                className='modal-box flex flex-col w-full h-full max-w-none max-h-none p-0 rounded-none 
-                        md:min-w-[600px] md:min-h-[650px] md:h-0 md:rounded-2xl md:max-w-[600px] '
+                className={`modal-box flex flex-col w-full h-full max-w-none max-h-none p-0 rounded-none 
+                        md:min-w-[600px] md:min-h-[650px] md:h-0 md:rounded-2xl md:max-w-[600px] ${className}`}
             >
                 {/* header */}
                 <div className='flex h-14 items-stretch justify-center px-4'>
