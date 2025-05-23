@@ -1,9 +1,16 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { IoEyeOffOutline, IoEyeOutline } from 'react-icons/io5';
 
 export default function () {
     const [showPassword, setShowPassword] = useState(false);
 
+    const passwordRef = useRef<HTMLInputElement>(null);
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            passwordRef.current?.focus();
+        }, 100);
+        return () => clearTimeout(timer);
+    }, []);
     return (
         <>
             <div className='flex-1 overflow-auto'>
@@ -28,6 +35,7 @@ export default function () {
                         <div className='py-3 relative'>
                             <label className='floating-label'>
                                 <input
+                                    ref={passwordRef}
                                     type={showPassword ? 'text' : 'password'}
                                     placeholder='Password'
                                     className='input input-xl w-full peer placeholder:text-base focus:outline-0 focus:border-primary focus:ring-primary pr-10'
