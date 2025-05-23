@@ -1,6 +1,7 @@
 import { useRef } from 'react';
 import { AppleSvg, GoogleSvg, XSvg } from '../../components/svgs';
 import SignUpModal from '../../components/auth/SignUpModal';
+import LoginModal from '../../components/auth/LoginModal';
 
 export type RefObj = {
     inputRef: HTMLInputElement | null;
@@ -8,14 +9,19 @@ export type RefObj = {
 };
 
 export default function AuthLanding() {
-    const refObj = useRef<RefObj>({
+    const signUpRef = useRef<RefObj>({
         inputRef: null,
         modalRef: null,
     });
-    const openModal = () => {
-        refObj.current.modalRef?.showModal();
-        setTimeout(() => refObj.current.inputRef?.focus(), 50);
+    const loginModalRef = useRef<HTMLDialogElement | null>(null);
+
+    const openSignupModal = () => {
+        signUpRef.current.modalRef?.showModal();
+        setTimeout(() => signUpRef.current.inputRef?.focus(), 50);
     };
+
+    const openLoginModal = () => loginModalRef.current?.showModal();
+
     return (
         <>
             <section className='flex h-full'>
@@ -53,7 +59,7 @@ export default function AuthLanding() {
 
                         <button
                             className='btn btn-primary w-[300px] rounded-full px-4 text-white'
-                            onClick={openModal}
+                            onClick={openSignupModal}
                         >
                             <span>Create account</span>
                         </button>
@@ -62,14 +68,18 @@ export default function AuthLanding() {
                             <h2 className='mb-4 font-bold lg:mb-5'>
                                 Already have an account?
                             </h2>
-                            <button className='btn w-[300px] rounded-full bg-transparent text-primary transition-colors duration-300 hover:bg-primary/10'>
+                            <button
+                                className='btn w-[300px] rounded-full bg-transparent text-primary transition-colors duration-300 hover:bg-primary/10'
+                                onClick={openLoginModal}
+                            >
                                 Sign in
                             </button>
                         </div>
                     </div>
                 </div>
             </section>
-            <SignUpModal ref={refObj} />
+            <SignUpModal ref={signUpRef} />
+            <LoginModal ref={loginModalRef} />
         </>
     );
 }
