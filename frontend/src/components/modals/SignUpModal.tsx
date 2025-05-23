@@ -10,7 +10,7 @@ export default function SignUpModal() {
         if (step === 2) return <StepTwo />;
     };
     return (
-        <ModalLayout className='md:!min-h-[450px]'>
+        <ModalLayout className='md:!h-[450px]'>
             {renderStepContent()}
         </ModalLayout>
     );
