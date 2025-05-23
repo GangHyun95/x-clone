@@ -1,7 +1,17 @@
-import ModalLayout from '../../layouts/ModalLayout';
-import { AppleSvg, GoogleSvg } from '../svgs';
+import { useNavigate } from 'react-router-dom';
+import ModalLayout from '@/layouts/ModalLayout';
+import { AppleSvg, GoogleSvg } from '@/components/svgs';
 
 export default function LoginModal() {
+    const navigate = useNavigate();
+
+    const handleSignUpClick = () => {
+        navigate('/signup', {
+            state: { backgroundLocation: '/' },
+            replace: true,
+        });
+    };
+
     return (
         <ModalLayout>
             <div className='flex-1 overflow-auto'>
@@ -57,7 +67,10 @@ export default function LoginModal() {
                             <span className='text-gray-500 text-sm'>
                                 Don't have an account?
                             </span>
-                            <button className='text-sm text-primary'>
+                            <button
+                                className='text-sm text-primary cursor-pointer hover:underline decoration-primary underline-offset-4'
+                                onClick={handleSignUpClick}
+                            >
                                 Sign up
                             </button>
                         </div>

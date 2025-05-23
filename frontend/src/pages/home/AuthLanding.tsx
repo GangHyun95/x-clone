@@ -1,5 +1,5 @@
-import { AppleSvg, GoogleSvg, XSvg } from '../../components/svgs';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { AppleSvg, GoogleSvg, XSvg } from '@/components/svgs';
 
 export default function AuthLanding() {
     const navigate = useNavigate();

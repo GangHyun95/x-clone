@@ -1,5 +1,5 @@
-import HomeScreen from './HomeScreen';
-import AuthLanding from './AuthLanding';
+import HomeScreen from '@/pages/home/HomeScreen';
+import AuthLanding from '@/pages/home/AuthLanding';
 
 export default function HomePage() {
     const user = null;

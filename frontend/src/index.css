@@ -8,7 +8,7 @@
     --color-secondary: rgb(24, 24, 24);
 }
 
-@import './styles//fonts.css';
+@import './styles/fonts.css';
 
 body {
     font-family: 'Pretendard', sans-serif;

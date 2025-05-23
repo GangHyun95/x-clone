@@ -1,14 +1,13 @@
 import { Route, Routes, useLocation } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
-import HomePage from './pages/home/HomePage';
-import AppLayout from './layouts/AppLayout';
-import SignUpModal from './components/auth/SignUpModal';
-import LoginModal from './components/auth/LoginModal';
+import HomePage from '@/pages/home/HomePage';
+import AppLayout from '@/layouts/AppLayout';
+import SignUpModal from '@/components/modals/SignUpModal';
+import LoginModal from '@/components/modals/LoginModal';
 
 function App() {
     const location = useLocation();
     const state = location.state;
-    console.log(location);
     return (
         <>
             <Routes location={state?.backgroundLocation || location}>

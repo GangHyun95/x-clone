@@ -1,5 +1,5 @@
 import { IoCloseOutline } from 'react-icons/io5';
-import { XSvg } from '../components/svgs';
+import { XSvg } from '@/components/svgs';
 import { useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 

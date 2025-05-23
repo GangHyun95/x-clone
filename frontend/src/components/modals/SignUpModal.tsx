@@ -1,6 +1,17 @@
-import ModalLayout from '../../layouts/ModalLayout';
+import ModalLayout from '@/layouts/ModalLayout';
+import { useNavigate } from 'react-router-dom';
 
 export default function SignUpModal() {
+    const navigate = useNavigate();
+
+    const handleSignInClick = () => {
+        navigate('/login', {
+            state: {
+                backgroundLocation: '/',
+                replace: true,
+            },
+        });
+    };
     return (
         <ModalLayout>
             <div className='flex-1 overflow-auto px-8 md:px-20'>
@@ -38,7 +49,12 @@ export default function SignUpModal() {
                     <span className='text-gray-500 text-sm'>
                         Already have an account?
                     </span>
-                    <button className='text-sm text-primary'>Sign In</button>
+                    <button
+                        className='text-sm text-primary'
+                        onClick={handleSignInClick}
+                    >
+                        Sign In
+                    </button>
                 </div>
             </div>
 
