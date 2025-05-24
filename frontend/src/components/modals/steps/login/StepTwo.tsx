@@ -12,9 +12,9 @@ export default function () {
         return () => clearTimeout(timer);
     }, []);
     return (
-        <>
+        <form className='flex flex-col h-full'>
             <div className='flex-1 overflow-auto'>
-                <div className='flex flex-col justify-center items-stretch basis-auto shrink-0 max-w-full h-full md:h-auto px-20 pb-12 mx-auto'>
+                <div className='flex flex-col items-stretch basis-auto shrink-0 max-w-full h-full md:h-auto px-8 md:px-20 pb-12 mx-auto'>
                     <h1 className='font-pyeojin text-3xl font-bold my-5 '>
                         Enter your password
                     </h1>
@@ -78,6 +78,6 @@ export default function () {
                     </button>
                 </div>
             </div>
-        </>
+        </form>
     );
 }

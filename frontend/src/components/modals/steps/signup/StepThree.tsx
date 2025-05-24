@@ -12,11 +12,16 @@ export default function () {
         return () => clearTimeout(timer);
     }, []);
     return (
-        <>
+        <form className='flex flex-col h-full'>
             <div className='flex-1 overflow-auto px-8 md:px-20'>
-                <h1 className='my-5 text-2xl md:text-4xl font-bold'>
-                    You'll need a password
-                </h1>
+                <div className='my-5'>
+                    <h1 className='text-2xl md:text-4xl font-bold'>
+                        You'll need a password
+                    </h1>
+                    <h3 className='text-sm text-gray-500 mt-2'>
+                        Make sure it’s 6 characters or more.
+                    </h3>
+                </div>
 
                 <div className='py-3'>
                     <label className='floating-label'>
@@ -57,6 +62,6 @@ export default function () {
                     Sign up
                 </button>
             </div>
-        </>
+        </form>
     );
 }

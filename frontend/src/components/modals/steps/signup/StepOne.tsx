@@ -1,55 +1,102 @@
-import { useEffect, useRef } from 'react';
+import { useMutation } from '@tanstack/react-query';
+import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { RiLoader4Fill } from 'react-icons/ri';
+import { useForm } from 'react-hook-form';
+import { handleFormErrors } from '@/utils/handleFormErrors';
+import { sendEmailCode} from '@/service/auth';
+import type { EmailVerifyPayload } from '@/types/auth';
 
-export default function ({ onNext }: { onNext: () => void }) {
+export default function ({ onNext }: { onNext: (email: string, expiresAt: number) => void }) {
+    const form = useForm<EmailVerifyPayload>({
+        mode: 'onChange',
+        defaultValues: {
+            email: '',
+            fullName: '',
+        },
+    });
+    const { register, handleSubmit, setError, setFocus, formState: { errors, isValid } } = form;
     const navigate = useNavigate();
-    const nameRef = useRef<HTMLInputElement | null>(null);
 
-    const handleSignInClick = () => {
-        navigate('/login', {
-            state: { backgroundLocation: '/' },
-            replace: true,
-        });
-    };
+    const { mutate, isPending } = useMutation({
+        mutationFn: sendEmailCode,
+        onSuccess: (response, variables) => {
+            if ('expiresAt' in response.data) onNext(variables.email, response.data.expiresAt);
+        },
+        onError: (error) => {
+            handleFormErrors<EmailVerifyPayload>(error, setError);
+        },
+    });
 
     useEffect(() => {
         const timer = setTimeout(() => {
-            nameRef.current?.focus();
+            setFocus('fullName');
         }, 100);
         return () => clearTimeout(timer);
     }, []);
 
+    const onSubmit = (data: EmailVerifyPayload) => {
+        mutate(data);
+    };
+
     return (
-        <>
+        <form className='flex flex-col h-full' onSubmit={handleSubmit(onSubmit)}>
             <div className='flex-1 overflow-auto px-8 md:px-20'>
                 <h1 className='my-5 text-2xl md:text-4xl font-bold'>
                     Create your account
                 </h1>
 
                 <div className='py-3'>
-                    <label className='floating-label'>
+                    <label htmlFor='fullName' className='floating-label'>
                         <input
-                            ref={nameRef}
+                            {...register('fullName', {
+                                required: '이름을 입력해 주세요.',
+                            })}
+                            id='fullName'
                             type='text'
                             placeholder='Name'
-                            className='input input-xl w-full peer placeholder:text-base focus:outline-0 focus:border-primary focus:ring-primary'
+                            className={`input input-xl w-full text-base peer placeholder:text-base focus:outline-0 focus:border-primary focus:ring-primary ${
+                                errors.fullName ? 'border-red-500' : ''
+                            }`}
                         />
                         <span className='floating-label label-text peer-focus:text-primary peer-focus:text-sm'>
                             Name
                         </span>
+
+                        {errors.fullName && (
+                            <p className='text-sm text-red-500'>
+                                {errors.fullName.message}
+                            </p>
+                        )}
                     </label>
                 </div>
 
                 <div className='py-3'>
                     <label className='floating-label'>
                         <input
-                            type='text'
+                            {...register('email', {
+                                required: '이메일을 입력해 주세요.',
+                                pattern: {
+                                    value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+                                    message: '이메일 형식이 올바르지 않습니다.',
+                                },
+                            })}
+                            id='email'
+                            type='email'
                             placeholder='Email'
-                            className='input input-xl w-full peer placeholder:text-base focus:outline-0 focus:border-primary focus:ring-primary'
+                            className={`input input-xl w-full text-base peer placeholder:text-base focus:outline-0 focus:border-primary focus:ring-primary ${
+                                errors.email ? 'border-red-500' : ''
+                            }`}
                         />
                         <span className='floating-label label-text peer-focus:text-primary'>
                             Email
                         </span>
+
+                        {errors.email && (
+                            <p className='text-sm text-red-500'>
+                                {errors.email.message}
+                            </p>
+                        )}
                     </label>
                 </div>
 
@@ -58,8 +105,14 @@ export default function ({ onNext }: { onNext: () => void }) {
                         Already have an account?
                     </span>
                     <button
+                        type='button'
                         className='text-sm text-primary cursor-pointer hover:underline decoration-primary underline-offset-4'
-                        onClick={handleSignInClick}
+                        onClick={() =>
+                            navigate('/login', {
+                                state: { backgroundLocation: '/' },
+                                replace: true,
+                            })
+                        }
                     >
                         Sign In
                     </button>
@@ -69,11 +122,18 @@ export default function ({ onNext }: { onNext: () => void }) {
             <div className='flex flex-col items-stretch flex-none my-6 px-8 md:px-20'>
                 <button
                     className='btn w-full min-h-14 rounded-full text-base text-white bg-secondary hover:bg-secondary/90'
-                    onClick={onNext}
+                    disabled={!isValid || isPending}
                 >
-                    Next
+                    {isPending ? (
+                        <>
+                            <RiLoader4Fill className='animate-spin size-5' />
+                            Loading...
+                        </>
+                    ) : (
+                        'Next'
+                    )}
                 </button>
             </div>
-        </>
-    );
+        </form>
+    )
 }

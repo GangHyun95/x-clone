@@ -11,7 +11,7 @@ export default function ({ onNext }: { onNext: () => void }) {
         });
     };
     return (
-        <div className='flex-1 overflow-auto'>
+        <div className='flex-1 overflow-auto h-full'>
             <div className='flex flex-col justify-center items-stretch basis-auto shrink-0 max-w-96 h-full md:h-auto px-8 pb-12 mx-auto'>
                 <h1 className='font-pyeojin text-3xl font-bold my-5 '>
                     Sign in to X

@@ -4,14 +4,29 @@ import { StepOne, StepTwo, StepThree } from '@/components/modals/steps/signup';
 
 export default function SignUpModal() {
     const [step, setStep] = useState(1);
+    const [email, setEmail] = useState('');
+    const [expiresAt, setExpiresAt] = useState(0);
+
     const renderStepContent = () => {
         if (step === 1) {
-            return <StepOne onNext={() => setStep(2)} />;
+            return (
+                <StepOne
+                    onNext={(email: string, expiresAt: number) => {
+                        setEmail(email);
+                        setExpiresAt(expiresAt);
+                        setStep(2);
+                    }}
+                />
+            );
         }
 
         if (step === 2) {
             return (
-                <StepTwo onNext={() => setStep(3)} />
+                <StepTwo
+                    onNext={() => setStep(3)}
+                    email={email}
+                    expiresAt={expiresAt}
+                />
             );
         }
 
