@@ -4,10 +4,7 @@ import Notification from '../models/notification.model.ts';
 import User from '../models/user.model.ts';
 import { buildUserResponse, uploadAndReplaceImage } from '../lib/util.ts';
 
-export const getUserProfile = async (
-    req: Request,
-    res: Response
-): Promise<void> => {
+export const getUserProfile = async (req: Request, res: Response): Promise<void> => {
     const { nickname } = req.params;
 
     try {
@@ -22,7 +19,9 @@ export const getUserProfile = async (
 
         res.status(200).json({
             success: true,
-            user: buildUserResponse(user),
+            data: {
+                user: buildUserResponse(user),
+            }
         });
     } catch (error) {
         console.error('Error in getUserProfile:', error);
@@ -33,14 +32,11 @@ export const getUserProfile = async (
     }
 };
 
-export const followUnfollowUser = async (
-    req: Request,
-    res: Response
-): Promise<void> => {
+export const followUnfollowUser = async (req: Request, res: Response): Promise<void> => {
+    const { id } = req.params;
+    if (!req.user) throw new Error('사용자를 찾을 수 없습니다.');
+    
     try {
-        const { id } = req.params;
-        if (!req.user) throw new Error('사용자를 찾을 수 없습니다.');
-
         const userToModify = await User.findById(id);
         const currentUser = await User.findById(req.user._id);
 
@@ -83,6 +79,7 @@ export const followUnfollowUser = async (
             res.status(200).json({
                 success: true,
                 message: '언팔로우 되었습니다.',
+                data: {},
             });
         } else {
             await Promise.all([
@@ -102,6 +99,7 @@ export const followUnfollowUser = async (
             res.status(200).json({
                 success: true,
                 message: '팔로우 되었습니다.',
+                data: {},
             });
         }
     } catch (error) {
@@ -113,13 +111,9 @@ export const followUnfollowUser = async (
     }
 };
 
-export const getSuggestedUsers = async (
-    req: Request,
-    res: Response
-): Promise<void> => {
+export const getSuggestedUsers = async (req: Request, res: Response): Promise<void> => {
+    if (!req.user) throw new Error('사용자를 찾을 수 없습니다.');
     try {
-        if (!req.user) throw new Error('사용자를 찾을 수 없습니다.');
-
         const usersFollowedByMe = await User.findById(req.user._id).select(
             'following'
         );
@@ -140,7 +134,9 @@ export const getSuggestedUsers = async (
 
         res.status(200).json({
             success: true,
-            users: suggestedUsers.map((user) => buildUserResponse(user)),
+            data: {
+                users: suggestedUsers.map((user) => buildUserResponse(user)),
+            }
         });
     } catch (error) {
         console.error('Error in getSuggestedUsers:', error);
@@ -151,10 +147,7 @@ export const getSuggestedUsers = async (
     }
 };
 
-export const checkNickname = async (
-    req: Request,
-    res: Response
-): Promise<void> => {
+export const checkNickname = async (req: Request, res: Response): Promise<void> => {
     const { nickname } = req.query;
 
     if (!nickname || typeof nickname !== 'string') {
@@ -167,7 +160,7 @@ export const checkNickname = async (
     try {
         const existingUser = await User.findOne({ nickname });
         if (existingUser) {
-            res.status(200).json({
+            res.status(400).json({
                 success: false,
                 message: '이미 사용중인 닉네임입니다.',
             });
@@ -177,6 +170,7 @@ export const checkNickname = async (
         res.status(200).json({
             success: true,
             message: '사용 가능한 닉네임입니다.',
+            data: {},
         });
     } catch (error) {
         console.error('Error in checkNickname:', error);
@@ -187,10 +181,7 @@ export const checkNickname = async (
     }
 };
 
-export const updateUserProfile = async (
-    req: Request,
-    res: Response
-): Promise<void> => {
+export const updateUserProfile = async (req: Request, res: Response): Promise<void> => {
     if (!req.user) throw new Error('사용자를 찾을 수 없습니다.');
 
     const {
@@ -289,7 +280,9 @@ export const updateUserProfile = async (
         res.status(200).json({
             success: true,
             message: '프로필이 업데이트 되었습니다.',
-            user: buildUserResponse(user),
+            data: {
+                user: buildUserResponse(user),
+            }
         });
     } catch (error) {
         console.error('Error in updateUserProfile:', error);
@@ -300,10 +293,7 @@ export const updateUserProfile = async (
     }
 };
 
-export const deleteAccount = async (
-    req: Request,
-    res: Response
-): Promise<void> => {
+export const deleteAccount = async (req: Request, res: Response): Promise<void> => {
     if (!req.user) throw new Error('사용자를 찾을 수 없습니다.');
 
     try {
@@ -332,6 +322,7 @@ export const deleteAccount = async (
         res.status(200).json({
             success: true,
             message: '계정이 삭제되었습니다.',
+            data: {},
         });
     } catch (error) {
         console.error('Error in deleteAccount:', error);

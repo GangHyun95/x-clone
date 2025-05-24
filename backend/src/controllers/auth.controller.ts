@@ -22,14 +22,17 @@ export const signup = async (req: Request, res: Response): Promise<void> => {
     if (errors.length > 0) {
         res.status(400).json({
             success: false,
+            message: '회원가입에 실패했습니다.',
             errors,
         });
         return;
     }
+
     try {
         if (!verifiedEmails.has(email)) {
             res.status(400).json({
                 success: false,
+                message: '이메일 인증이 필요합니다.',
                 errors: [{ field: 'root', message: '이메일 인증이 필요합니다.' }],
             });
             return;
@@ -39,6 +42,7 @@ export const signup = async (req: Request, res: Response): Promise<void> => {
         if (existingUser) {
             res.status(400).json({
                 success: false,
+                message: '이미 사용 중인 닉네임입니다.',
                 errors: [{ field: 'nickname', message: '이미 사용 중인 닉네임입니다.' }],
             });
             return;
@@ -69,8 +73,10 @@ export const signup = async (req: Request, res: Response): Promise<void> => {
         res.status(201).json({
             success: true,
             message: '회원가입이 완료되었습니다.',
-            user: buildUserResponse(newUser),
-            accessToken,
+            data: {
+                user: buildUserResponse(newUser),
+                accessToken,
+            },
         });
     } catch (error) {
         console.log('Error in signup controller:', error);
@@ -89,7 +95,7 @@ export const login = async (req: Request, res: Response): Promise<void> => {
     if (!password) errors.push({ field: 'password', message: '비밀번호를 입력해 주세요.' });
 
     if (errors.length > 0) {
-        res.status(400).json({ success: false, errors });
+        res.status(400).json({ success: false, message: '로그인에 실패했습니다.', errors });
         return;
     }
     try {
@@ -109,6 +115,7 @@ export const login = async (req: Request, res: Response): Promise<void> => {
         if (!isPasswordValid) {
             res.status(401).json({
                 success: false,
+                message: '이메일 또는 비밀번호가 올바르지 않습니다.',
                 errors: [
                     { field: 'email', message: '이메일 또는 비밀번호가 올바르지 않습니다.' },
                     { field: 'password', message: '이메일 또는 비밀번호가 올바르지 않습니다.' },
@@ -130,8 +137,10 @@ export const login = async (req: Request, res: Response): Promise<void> => {
         res.status(200).json({
             success: true,
             message: '로그인에 성공했습니다.',
-            user: buildUserResponse(user),
-            accessToken,
+            data: {
+                user: buildUserResponse(user),
+                accessToken,
+            }
         });
     } catch (error) {
         console.log('Error in login controller:', error);
@@ -153,6 +162,7 @@ export const logout = async (req: Request, res: Response): Promise<void> => {
         res.status(200).json({
             success: true,
             message: '성공적으로 로그아웃되었습니다.',
+            data: {},
         });
     } catch (error) {
         console.log('Error in logout controller:', error);
@@ -201,8 +211,12 @@ export const refreshAccessToken = async (req: Request, res: Response): Promise<v
 
         const newAccessToken = generateToken(user._id.toString(), 'access');
         res.status(200).json({
-            accessToken: newAccessToken,
-            user: buildUserResponse(user),
+            success: true,
+            message: 'Access token이 갱신되었습니다.',
+            data: {
+                accessToken: newAccessToken,
+                user: buildUserResponse(user),
+            },
         });
     } catch (error) {
         console.error('Access Token 갱신 오류:', error);
@@ -316,8 +330,10 @@ export const googleLogin = async (req: Request, res: Response): Promise<void> =>
         res.status(200).json({
             success: true,
             message: 'Google 로그인에 성공했습니다.',
-            user: buildUserResponse(user),
-            accessToken,
+            data: {
+                user: buildUserResponse(user),
+                accessToken,
+            },
         });
     } catch (error) {
         console.error('Google 로그인 오류:', error);
@@ -341,7 +357,8 @@ export const getGoogleClientId = async (req: Request, res: Response) => {
 
         res.status(200).json({
             success: true,
-            googleClientId,
+            message: 'Google Client ID를 성공적으로 반환했습니다.',
+            data: { googleClientId },
         });
     } catch (error) {
         console.error('Google Client ID 가져오기 오류:', error);
@@ -355,14 +372,14 @@ export const getGoogleClientId = async (req: Request, res: Response) => {
 // email verification
 export const requestEmailVerification = async (req: Request, res: Response): Promise<void> => {
     const { email, fullName } = req.body;
-    
+
     const errors: { field: string; message: string }[] = [];
     if (!email) errors.push({ field: 'email', message: '이메일을 입력해 주세요.' });
     if (!fullName) errors.push({ field: 'fullName', message: '이름을 입력해 주세요.' });
     if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) errors.push({ field: 'email', message: '이메일 형식이 올바르지 않습니다.' });
 
     if (errors.length > 0) {
-        res.status(400).json({ success: false, errors });
+        res.status(400).json({ success: false, message: '이메일 인증 요청에 실패했습니다.', errors});
         return;
     }
 
@@ -371,6 +388,7 @@ export const requestEmailVerification = async (req: Request, res: Response): Pro
         if (existingUser) {
             res.status(400).json({
                 success: false,
+                message: '이미 사용 중인 이메일입니다.',
                 errors: [
                     { field: 'email', message: '이미 사용 중인 이메일입니다.' },
                 ],
@@ -379,12 +397,6 @@ export const requestEmailVerification = async (req: Request, res: Response): Pro
         }
 
         const code = generateVerificationCode();
-        const expiresAt = Date.now() + 3 * 60 * 1000;
-
-        verificationStore.set(email, {
-            code,
-            expiresAt,
-        });
 
         const transporter = nodemailer.createTransport({
             service: 'gmail',
@@ -401,10 +413,19 @@ export const requestEmailVerification = async (req: Request, res: Response): Pro
             text: `인증번호는 ${code} 입니다.`,
         });
 
+        const expiresAt = Date.now() + 3 * 60 * 1000;
+
+        verificationStore.set(email, {
+            code,
+            expiresAt,
+        });
+
         res.status(200).json({
             success: true,
             message: '인증번호를 전송했습니다.',
-            expiresAt,
+            data: {
+                expiresAt,
+            },
         });
     } catch (error) {
         console.error('Error in requestEmailVerification controller:', error);
@@ -422,7 +443,7 @@ export const verifyEmailCode = async (req: Request, res: Response): Promise<void
     if (!code) errors.push({ field: 'code', message: '인증번호를 입력해 주세요.' });
 
     if (errors.length > 0) {
-        res.status(400).json({ success: false, errors });
+        res.status(400).json({ success: false, message: '인증번호 확인에 실패했습니다.', errors });
         return;
     }
 
@@ -431,6 +452,7 @@ export const verifyEmailCode = async (req: Request, res: Response): Promise<void
         if (!record) {
             res.status(400).json({
                 success: false,
+                message: '인증 요청이 없습니다.',
                 errors: [
                     { field: 'root', message: '인증 요청을 먼저 해주세요.' },
                 ],
@@ -442,6 +464,7 @@ export const verifyEmailCode = async (req: Request, res: Response): Promise<void
             verificationStore.delete(email);
             res.status(400).json({
                 success: false,
+                message: '인증번호가 만료되었습니다.',
                 errors: [
                     { field: 'code', message: '인증번호가 만료되었습니다.' },
                 ],
@@ -452,6 +475,7 @@ export const verifyEmailCode = async (req: Request, res: Response): Promise<void
         if (record.code !== code) {
             res.status(400).json({
                 success: false,
+                message: '인증번호가 일치하지 않습니다.',
                 errors: [
                     { field: 'code', message: '인증번호가 일치하지 않습니다.' },
                 ],
@@ -465,6 +489,7 @@ export const verifyEmailCode = async (req: Request, res: Response): Promise<void
         res.status(200).json({
             success: true,
             message: '인증번호가 확인되었습니다.',
+            data: {}
         });
     } catch (error) {
         console.error('Error in verifyEmailCode controller:', error);

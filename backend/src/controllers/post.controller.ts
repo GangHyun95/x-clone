@@ -4,23 +4,19 @@ import User from '../models/user.model.ts';
 import { deleteImage, uploadAndReplaceImage } from '../lib/util.ts';
 import Notification from '../models/notification.model.ts';
 
-export const createPost = async (
-    req: Request,
-    res: Response
-): Promise<void> => {
+export const createPost = async (req: Request, res: Response): Promise<void> => {
+    if (!req.user) throw new Error('사용자를 찾을 수 없습니다.');
+    const { text, img } = req.body;
+
+    if (!text && !img) {
+        res.status(400).json({
+            success: false,
+            message: '텍스트 또는 이미지를 입력해야 합니다.',
+        });
+        return;
+    }
+
     try {
-        if (!req.user) throw new Error('사용자를 찾을 수 없습니다.');
-
-        const { text, img } = req.body;
-
-        if (!text && !img) {
-            res.status(400).json({
-                success: false,
-                message: '텍스트 또는 이미지를 입력해야 합니다.',
-            });
-            return;
-        }
-
         let uploadImgUrl = null;
 
         const user = await User.findById(req.user._id);
@@ -47,7 +43,7 @@ export const createPost = async (
         res.status(201).json({
             success: true,
             message: '게시물이 생성되었습니다.',
-            post: newPost,
+            data: { post: newPost },
         });
     } catch (error) {
         console.error('Error in createPost controller:', error);
@@ -59,20 +55,19 @@ export const createPost = async (
 };
 
 export const editPost = async (req: Request, res: Response): Promise<void> => {
+    if (!req.user) throw new Error('사용자를 찾을 수 없습니다.');
+    const { id } = req.params;
+    const { text, img } = req.body;
+
+    if (!text && !img) {
+        res.status(400).json({
+            success: false,
+            message: '텍스트 또는 이미지를 입력해야 합니다.',
+        });
+        return;
+    }
+
     try {
-        if (!req.user) throw new Error('사용자를 찾을 수 없습니다.');
-
-        const { id } = req.params;
-        const { text, img } = req.body;
-
-        if (!text && !img) {
-            res.status(400).json({
-                success: false,
-                message: '텍스트 또는 이미지를 입력해야 합니다.',
-            });
-            return;
-        }
-
         const post = await Post.findById(id);
         if (!post) {
             res.status(404).json({
@@ -105,7 +100,7 @@ export const editPost = async (req: Request, res: Response): Promise<void> => {
         res.status(200).json({
             success: true,
             message: '게시물이 수정되었습니다.',
-            post,
+            data: { post },
         });
     } catch (error) {
         console.error('Error in editPost controller:', error);
@@ -116,15 +111,11 @@ export const editPost = async (req: Request, res: Response): Promise<void> => {
     }
 };
 
-export const deletePost = async (
-    req: Request,
-    res: Response
-): Promise<void> => {
+export const deletePost = async (req: Request, res: Response): Promise<void> => {
+    if (!req.user) throw new Error('사용자를 찾을 수 없습니다.');
+    const { id } = req.params;
+
     try {
-        if (!req.user) throw new Error('사용자를 찾을 수 없습니다.');
-
-        const { id } = req.params;
-
         const post = await Post.findById(id);
         if (!post) {
             res.status(404).json({
@@ -150,6 +141,7 @@ export const deletePost = async (
         res.status(200).json({
             success: true,
             message: '게시물이 삭제되었습니다.',
+            data: {},
         });
     } catch (error) {
         console.error('Error in deletePost controller:', error);
@@ -160,23 +152,20 @@ export const deletePost = async (
     }
 };
 
-export const commentOnPost = async (
-    req: Request,
-    res: Response
-): Promise<void> => {
+export const commentOnPost = async (req: Request, res: Response): Promise<void> => {
+    if (!req.user) throw new Error('사용자를 찾을 수 없습니다.');
+    const { text } = req.body;
+    const { id } = req.params;
+
+    if (!text) {
+        res.status(400).json({
+            success: false,
+            message: '댓글을 입력해야 합니다.',
+        });
+        return;
+    }
+
     try {
-        if (!req.user) throw new Error('사용자를 찾을 수 없습니다.');
-        const { text } = req.body;
-        const { id } = req.params;
-
-        if (!text) {
-            res.status(400).json({
-                success: false,
-                message: '댓글을 입력해야 합니다.',
-            });
-            return;
-        }
-
         const updatedPost = await Post.findByIdAndUpdate(
             id,
             { $push: { comments: { user: req.user._id, text } } },
@@ -194,7 +183,7 @@ export const commentOnPost = async (
         res.status(200).json({
             success: true,
             message: '댓글이 작성되었습니다.',
-            post: updatedPost,
+            data: { post: updatedPost },
         });
     } catch (error) {
         console.error('Error in commentOnPost controller:', error);
@@ -205,14 +194,11 @@ export const commentOnPost = async (
     }
 };
 
-export const likeUnlikePost = async (
-    req: Request,
-    res: Response
-): Promise<void> => {
-    try {
-        const { id } = req.params;
-        if (!req.user) throw new Error('사용자를 찾을 수 없습니다.');
+export const likeUnlikePost = async (req: Request, res: Response): Promise<void> => {
+    if (!req.user) throw new Error('사용자를 찾을 수 없습니다.');
+    const { id } = req.params;
 
+    try {
         const post = await Post.findById(id);
         if (!post) {
             res.status(404).json({
@@ -238,6 +224,7 @@ export const likeUnlikePost = async (
             res.status(200).json({
                 success: true,
                 message: '게시물의 좋아요가 취소되었습니다.',
+                data: {},
             });
         } else {
             await Promise.all([
@@ -259,6 +246,7 @@ export const likeUnlikePost = async (
             res.status(200).json({
                 success: true,
                 message: '게시물에 좋아요가 추가되었습니다.',
+                data: {},
             });
         }
     } catch (error) {
@@ -270,10 +258,7 @@ export const likeUnlikePost = async (
     }
 };
 
-export const getAllPosts = async (
-    req: Request,
-    res: Response
-): Promise<void> => {
+export const getAllPosts = async (req: Request, res: Response): Promise<void> => {
     try {
         const posts = await Post.find()
             .sort({ createdAt: -1 })
@@ -285,7 +270,7 @@ export const getAllPosts = async (
             message: posts.length
                 ? '게시물 목록을 가져왔습니다.'
                 : '게시물이 없습니다.',
-            posts,
+            data: { posts },
         });
     } catch (error) {
         console.error('Error in getAllPosts controller:', error);
@@ -296,12 +281,10 @@ export const getAllPosts = async (
     }
 };
 
-export const getLikedPosts = async (
-    req: Request,
-    res: Response
-): Promise<void> => {
+export const getLikedPosts = async (req: Request, res: Response): Promise<void> => {
+    const { id } = req.params;
+
     try {
-        const { id } = req.params;
         const user = await User.findById(id);
         if (!user) {
             res.status(404).json({
@@ -321,7 +304,7 @@ export const getLikedPosts = async (
             message: likedPosts.length
                 ? '좋아요한 게시물을 가져왔습니다.'
                 : '좋아요한 게시물이 없습니다.',
-            posts: likedPosts,
+            data: { posts: likedPosts },
         });
     } catch (error) {
         console.error('Error in getLikedPosts controller:', error);
@@ -332,13 +315,10 @@ export const getLikedPosts = async (
     }
 };
 
-export const getFollowingPosts = async (
-    req: Request,
-    res: Response
-): Promise<void> => {
-    try {
-        if (!req.user) throw new Error('사용자를 찾을 수 없습니다.');
+export const getFollowingPosts = async (req: Request, res: Response): Promise<void> => {
+    if (!req.user) throw new Error('사용자를 찾을 수 없습니다.');
 
+    try {
         const user = await User.findById(req.user._id).select('following');
         if (!user) {
             res.status(404).json({
@@ -360,7 +340,7 @@ export const getFollowingPosts = async (
             message: feedPosts.length
                 ? '피드를 가져왔습니다.'
                 : '팔로우한 사용자의 게시물이 없습니다.',
-            posts: feedPosts,
+            data: { posts: feedPosts },
         });
     } catch (error) {
         console.error('Error in getFollowingPosts controller:', error);
@@ -371,13 +351,10 @@ export const getFollowingPosts = async (
     }
 };
 
-export const getUserPosts = async (
-    req: Request,
-    res: Response
-): Promise<void> => {
+export const getUserPosts = async (req: Request, res: Response): Promise<void> => {
+    const { nickname } = req.params;
+    
     try {
-        const { nickname } = req.params;
-
         const user = await User.findOne({ nickname });
         if (!user) {
             res.status(404).json({
@@ -396,7 +373,7 @@ export const getUserPosts = async (
             message: posts.length
                 ? '게시물 목록을 가져왔습니다.'
                 : '게시물이 없습니다.',
-            posts,
+            data: { posts },
         });
     } catch (error) {
         console.error('Error in getUserPosts controller:', error);
