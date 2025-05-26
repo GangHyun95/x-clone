@@ -2,14 +2,14 @@ import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { CgSpinner } from 'react-icons/cg';
-import type { EmailVerifyPayload } from '@/types/auth';
+import type { SendCodePayload } from '@/types/auth';
 import { useSendCode } from '@/hooks/auth/useSignup';
 
 type Props = {
     onNext: (email: string, expiresAt: number) => void;
 }
 export default function ({ onNext }: Props) {
-    const form = useForm<EmailVerifyPayload>({
+    const form = useForm<SendCodePayload>({
         mode: 'onChange',
         defaultValues: {
             email: '',
@@ -28,7 +28,7 @@ export default function ({ onNext }: Props) {
         return () => clearTimeout(timer);
     }, []);
 
-    const onSubmit = (data: EmailVerifyPayload) => {
+    const onSubmit = (data: SendCodePayload) => {
         sendCode(data);
     };
 

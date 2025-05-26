@@ -2,16 +2,16 @@ import { useMutation } from '@tanstack/react-query';
 import { sendEmailCode, verifyEmailCode } from '@/service/auth';
 import { handleFormErrors } from '@/utils/handleFormErrors';
 import toast from 'react-hot-toast';
-import type { EmailVerifyPayload } from '@/types/auth';
+import type { SendCodePayload, VerifyCodePayload } from '@/types/auth';
 import type { UseFormSetError } from 'react-hook-form';
 
 type SendCode = {
-    setError: UseFormSetError<EmailVerifyPayload>;
+    setError: UseFormSetError<SendCodePayload>;
     onSuccess: (email: string, expiresAt: number) => void;
 };
 
 type VerifyCode = {
-    setError: UseFormSetError<EmailVerifyPayload>;
+    setError: UseFormSetError<VerifyCodePayload>;
     onSuccess: () => void;
 };
 
@@ -22,14 +22,12 @@ type ResendCode = {
 
 export function useSendCode({ onSuccess, setError }: SendCode) {
     const { mutate, isPending } = useMutation({
-        mutationFn: (payload: EmailVerifyPayload) => sendEmailCode(payload),
+        mutationFn: (payload: SendCodePayload) => sendEmailCode(payload),
         onSuccess: (res, variables) => {
-            if ('expiresAt' in res.data) {
-                onSuccess(variables.email, res.data.expiresAt);
-            }
+            onSuccess(variables.email, res.data.expiresAt);
         },
         onError: (err) => {
-            handleFormErrors<EmailVerifyPayload>(err, setError);
+            handleFormErrors<SendCodePayload>(err, setError);
         },
     });
 
@@ -44,7 +42,7 @@ export function useVerifyCode({ onSuccess, setError }: VerifyCode) {
         mutationFn: verifyEmailCode,
         onSuccess,
         onError: (err) => {
-            handleFormErrors<EmailVerifyPayload>(err, setError);
+            handleFormErrors<VerifyCodePayload>(err, setError);
         },
     });
 

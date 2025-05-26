@@ -1,8 +1,8 @@
 import { useResendCode, useVerifyCode } from '@/hooks/auth/useSignup';
 import { useCountdown } from '@/hooks/useCountdown';
-import type { EmailVerifyPayload } from '@/types/auth';
+import type { VerifyCodePayload } from '@/types/auth';
 import { formatTime } from '@/utils/time';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { CgSpinner } from 'react-icons/cg';
 
@@ -14,7 +14,7 @@ type Props = {
 }
 
 export default function ({ onNext, email, expiresAt, setExpiresAt }: Props) {
-    const form = useForm<EmailVerifyPayload>({
+    const form = useForm<VerifyCodePayload>({
         mode: 'onChange',
         defaultValues: {
             code: '',
@@ -33,7 +33,7 @@ export default function ({ onNext, email, expiresAt, setExpiresAt }: Props) {
         },
     });
 
-    const onSubmit = (data: EmailVerifyPayload) => {
+    const onSubmit = (data: VerifyCodePayload) => {
         verifyCode({ ...data, email });
     }
 

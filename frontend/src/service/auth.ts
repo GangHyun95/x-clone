@@ -1,6 +1,6 @@
-import type { EmailVerifyPayload } from '@/types/auth';
+import type { ResendCodePayload, SendCodePayload, VerifyCodePayload } from '@/types/auth';
 
-export async function sendEmailCode(payload: EmailVerifyPayload) {
+export async function sendEmailCode(payload: SendCodePayload | ResendCodePayload) {
     const res = await fetch('/api/auth/email-code', {
         method: 'POST',
         headers: {
@@ -15,7 +15,7 @@ export async function sendEmailCode(payload: EmailVerifyPayload) {
     return data;
 }
 
-export async function verifyEmailCode(payload: EmailVerifyPayload) {
+export async function verifyEmailCode(payload: VerifyCodePayload) {
     const res = await fetch('/api/auth/email-code/verify', {
         method: 'POST',
         headers: {
