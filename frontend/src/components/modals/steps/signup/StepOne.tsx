@@ -1,13 +1,14 @@
-import { useMutation } from '@tanstack/react-query';
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { RiLoader4Fill } from 'react-icons/ri';
 import { useForm } from 'react-hook-form';
-import { handleFormErrors } from '@/utils/handleFormErrors';
-import { sendEmailCode} from '@/service/auth';
+import { CgSpinner } from 'react-icons/cg';
 import type { EmailVerifyPayload } from '@/types/auth';
+import { useSendCode } from '@/hooks/auth/useSignup';
 
-export default function ({ onNext }: { onNext: (email: string, expiresAt: number) => void }) {
+type Props = {
+    onNext: (email: string, expiresAt: number) => void;
+}
+export default function ({ onNext }: Props) {
     const form = useForm<EmailVerifyPayload>({
         mode: 'onChange',
         defaultValues: {
@@ -18,15 +19,7 @@ export default function ({ onNext }: { onNext: (email: string, expiresAt: number
     const { register, handleSubmit, setError, setFocus, formState: { errors, isValid } } = form;
     const navigate = useNavigate();
 
-    const { mutate, isPending } = useMutation({
-        mutationFn: sendEmailCode,
-        onSuccess: (response, variables) => {
-            if ('expiresAt' in response.data) onNext(variables.email, response.data.expiresAt);
-        },
-        onError: (error) => {
-            handleFormErrors<EmailVerifyPayload>(error, setError);
-        },
-    });
+    const { sendCode, isSending } = useSendCode({ onSuccess: onNext, setError});
 
     useEffect(() => {
         const timer = setTimeout(() => {
@@ -36,8 +29,17 @@ export default function ({ onNext }: { onNext: (email: string, expiresAt: number
     }, []);
 
     const onSubmit = (data: EmailVerifyPayload) => {
-        mutate(data);
+        sendCode(data);
     };
+
+    if (isSending)
+        return (
+            <div className='flex flex-col h-full'>
+                <div className='flex-1 flex items-center justify-center mb-12'>
+                    <CgSpinner className='size-10 md:size-8 animate-spin text-primary' />
+                </div>
+            </div>
+        );
 
     return (
         <form className='flex flex-col h-full' onSubmit={handleSubmit(onSubmit)}>
@@ -72,7 +74,7 @@ export default function ({ onNext }: { onNext: (email: string, expiresAt: number
                 </div>
 
                 <div className='py-3'>
-                    <label className='floating-label'>
+                    <label htmlFor='email' className='floating-label'>
                         <input
                             {...register('email', {
                                 required: '이메일을 입력해 주세요.',
@@ -122,18 +124,11 @@ export default function ({ onNext }: { onNext: (email: string, expiresAt: number
             <div className='flex flex-col items-stretch flex-none my-6 px-8 md:px-20'>
                 <button
                     className='btn w-full min-h-14 rounded-full text-base text-white bg-secondary hover:bg-secondary/90'
-                    disabled={!isValid || isPending}
+                    disabled={!isValid || isSending}
                 >
-                    {isPending ? (
-                        <>
-                            <RiLoader4Fill className='animate-spin size-5' />
-                            Loading...
-                        </>
-                    ) : (
-                        'Next'
-                    )}
+                    Next
                 </button>
             </div>
         </form>
-    )
+    );
 }

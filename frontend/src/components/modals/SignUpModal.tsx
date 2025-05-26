@@ -26,6 +26,7 @@ export default function SignUpModal() {
                     onNext={() => setStep(3)}
                     email={email}
                     expiresAt={expiresAt}
+                    setExpiresAt={setExpiresAt}
                 />
             );
         }
