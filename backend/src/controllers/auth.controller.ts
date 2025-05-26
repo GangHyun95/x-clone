@@ -4,6 +4,7 @@ import jwt from 'jsonwebtoken';
 import nodemailer from 'nodemailer';
 import { buildUserResponse, generateToken, generateVerificationCode } from '../lib/util.ts';
 import User from '../models/user.model.ts';
+import { sendVerificationEmail } from '../lib/email.ts';
 
 export const verificationStore = new Map<string, { code: string; expiresAt: number }>();
 export const verifiedEmails = new Set<string>();
@@ -371,11 +372,11 @@ export const getGoogleClientId = async (req: Request, res: Response) => {
 
 // email verification
 export const requestEmailVerification = async (req: Request, res: Response): Promise<void> => {
-    const { email, fullName } = req.body;
+    const { email, fullName, isResend } = req.body;
 
     const errors: { field: string; message: string }[] = [];
     if (!email) errors.push({ field: 'email', message: '이메일을 입력해 주세요.' });
-    if (!fullName) errors.push({ field: 'fullName', message: '이름을 입력해 주세요.' });
+    if (!isResend && !fullName) errors.push({ field: 'fullName', message: '이름을 입력해 주세요.' });
     if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) errors.push({ field: 'email', message: '이메일 형식이 올바르지 않습니다.' });
 
     if (errors.length > 0) {
@@ -398,20 +399,7 @@ export const requestEmailVerification = async (req: Request, res: Response): Pro
 
         const code = generateVerificationCode();
 
-        const transporter = nodemailer.createTransport({
-            service: 'gmail',
-            auth: {
-                user: process.env.SMTP_USER,
-                pass: process.env.SMTP_PASS,
-            },
-        });
-
-        await transporter.sendMail({
-            from: `"X Clone" <${process.env.SMTP_USER}>`,
-            to: email,
-            subject: '이메일 인증번호',
-            text: `인증번호는 ${code} 입니다.`,
-        });
+        sendVerificationEmail(email, code);
 
         const expiresAt = Date.now() + 3 * 60 * 1000;
 
