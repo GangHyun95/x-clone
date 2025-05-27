@@ -12,3 +12,10 @@ export type ResendCodePayload = {
     email: string;
     isResend: true;
 };
+
+export type SignupPayload = {
+    email: string;
+    fullName: string;
+    nickname: string;
+    password: string;
+}

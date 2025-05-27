@@ -4,15 +4,20 @@ import { StepOne, StepTwo, StepThree } from '@/components/modals/steps/signup';
 
 export default function SignUpModal() {
     const [step, setStep] = useState(1);
-    const [email, setEmail] = useState('');
+    const [signupInfo, setSignupInfo] = useState({
+        email: '',
+        fullName: '',
+    });
     const [expiresAt, setExpiresAt] = useState(0);
+
+    const { email, fullName } = signupInfo;
 
     const renderStepContent = () => {
         if (step === 1) {
             return (
                 <StepOne
-                    onNext={(email: string, expiresAt: number) => {
-                        setEmail(email);
+                    onNext={({ email, fullName, expiresAt }) => {
+                        setSignupInfo((prev) => ({ ...prev, email, fullName }));
                         setExpiresAt(expiresAt);
                         setStep(2);
                     }}
@@ -32,7 +37,7 @@ export default function SignUpModal() {
         }
 
         if (step === 3) {
-            return <StepThree />;
+            return <StepThree email={email} fullName={fullName} />;
         }
 
         return <div>잘못된 단계입니다.</div>;

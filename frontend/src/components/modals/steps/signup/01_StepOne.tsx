@@ -6,7 +6,7 @@ import type { SendCodePayload } from '@/types/auth';
 import { useSendCode } from '@/hooks/auth/useSignup';
 
 type Props = {
-    onNext: (email: string, expiresAt: number) => void;
+    onNext: (data: {email: string, fullName: string, expiresAt: number}) => void;
 }
 export default function ({ onNext }: Props) {
     const form = useForm<SendCodePayload>({

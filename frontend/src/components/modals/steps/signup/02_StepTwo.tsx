@@ -26,11 +26,11 @@ export default function ({ onNext, email, expiresAt, setExpiresAt }: Props) {
     const { verifyCode, isVerifying } = useVerifyCode({ onSuccess: onNext, setError });
     
     const { resendCode, isResending } = useResendCode({
-        email,
         onSuccess: (expiresAt) => {
             setExpiresAt(expiresAt);
             setFocus('code');
         },
+        setError,
     });
 
     const onSubmit = (data: VerifyCodePayload) => {
@@ -79,7 +79,7 @@ export default function ({ onNext, email, expiresAt, setExpiresAt }: Props) {
                             </p>
                         )}
 
-                        <div className='text-sm text-primary px-2 pt-1 hover:underline decoration-primary cursor-pointer' onClick={() => resendCode()}>
+                        <div className='text-sm text-primary px-2 pt-1 hover:underline decoration-primary cursor-pointer' onClick={() => resendCode(email)}>
                             Didn't receive email?
                         </div>
                     </label>
