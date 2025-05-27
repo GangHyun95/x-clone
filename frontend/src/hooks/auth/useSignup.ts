@@ -7,6 +7,8 @@ import type {
     VerifyCodePayload,
 } from '@/types/auth';
 import type { UseFormSetError } from 'react-hook-form';
+import { useAppDispatch } from '@/store/hooks';
+import { setAuth } from '@/store/slices/authSlice';
 
 type SendCode = {
     setError: UseFormSetError<SendCodePayload>;
@@ -85,10 +87,17 @@ export function useResendCode({ onSuccess }: ResendCode) {
     };
 }
 
-export const useCompleteSignup = ({ onSuccess, setError }: CompleteSignup) => {
+export function useCompleteSignup ({ onSuccess, setError }: CompleteSignup) {
+    const dispatch = useAppDispatch();
     const { mutate, isPending } = useMutation({
         mutationFn: (payload: SignupPayload) => signup(payload),
-        onSuccess,
+        onSuccess: (data) => {
+            dispatch(setAuth({
+                user: data.user,
+                accessToken: data.accessToken,
+            }));
+            onSuccess();
+        },
         onError: (err) => {
             handleFormErrors<SendCodePayload>(err, setError);
         },

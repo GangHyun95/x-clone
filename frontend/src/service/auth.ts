@@ -44,3 +44,16 @@ export async function signup(payload: SignupPayload) {
 
     return data;
 }
+
+export const refreshAccessToken = async () => {
+    const res = await fetch('/api/auth/refresh', {
+        method: 'POST',
+        credentials: 'include',
+    });
+
+    const data = await res.json();
+
+    if (!data.success) throw new Error(data.message || '인증 확인 중 오류가 발생했습니다.');
+
+    return data.data;
+};

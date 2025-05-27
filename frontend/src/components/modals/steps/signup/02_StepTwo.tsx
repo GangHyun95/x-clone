@@ -1,5 +1,5 @@
 import { useResendCode, useVerifyCode } from '@/hooks/auth/useSignup';
-import { useCountdown } from '@/hooks/useCountdown';
+import useCountdown from '@/hooks/useCountdown';
 import type { VerifyCodePayload } from '@/types/auth';
 import { formatTime } from '@/utils/time';
 import { useEffect } from 'react';

@@ -4,12 +4,14 @@ import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { CgSpinner } from 'react-icons/cg';
 import { IoEyeOffOutline, IoEyeOutline } from 'react-icons/io5';
+import { useNavigate } from 'react-router-dom';
 
 type Props = {
     email: string;
     fullName: string;
 }
 export default function ({ email, fullName }: Props) {
+    const navigate = useNavigate();
     const form = useForm<SignupPayload>({
         mode: 'onChange',
         defaultValues: {
@@ -22,7 +24,7 @@ export default function ({ email, fullName }: Props) {
 
     const { signup, isSigningUp } = useCompleteSignup({
         onSuccess: () => {
-            console.log('Signup successful');
+            navigate(-1);
         },
         setError,
     })
