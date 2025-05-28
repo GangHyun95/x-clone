@@ -1,9 +1,9 @@
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
-import { CgSpinner } from 'react-icons/cg';
 import type { SendCodePayload } from '@/types/auth';
 import { useSendCode } from '@/hooks/auth/useSignup';
+import Spinner from '@/components/commons/Spinner';
 
 type Props = {
     onNext: (data: {email: string, fullName: string, expiresAt: number}) => void;
@@ -32,14 +32,7 @@ export default function ({ onNext }: Props) {
         sendCode(data);
     };
 
-    if (isSending)
-        return (
-            <div className='flex flex-col h-full'>
-                <div className='flex-1 flex items-center justify-center mb-12'>
-                    <CgSpinner className='size-10 md:size-8 animate-spin text-primary' />
-                </div>
-            </div>
-        );
+    if (isSending) return <Spinner />;
 
     return (
         <form className='flex flex-col h-full' onSubmit={handleSubmit(onSubmit)}>

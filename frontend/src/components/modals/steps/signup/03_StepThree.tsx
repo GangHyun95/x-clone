@@ -1,10 +1,11 @@
+import Spinner from '@/components/commons/Spinner';
 import { useCompleteSignup } from '@/hooks/auth/useSignup';
 import { useAppDispatch } from '@/store/hooks';
 import { setAccessToken } from '@/store/slices/authSlice';
 import type { SignupPayload } from '@/types/auth';
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { CgSpinner } from 'react-icons/cg';
+import toast from 'react-hot-toast';
 import { IoEyeOffOutline, IoEyeOutline } from 'react-icons/io5';
 import { useNavigate } from 'react-router-dom';
 
@@ -28,6 +29,7 @@ export default function ({ email, fullName }: Props) {
 
     const { signup, isSigningUp } = useCompleteSignup({
         onSuccess: (data) => {
+            toast.success('회원가입이 완료되었습니다.');
             dispatch(setAccessToken({ accessToken: data.accessToken}))
             navigate(-1);
         },
@@ -45,14 +47,7 @@ export default function ({ email, fullName }: Props) {
         return () => clearTimeout(timer);
     }, []);
 
-    if (isSigningUp)
-        return (
-            <div className='flex flex-col h-full'>
-                <div className='flex-1 flex items-center justify-center mb-12'>
-                    <CgSpinner className='size-10 md:size-8 animate-spin text-primary' />
-                </div>
-            </div>
-        );
+    if (isSigningUp) return <Spinner />
 
     return (
         <form className='flex flex-col h-full' onSubmit={handleSubmit(onSubmit)}>

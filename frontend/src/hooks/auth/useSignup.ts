@@ -23,8 +23,11 @@ type VerifyCode = {
 };
 
 type ResendCode = {
-    setError: UseFormSetError<VerifyCodePayload>;
-    onSuccess: (expiresAt: number) => void;
+    onSuccess: (data: {
+        expiresAt: number;
+        message: string;
+    }) => void;
+    onError: () => void;
 };
 
 type CompleteSignup = {
@@ -68,15 +71,16 @@ export function useVerifyCode({ onSuccess, setError }: VerifyCode) {
     };
 }
 
-export function useResendCode({ onSuccess }: ResendCode) {
+export function useResendCode({ onSuccess, onError }: ResendCode) {
     const { mutate, isPending } = useMutation({
         mutationFn: (email: string) => sendEmailCode({ email, isResend: true }),
         onSuccess: (res) => {
-            onSuccess(res.data.expiresAt);
+            onSuccess({
+                expiresAt: res.data.expiresAt,
+                message: res.message,
+            });
         },
-        onError: () => {
-            // toast.error('인증번호 전송에 실패했습니다. 다시 시도해 주세요.');
-        },
+        onError,
     });
 
     return {

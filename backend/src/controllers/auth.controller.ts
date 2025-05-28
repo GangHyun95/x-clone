@@ -1,7 +1,6 @@
 import type { Request, Response } from 'express';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
-import nodemailer from 'nodemailer';
 import { buildUserResponse, generateToken, generateVerificationCode } from '../lib/util.ts';
 import User from '../models/user.model.ts';
 import { sendVerificationEmail } from '../lib/email.ts';
