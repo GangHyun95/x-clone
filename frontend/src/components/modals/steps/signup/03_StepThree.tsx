@@ -1,4 +1,6 @@
 import { useCompleteSignup } from '@/hooks/auth/useSignup';
+import { useAppDispatch } from '@/store/hooks';
+import { setAccessToken } from '@/store/slices/authSlice';
 import type { SignupPayload } from '@/types/auth';
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
@@ -22,8 +24,11 @@ export default function ({ email, fullName }: Props) {
     const { register, handleSubmit, setError, setFocus, formState: { errors, isValid } } = form;  
     const [showPassword, setShowPassword] = useState(false);
 
+    const dispatch = useAppDispatch();
+
     const { signup, isSigningUp } = useCompleteSignup({
-        onSuccess: () => {
+        onSuccess: (data) => {
+            dispatch(setAccessToken({ accessToken: data.accessToken}))
             navigate(-1);
         },
         setError,

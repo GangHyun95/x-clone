@@ -14,7 +14,6 @@ function App() {
     const location = useLocation();
     const state = location.state;
 
-    const user = useAppSelector((state) => state.auth.user);
     const accessToken = useAppSelector((state) => state.auth.accessToken);
     const { checkAuth, isCheckingAuth } = useCheckAuth();
 
@@ -34,7 +33,7 @@ function App() {
                 <Route path='/' element={<AppLayout />}>
                     <Route
                         index
-                        element={user ? <HomeScreen /> : <AuthLanding />}
+                        element={accessToken ? <HomeScreen /> : <AuthLanding />}
                     />
                     <Route path='signup' element={null} />
                     <Route path='login' element={null} />

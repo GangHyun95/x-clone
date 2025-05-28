@@ -18,4 +18,4 @@ export type SignupPayload = {
     fullName: string;
     nickname: string;
     password: string;
-}
+};

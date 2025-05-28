@@ -42,7 +42,7 @@ export async function signup(payload: SignupPayload) {
     const data = await res.json();
     if (!data.success) throw new Error(JSON.stringify(data));
 
-    return data;
+    return data.data;
 }
 
 export const refreshAccessToken = async () => {

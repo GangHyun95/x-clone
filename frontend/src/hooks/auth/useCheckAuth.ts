@@ -1,6 +1,6 @@
 import { refreshAccessToken } from '@/service/auth';
 import { useAppDispatch } from '@/store/hooks';
-import { setAuth } from '@/store/slices/authSlice';
+import { setAccessToken } from '@/store/slices/authSlice';
 import { useState } from 'react';
 
 export default function useCheckAuth() {
@@ -10,9 +10,9 @@ export default function useCheckAuth() {
     const checkAuth = async () => {
         try {
             const data = await refreshAccessToken();
-            dispatch(setAuth({ user: data.user, accessToken: data.accessToken }));
+            dispatch(setAccessToken({ accessToken: data.accessToken }));
         } catch (error) {
-            dispatch(setAuth({ user: null, accessToken: null }));
+            dispatch(setAccessToken({ accessToken: null }));
         } finally {
             setIsCheckingAuth(false);
         }
