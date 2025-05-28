@@ -370,7 +370,41 @@ export const getGoogleClientId = async (req: Request, res: Response) => {
 };
 
 // email verification
-export const requestEmailVerification = async (req: Request, res: Response): Promise<void> => {
+export const checkEmailExists = async (req: Request, res: Response): Promise<void> => {
+    const { email } = req.query;
+    const errors: { field: string; message: string }[] = [];
+    if (!email) errors.push({ field: 'email', message: '이메일을 입력해 주세요.' });
+    if (errors.length > 0) {
+        res.status(400).json({ success: false, message: '이메일 확인에 실패했습니다.', errors });
+        return;
+    }
+    try {
+        const user = await User.findOne({ email });
+        if (!user) {
+            res.status(404).json({
+                success: false,
+                message: '해당 이메일로 가입된 사용자가 없습니다.',
+                errors: [{ field: 'email', message: '해당 이메일로 가입된 사용자가 없습니다.' }],
+            });
+            return;
+        }
+
+        res.status(200).json({
+            success: true,
+            message: '등록된 이메일입니다.',
+            data: { exists: true },
+        });
+    } catch (error) {
+        console.error('Error in checkEmailExists controller:', error);
+        res.status(500).json({
+            success: false,
+            message: '서버 오류가 발생했습니다.',
+        });
+        return;
+    }
+}
+
+export const sendEmailCode = async (req: Request, res: Response): Promise<void> => {
     const { email, fullName, isResend } = req.body;
 
     const errors: { field: string; message: string }[] = [];

@@ -1,11 +1,12 @@
 import express from 'express';
 import {
+    checkEmailExists,
     getGoogleClientId,
     googleLogin,
     login,
     logout,
     refreshAccessToken,
-    requestEmailVerification,
+    sendEmailCode,
     signup,
     verifyEmailCode,
 } from '../controllers/auth.controller.ts';
@@ -21,7 +22,8 @@ router.post('/refresh', refreshAccessToken);
 router.post('/google', googleLogin);
 router.get('/google', getGoogleClientId);
 
-router.post('/email-code', requestEmailVerification);
+router.post('/email-code', sendEmailCode);
 router.post('/email-code/verify', verifyEmailCode);
+router.get('/email/check', checkEmailExists);
 
 export default router;
