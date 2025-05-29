@@ -31,7 +31,6 @@ export default tseslint.config(
         'warn',
         {
           groups: [
-            'builtin',
             'external',
             'internal',
             ['parent', 'sibling', 'index'],
@@ -43,7 +42,6 @@ export default tseslint.config(
               group: 'internal',
             },
           ],
-          pathGroupsExcludedImportTypes: ['builtin'],
           'newlines-between': 'always-and-inside-groups',
           alphabetize: { order: 'asc', caseInsensitive: true },
         }
