@@ -9,6 +9,7 @@ import postRoutes from './routes/post.route.ts';
 import notificationRoutes from './routes/notification.route.ts';
 import { connectDB } from './lib/db.ts';
 import { protectRoute } from './middleware/auth.middleware.ts';
+import { connectRedis } from './lib/redis.ts';
 
 dotenv.config();
 
@@ -33,4 +34,5 @@ app.use('/api/notifications', protectRoute, notificationRoutes);
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
     connectDB();
+    connectRedis();
 });

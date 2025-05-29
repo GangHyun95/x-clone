@@ -4,9 +4,7 @@ import jwt from 'jsonwebtoken';
 import { buildUserResponse, generateToken, generateVerificationCode } from '../lib/util.ts';
 import User from '../models/user.model.ts';
 import { sendVerificationEmail } from '../lib/email.ts';
-
-export const verificationStore = new Map<string, { code: string; expiresAt: number }>();
-export const verifiedEmails = new Set<string>();
+import { redis } from '../lib/redis.ts';
 
 // signup, login, logout
 export const signup = async (req: Request, res: Response): Promise<void> => {
@@ -29,7 +27,8 @@ export const signup = async (req: Request, res: Response): Promise<void> => {
     }
 
     try {
-        if (!verifiedEmails.has(email)) {
+        const isVerified = await redis.get(`email_verified:${email}`);
+        if (!isVerified) {
             res.status(400).json({
                 success: false,
                 message: '이메일 인증이 필요합니다.',
@@ -78,6 +77,8 @@ export const signup = async (req: Request, res: Response): Promise<void> => {
                 accessToken,
             },
         });
+
+        await redis.del(`email_verified:${email}`);
     } catch (error) {
         console.log('Error in signup controller:', error);
         res.status(500).json({
@@ -436,10 +437,7 @@ export const sendEmailCode = async (req: Request, res: Response): Promise<void> 
 
         const expiresAt = Date.now() + 3 * 60 * 1000;
 
-        verificationStore.set(email, {
-            code,
-            expiresAt,
-        });
+        await redis.set(`email_code:${email}`, code, { EX: 180 });
 
         res.status(200).json({
             success: true,
@@ -469,31 +467,17 @@ export const verifyEmailCode = async (req: Request, res: Response): Promise<void
     }
 
     try {
-        const record = verificationStore.get(email);
-        if (!record) {
+        const storedCode = await redis.get(`email_code:${email}`);
+        if (!storedCode) {
             res.status(400).json({
                 success: false,
-                message: '인증 요청이 없습니다.',
-                errors: [
-                    { field: 'root', message: '인증 요청을 먼저 해주세요.' },
-                ],
+                message: '인증번호가 만료되었거나 요청이 없습니다.',
+                errors: [{ field: 'code', message: '인증번호가 만료되었거나 요청이 없습니다.' }],
             });
             return;
         }
 
-        if (Date.now() > record.expiresAt) {
-            verificationStore.delete(email);
-            res.status(400).json({
-                success: false,
-                message: '인증번호가 만료되었습니다.',
-                errors: [
-                    { field: 'code', message: '인증번호가 만료되었습니다.' },
-                ],
-            });
-            return;
-        }
-
-        if (record.code !== code) {
+        if (storedCode !== code) {
             res.status(400).json({
                 success: false,
                 message: '인증번호가 일치하지 않습니다.',
@@ -504,8 +488,8 @@ export const verifyEmailCode = async (req: Request, res: Response): Promise<void
             return;
         }
 
-        verifiedEmails.add(email);
-        verificationStore.delete(email);
+        await redis.set(`email_verified:${email}`, 'true', { EX: 300 });
+        await redis.del(`email_code:${email}`);
 
         res.status(200).json({
             success: true,

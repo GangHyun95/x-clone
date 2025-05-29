@@ -29,7 +29,7 @@ export async function sendEmailCode(
     payload: SendCodePayload | ResendCodePayload
 ) {
     return post<SendCodePayload | ResendCodePayload, { expiresAt: number }>(
-        '/api/auth/email-code/send',
+        '/api/auth/email-code',
         payload
     );
 }

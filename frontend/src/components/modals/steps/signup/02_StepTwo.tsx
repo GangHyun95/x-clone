@@ -66,7 +66,7 @@ export default function StepTwo({ onNext, email, expiresAt, setExpiresAt }: Prop
                             We sent you a code
                         </h1>
                         <h3 className='text-sm text-gray-500 mt-2'>
-                            Enter it below to verify hgh6128@gmail.com.
+                            Enter it below to verify {email}
                         </h3>
                     </div>
 
