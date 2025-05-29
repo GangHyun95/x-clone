@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import type { SendCodePayload } from '@/types/auth';
-import { useSendCode } from '@/hooks/auth/useSignup';
+import { useSendCode } from '@/hooks/auth/useAuthMutations';
 import Spinner from '@/components/commons/Spinner';
 
 type Props = {

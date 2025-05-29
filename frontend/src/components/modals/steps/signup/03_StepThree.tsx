@@ -1,5 +1,5 @@
 import Spinner from '@/components/commons/Spinner';
-import { useCompleteSignup } from '@/hooks/auth/useSignup';
+import { useSignup } from '@/hooks/auth/useAuthMutations';
 import { useAppDispatch } from '@/store/hooks';
 import { setAccessToken } from '@/store/slices/authSlice';
 import type { SignupPayload } from '@/types/auth';
@@ -27,7 +27,7 @@ export default function ({ email, fullName }: Props) {
 
     const dispatch = useAppDispatch();
 
-    const { signup, isSigningUp } = useCompleteSignup({
+    const { signup, isSigningUp } = useSignup({
         onSuccess: (data) => {
             toast.success('회원가입이 완료되었습니다.');
             dispatch(setAccessToken({ accessToken: data.accessToken}))

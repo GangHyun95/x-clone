@@ -31,7 +31,7 @@ type ResendCode = {
     onError: () => void;
 };
 
-type CompleteSignup = {
+type Signup = {
     setError: UseFormSetError<SignupPayload>;
     onSuccess: (data: { accessToken: string }) => void;
 };
@@ -47,7 +47,7 @@ export function useSendCode({ onSuccess, setError }: SendCode) {
             });
         },
         onError: (err) => {
-            handleFormErrors<SendCodePayload>(err, setError);
+            handleFormErrors(err, setError);
         },
     });
 
@@ -62,7 +62,7 @@ export function useVerifyCode({ onSuccess, setError }: VerifyCode) {
         mutationFn: verifyEmailCode,
         onSuccess,
         onError: (err) => {
-            handleFormErrors<VerifyCodePayload>(err, setError);
+            handleFormErrors(err, setError);
         },
     });
 
@@ -90,14 +90,14 @@ export function useResendCode({ onSuccess, onError }: ResendCode) {
     };
 }
 
-export function useCompleteSignup({ onSuccess, setError }: CompleteSignup) {
+export function useSignup({ onSuccess, setError }: Signup) {
     const { mutate, isPending } = useMutation({
         mutationFn: (payload: SignupPayload) => signup(payload),
         onSuccess: (data) => {
             onSuccess(data);
         },
         onError: (err) => {
-            handleFormErrors<SendCodePayload>(err, setError);
+            handleFormErrors(err, setError);
         },
     });
 
@@ -107,12 +107,12 @@ export function useCompleteSignup({ onSuccess, setError }: CompleteSignup) {
     };
 };
 
-export function useLogin({ onSuccess, setError }: CompleteSignup) {
+export function useLogin({ onSuccess, setError }: Signup) {
     const { mutate, isPending } = useMutation({
         mutationFn: (payload: LoginPayload) => login(payload),
         onSuccess,
         onError: (err) => {
-            handleFormErrors<SendCodePayload>(err, setError);
+            handleFormErrors(err, setError);
         },
     });
 

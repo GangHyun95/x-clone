@@ -17,7 +17,7 @@ export function useCheckEmail({ onSuccess, setError }: Props) {
             const { exists, email } = await checkEmailExists(payload);
             if (exists) onSuccess({ email });
         } catch (err) {
-            handleFormErrors<{ email: string }>(err, setError);
+            handleFormErrors(err, setError);
         } finally {
             setIsCheckingEmail(false);
         }

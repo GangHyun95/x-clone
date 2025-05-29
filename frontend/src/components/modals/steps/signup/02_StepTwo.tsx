@@ -1,5 +1,5 @@
 import Spinner from '@/components/commons/Spinner';
-import { useResendCode, useVerifyCode } from '@/hooks/auth/useSignup';
+import { useResendCode, useVerifyCode } from '@/hooks/auth/useAuthMutations';
 import useCountdown from '@/hooks/useCountdown';
 import type { VerifyCodePayload } from '@/types/auth';
 import { formatTime } from '@/utils/time';
