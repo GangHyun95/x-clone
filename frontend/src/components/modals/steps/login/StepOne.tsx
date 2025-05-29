@@ -1,17 +1,28 @@
 import { useNavigate } from 'react-router-dom';
 import { AppleSvg, GoogleSvg } from '@/components/svgs';
+import { useForm } from 'react-hook-form';
+import { useCheckEmail } from '@/hooks/auth/useCheckEmail';
+import { CgSpinner } from 'react-icons/cg';
 
-export default function ({ onNext }: { onNext: () => void }) {
+export default function ({ onNext }: { onNext: (data: { email: string }) => void; }) {
     const navigate = useNavigate();
+    const form = useForm<{ email: string }>({
+        mode: 'onChange',
+        defaultValues: {
+            email: '',
+        },
+    })
 
-    const handleSignUpClick = () => {
-        navigate('/signup', {
-            state: { backgroundLocation: '/' },
-            replace: true,
-        });
-    };
+    const { register, handleSubmit, setError, formState: { errors, isValid } } = form;
+
+    const { checkEmail, isCheckingEmail } = useCheckEmail({ onSuccess: onNext, setError});
+    
+    const onSubmit = (data: { email: string }) => {
+        checkEmail(data);
+    }
+
     return (
-        <div className='flex-1 overflow-auto h-full'>
+        <form className='flex-1 overflow-auto h-full' onSubmit={handleSubmit(onSubmit)}>
             <div className='flex flex-col justify-center items-stretch basis-auto shrink-0 max-w-96 h-full md:h-auto px-8 pb-12 mx-auto'>
                 <h1 className='font-pyeojin text-3xl font-bold my-5 '>
                     Sign in to X
@@ -36,24 +47,46 @@ export default function ({ onNext }: { onNext: () => void }) {
                     </div>
 
                     <div className='py-3'>
-                        <label className='floating-label'>
+                        <label htmlFor='email' className='floating-label'>
                             <input
+                                {...register('email', {
+                                    required: '이메일을 입력해 주세요.',
+                                    pattern: {
+                                        value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+                                        message: '이메일 형식이 올바르지 않습니다.',
+                                    },
+                                })}
+                                id='email'
                                 type='text'
                                 placeholder='Enter your email'
-                                className='input input-xl w-full peer placeholder:text-base focus:outline-0 focus:border-primary focus:ring-primary'
+                                className={`input input-xl w-full text-base peer placeholder:text-base focus:outline-0 focus:border-primary focus:ring-primary ${
+                                    errors.email ? 'border-red-500' : ''
+                                }`}
                             />
                             <span className='floating-label label-text peer-focus:text-primary peer-focus:text-sm'>
                                 Email
                             </span>
+                            {errors.email && (
+                                <p className='text-sm text-red-500'>
+                                    {errors.email.message}
+                                </p>
+                            )}
                         </label>
                     </div>
 
                     <div className='flex flex-col items-stretch flex-none my-3'>
                         <button
                             className='btn w-full rounded-full text-white bg-secondary hover:bg-secondary/90'
-                            onClick={onNext}
+                            disabled={!isValid || isCheckingEmail}
                         >
-                            Next
+                            {isCheckingEmail ? (
+                                <>
+                                    <CgSpinner className='animate-spin text-primary h-5 w-5' />
+                                    Checking...
+                                </>
+                            ) : (
+                                'Next'
+                            )}
                         </button>
                     </div>
 
@@ -64,18 +97,25 @@ export default function ({ onNext }: { onNext: () => void }) {
                     </div>
 
                     <div className='flex gap-1 mt-10'>
-                        <span className='text-gray-500 text-sm'>
+                        <span
+                            className='text-gray-500 text-sm'
+                        >
                             Don't have an account?
                         </span>
                         <button
                             className='text-sm text-primary cursor-pointer hover:underline decoration-primary underline-offset-4'
-                            onClick={handleSignUpClick}
+                            onClick={() =>
+                                navigate('/signup', {
+                                    state: { backgroundLocation: '/' },
+                                    replace: true,
+                                })
+                            }
                         >
                             Sign up
                         </button>
                     </div>
                 </div>
             </div>
-        </div>
+        </form>
     );
 }

@@ -1,3 +1,6 @@
+import useLogout from '@/hooks/auth/useLogout';
+
 export default function HomeScreen() {
-    return <div>로그인 ?</div>;
+    const { logout } = useLogout();
+    return <div onClick={logout}>로그아웃!</div>;
 }

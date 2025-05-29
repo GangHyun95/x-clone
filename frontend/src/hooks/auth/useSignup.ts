@@ -1,7 +1,8 @@
 import { useMutation } from '@tanstack/react-query';
-import { sendEmailCode, signup, verifyEmailCode } from '@/service/auth';
+import { login, sendEmailCode, signup, verifyEmailCode } from '@/service/auth';
 import { handleFormErrors } from '@/utils/handleFormErrors';
 import type {
+    LoginPayload,
     SendCodePayload,
     SignupPayload,
     VerifyCodePayload,
@@ -32,7 +33,7 @@ type ResendCode = {
 
 type CompleteSignup = {
     setError: UseFormSetError<SignupPayload>;
-    onSuccess: (data: { accessToken: string}) => void;
+    onSuccess: (data: { accessToken: string }) => void;
 };
 
 export function useSendCode({ onSuccess, setError }: SendCode) {
@@ -89,7 +90,7 @@ export function useResendCode({ onSuccess, onError }: ResendCode) {
     };
 }
 
-export function useCompleteSignup ({ onSuccess, setError }: CompleteSignup) {
+export function useCompleteSignup({ onSuccess, setError }: CompleteSignup) {
     const { mutate, isPending } = useMutation({
         mutationFn: (payload: SignupPayload) => signup(payload),
         onSuccess: (data) => {
@@ -105,3 +106,18 @@ export function useCompleteSignup ({ onSuccess, setError }: CompleteSignup) {
         isSigningUp: isPending,
     };
 };
+
+export function useLogin({ onSuccess, setError }: CompleteSignup) {
+    const { mutate, isPending } = useMutation({
+        mutationFn: (payload: LoginPayload) => login(payload),
+        onSuccess,
+        onError: (err) => {
+            handleFormErrors<SendCodePayload>(err, setError);
+        },
+    });
+
+    return {
+        login: mutate,
+        isLoggingIn: isPending,
+    };
+}

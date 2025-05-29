@@ -15,7 +15,7 @@ type Props = {
 }
 
 export default function ({ onNext, email, expiresAt, setExpiresAt }: Props) {
-    const [showMenu, setShowMenu] = useState(true);
+    const [showMenu, setShowMenu] = useState(false);
     const form = useForm<VerifyCodePayload>({
         mode: 'onChange',
         defaultValues: {

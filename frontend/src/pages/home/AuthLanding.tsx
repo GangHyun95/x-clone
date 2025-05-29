@@ -8,6 +8,7 @@ export default function AuthLanding() {
     const openModal = (path: string) => {
         navigate(path, {
             state: { backgroundLocation: location },
+            replace: false,
         });
     };
 
