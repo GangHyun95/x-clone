@@ -1,4 +1,4 @@
-export default function (props: React.SVGProps<SVGSVGElement>) {
+export default function X(props: React.SVGProps<SVGSVGElement>) {
     return (
         <svg aria-hidden='true' viewBox='0 0 24 24' {...props}>
             <g>

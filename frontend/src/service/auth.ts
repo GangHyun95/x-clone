@@ -35,7 +35,7 @@ export async function sendEmailCode(
 }
 
 export async function verifyEmailCode(payload: VerifyCodePayload) {
-    return post<VerifyCodePayload, {}>('/api/auth/email-code/verify', payload);
+    return post<VerifyCodePayload, object>('/api/auth/email-code/verify', payload);
 }
 
 export async function signup(payload: SignupPayload) {

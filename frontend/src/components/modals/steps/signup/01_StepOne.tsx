@@ -1,14 +1,15 @@
 import { useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
-import type { SendCodePayload } from '@/types/auth';
-import { useSendCode } from '@/hooks/auth/useAuthMutations';
+import { useNavigate } from 'react-router-dom';
+
 import Spinner from '@/components/commons/Spinner';
+import { useSendCode } from '@/hooks/auth/useAuthMutations';
+import type { SendCodePayload } from '@/types/auth';
 
 type Props = {
     onNext: (data: {email: string, fullName: string, expiresAt: number}) => void;
 }
-export default function ({ onNext }: Props) {
+export default function StepOne({ onNext }: Props) {
     const form = useForm<SendCodePayload>({
         mode: 'onChange',
         defaultValues: {
@@ -26,7 +27,7 @@ export default function ({ onNext }: Props) {
             setFocus('fullName');
         }, 100);
         return () => clearTimeout(timer);
-    }, []);
+    }, [setFocus]);
 
     const onSubmit = (data: SendCodePayload) => {
         sendCode(data);

@@ -1,17 +1,27 @@
-import { useState } from 'react';
-import ModalLayout from '@/layouts/ModalLayout';
+import { useState, type JSX } from 'react';
+
 import { StepOne, StepTwo } from '@/components/modals/steps/login';
+import ModalLayout from '@/layouts/ModalLayout';
 
 export default function LoginModal() {
-    const [step, setStep] = useState(1);
+    const [step, setStep] = useState<1 | 2>(1);
     const [email, setEmail] = useState('');
 
-    const renderStepContent = () => {
-        if (step === 1) return <StepOne onNext={({ email }) => {
-            setEmail(email)
-            setStep(2);
-        }} />;
-        if (step === 2) return <StepTwo email={email}/>;
+    const steps: Record<1 | 2, () => JSX.Element> = {
+        1: () => (
+            <StepOne
+                onNext={({ email }) => {
+                    setEmail(email);
+                    setStep(2);
+                }}
+            />
+        ),
+        2: () => <StepTwo email={email} />,
     };
-    return <ModalLayout>{renderStepContent()}</ModalLayout>;
+
+    return (
+        <ModalLayout>
+            {steps[step]?.() ?? <div>잘못된 단계입니다.</div>}
+        </ModalLayout>
+    );
 }

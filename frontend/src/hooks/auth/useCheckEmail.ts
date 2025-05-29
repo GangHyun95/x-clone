@@ -1,7 +1,8 @@
 import { useState } from 'react';
+import type { UseFormSetError } from 'react-hook-form';
+
 import { checkEmailExists } from '@/service/auth';
 import { handleFormErrors } from '@/utils/handleFormErrors';
-import type { UseFormSetError } from 'react-hook-form';
 
 type Props = {
     onSuccess: (data: { email: string }) => void;

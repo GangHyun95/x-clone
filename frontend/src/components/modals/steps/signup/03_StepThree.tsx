@@ -1,19 +1,20 @@
+import { useEffect } from 'react';
+import { useForm } from 'react-hook-form';
+import toast from 'react-hot-toast';
+import { useNavigate } from 'react-router-dom';
+
+import { PasswordInput } from '@/components/commons/input';
 import Spinner from '@/components/commons/Spinner';
 import { useSignup } from '@/hooks/auth/useAuthMutations';
 import { useAppDispatch } from '@/store/hooks';
 import { setAccessToken } from '@/store/slices/authSlice';
 import type { SignupPayload } from '@/types/auth';
-import { useEffect, useState } from 'react';
-import { useForm } from 'react-hook-form';
-import toast from 'react-hot-toast';
-import { IoEyeOffOutline, IoEyeOutline } from 'react-icons/io5';
-import { useNavigate } from 'react-router-dom';
 
 type Props = {
     email: string;
     fullName: string;
 }
-export default function ({ email, fullName }: Props) {
+export default function StepThree({ email, fullName }: Props) {
     const navigate = useNavigate();
     const form = useForm<SignupPayload>({
         mode: 'onChange',
@@ -23,7 +24,6 @@ export default function ({ email, fullName }: Props) {
         },
     });
     const { register, handleSubmit, setError, setFocus, formState: { errors, isValid } } = form;  
-    const [showPassword, setShowPassword] = useState(false);
 
     const dispatch = useAppDispatch();
 
@@ -45,7 +45,7 @@ export default function ({ email, fullName }: Props) {
             setFocus('nickname');
         }, 100);
         return () => clearTimeout(timer);
-    }, []);
+    }, [setFocus]);
 
     if (isSigningUp) return <Spinner />
 
@@ -88,40 +88,18 @@ export default function ({ email, fullName }: Props) {
                         )}
                     </label>
                 </div>
-                <div className='py-3 relative'>
-                    <label htmlFor='password' className='floating-label'>
-                        <input
-                            {...register('password', {
-                                required: '비밀번호를 입력해 주세요.',
-                                minLength: {
-                                    value: 6,
-                                    message: '비밀번호는 최소 6자 이상이어야 합니다.',
-                                },
-                            })}
-                            id='password'
-                            type={showPassword ? 'text' : 'password'}
-                            placeholder='Password'
-                            
-                            className={`input input-xl w-full text-base peer placeholder:text-base focus:outline-0 focus:border-primary focus:ring-primary pr-10 ${
-                                errors.password ? 'border-red-500' : ''
-                            }`}
-                        />
-                        <span className='floating-label label-text peer-focus:text-primary peer-focus:text-sm'>
-                            Password
-                        </span>
-                        {errors.password && (
-                            <p className='text-sm text-red-500'>
-                                {errors.password.message}
-                            </p>
-                        )}
-                    </label>
-                    <div
-                        className='absolute right-3 top-1/2 -translate-y-1/2 z-10 text-xl cursor-pointer'
-                        onClick={() => setShowPassword(!showPassword)}
-                    >
-                        {showPassword ? <IoEyeOffOutline /> : <IoEyeOutline />}
-                    </div>
-                </div>
+                <PasswordInput
+                    id='password'
+                    label='Password'
+                    register={register('password', {
+                        required: '비밀번호를 입력해 주세요.',
+                        minLength: {
+                            value: 6,
+                            message: '비밀번호는 최소 6자 이상이어야 합니다.',
+                        },
+                    })}
+                    error={errors.password}
+                />
             </div>
 
             <div className='flex flex-col items-stretch flex-none my-6 px-8 md:px-20'>

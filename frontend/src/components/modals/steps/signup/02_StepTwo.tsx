@@ -1,11 +1,12 @@
+import { useEffect, useState } from 'react';
+import { useForm } from 'react-hook-form';
+import toast, { Toaster } from 'react-hot-toast';
+
 import Spinner from '@/components/commons/Spinner';
 import { useResendCode, useVerifyCode } from '@/hooks/auth/useAuthMutations';
 import useCountdown from '@/hooks/useCountdown';
 import type { VerifyCodePayload } from '@/types/auth';
 import { formatTime } from '@/utils/time';
-import { useEffect, useState } from 'react';
-import { useForm } from 'react-hook-form';
-import toast, { Toaster } from 'react-hot-toast';
 
 type Props = {
     onNext: () => void;
@@ -14,7 +15,7 @@ type Props = {
     setExpiresAt: (expiresAt: number) => void;
 }
 
-export default function ({ onNext, email, expiresAt, setExpiresAt }: Props) {
+export default function StepTwo({ onNext, email, expiresAt, setExpiresAt }: Props) {
     const [showMenu, setShowMenu] = useState(false);
     const form = useForm<VerifyCodePayload>({
         mode: 'onChange',
@@ -50,7 +51,7 @@ export default function ({ onNext, email, expiresAt, setExpiresAt }: Props) {
             setFocus('code');
         }, 100);
         return () => clearTimeout(timer);
-    }, []);
+    }, [setFocus]);
 
     if (isVerifying || isResending) return <Spinner />
 

@@ -1,9 +1,11 @@
-import { useAppDispatch } from '@/store/hooks';
-import { useNavigate } from 'react-router-dom';
-import { logout as logoutReqest } from '@/service/auth';
-import { setAccessToken } from '@/store/slices/authSlice';
-import toast from 'react-hot-toast';
 import { useState } from 'react';
+import toast from 'react-hot-toast';
+import { useNavigate } from 'react-router-dom';
+
+import { logout as logoutReqest } from '@/service/auth';
+import { useAppDispatch } from '@/store/hooks';
+import { setAccessToken } from '@/store/slices/authSlice';
+
 
 export default function useLogout() {
     const [isLoggingOut, setIsLoggingOut] = useState(false);

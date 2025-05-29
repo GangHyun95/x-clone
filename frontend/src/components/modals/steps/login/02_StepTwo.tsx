@@ -1,13 +1,14 @@
-import Spinner from '@/components/commons/Spinner';
-import { useLogin } from '@/hooks/auth/useAuthMutations';
-import { useAppDispatch } from '@/store/hooks';
-import { setAccessToken } from '@/store/slices/authSlice';
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { IoEyeOffOutline, IoEyeOutline } from 'react-icons/io5';
 import { useNavigate } from 'react-router-dom';
 
-export default function ({ email }: { email: string }) {
+import Spinner from '@/components/commons/Spinner';
+import { useLogin } from '@/hooks/auth/useAuthMutations';
+import { useAppDispatch } from '@/store/hooks';
+import { setAccessToken } from '@/store/slices/authSlice';
+
+export default function StepTwo({ email }: { email: string }) {
     const form = useForm<{ password: string }>({
         mode: 'onChange',
         defaultValues: {
@@ -34,7 +35,7 @@ export default function ({ email }: { email: string }) {
             setFocus('password');
         }, 100);
         return () => clearTimeout(timer);
-    }, []);
+    }, [setFocus]);
 
     const onSubmit = (data: { password: string }) => {
         login({ email, password: data.password});

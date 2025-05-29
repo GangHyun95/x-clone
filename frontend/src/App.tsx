@@ -1,13 +1,15 @@
-import { Route, Routes, useLocation } from 'react-router-dom';
-import { Toaster } from 'react-hot-toast';
-import AppLayout from '@/layouts/AppLayout';
-import HomeScreen from '@/pages/home/HomeScreen';
-import AuthLanding from '@/pages/home/AuthLanding';
-import SignUpModal from '@/components/modals/SignUpModal';
-import LoginModal from '@/components/modals/LoginModal';
-import { CgSpinner } from 'react-icons/cg';
-import useCheckAuth from '@/hooks/auth/useCheckAuth';
 import { useEffect } from 'react';
+import { Toaster } from 'react-hot-toast';
+import { CgSpinner } from 'react-icons/cg';
+import { Route, Routes, useLocation } from 'react-router-dom';
+
+import LoginModal from '@/components/modals/LoginModal';
+import ResetPasswordModal from '@/components/modals/ResetPasswordModal';
+import SignUpModal from '@/components/modals/SignUpModal';
+import useCheckAuth from '@/hooks/auth/useCheckAuth';
+import AppLayout from '@/layouts/AppLayout';
+import AuthLanding from '@/pages/home/AuthLanding';
+import HomeScreen from '@/pages/home/HomeScreen';
 import { useAppSelector } from '@/store/hooks';
 
 function App() {

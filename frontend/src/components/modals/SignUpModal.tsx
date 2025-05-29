@@ -1,9 +1,10 @@
-import { useState } from 'react';
-import ModalLayout from '@/layouts/ModalLayout';
+import { useState, type JSX } from 'react';
+
 import { StepOne, StepTwo, StepThree } from '@/components/modals/steps/signup';
+import ModalLayout from '@/layouts/ModalLayout';
 
 export default function SignUpModal() {
-    const [step, setStep] = useState(1);
+    const [step, setStep] = useState<1 | 2 | 3>(1);
     const [signupInfo, setSignupInfo] = useState({
         email: '',
         fullName: '',
@@ -12,39 +13,30 @@ export default function SignUpModal() {
 
     const { email, fullName } = signupInfo;
 
-    const renderStepContent = () => {
-        if (step === 1) {
-            return (
-                <StepOne
-                    onNext={({ email, fullName, expiresAt }) => {
-                        setSignupInfo((prev) => ({ ...prev, email, fullName }));
-                        setExpiresAt(expiresAt);
-                        setStep(2);
-                    }}
-                />
-            );
-        }
-
-        if (step === 2) {
-            return (
-                <StepTwo
-                    onNext={() => setStep(3)}
-                    email={email}
-                    expiresAt={expiresAt}
-                    setExpiresAt={setExpiresAt}
-                />
-            );
-        }
-
-        if (step === 3) {
-            return <StepThree email={email} fullName={fullName} />;
-        }
-
-        return <div>잘못된 단계입니다.</div>;
+    const steps: Record<number, () => JSX.Element> = {
+        1: () => (
+            <StepOne
+                onNext={({ email, fullName, expiresAt }) => {
+                    setSignupInfo({ email, fullName });
+                    setExpiresAt(expiresAt);
+                    setStep(2);
+                }}
+            />
+        ),
+        2: () => (
+            <StepTwo
+                onNext={() => setStep(3)}
+                email={email}
+                expiresAt={expiresAt}
+                setExpiresAt={setExpiresAt}
+            />
+        ),
+        3: () => <StepThree email={email} fullName={fullName} />,
     };
+
     return (
-        <ModalLayout className='md:!h-[450px]'>
-            {renderStepContent()}
+        <ModalLayout>
+            {steps[step]?.() ?? <div className='p-4'>잘못된 단계입니다.</div>}
         </ModalLayout>
     );
 }
