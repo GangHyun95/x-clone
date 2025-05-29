@@ -1,8 +1,10 @@
 import bcrypt from 'bcryptjs';
 import type { Request, Response } from 'express';
-import Notification from '../models/notification.model.ts';
-import User from '../models/user.model.ts';
-import { buildUserResponse, uploadAndReplaceImage } from '../lib/util.ts';
+
+import { buildUserResponse, uploadAndReplaceImage } from '@/lib/util.ts';
+import Notification from '@/models/notification.model.ts';
+import User from '@/models/user.model.ts';
+
 
 export const getUserProfile = async (req: Request, res: Response): Promise<void> => {
     const { nickname } = req.params;

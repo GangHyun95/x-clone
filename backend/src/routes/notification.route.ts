@@ -1,5 +1,6 @@
 import express from 'express';
-import { deleteNotification, deleteNotifications, getNotifications } from '../controllers/notification.controller.ts';
+
+import { deleteNotification, deleteNotifications, getNotifications } from '@/controllers/notification.controller.ts';
 
 const router = express.Router();
 

@@ -1,4 +1,5 @@
 import express from 'express';
+
 import {
     checkNickname,
     deleteAccount,
@@ -6,7 +7,7 @@ import {
     getSuggestedUsers,
     getUserProfile,
     updateUserProfile,
-} from '../controllers/user.controller.ts';
+} from '@/controllers/user.controller.ts';
 
 const router = express.Router();
 

@@ -1,12 +1,16 @@
 {
     "compilerOptions": {
-        "module": "NodeNext",        // Node.js의 ESM(ECMAScript Module) 방식으로 모듈을 컴파일
+        "module": "NodeNext", // Node.js의 ESM(ECMAScript Module) 방식으로 모듈을 컴파일
         "outDir": "./dist",
         "forceConsistentCasingInFileNames": true,
         "allowImportingTsExtensions": true,
         "noEmit": true,
         "strict": true,
         "typeRoots": ["./node_modules/@types", "./src/types"],
+        "baseUrl": ".",
+        "paths": {
+            "@/*": ["src/*"]
+        }
     },
     "include": ["src/**/*"],
     "exclude": ["node_modules"]

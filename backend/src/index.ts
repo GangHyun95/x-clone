@@ -1,15 +1,15 @@
-import express from 'express';
-import dotenv from 'dotenv';
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
+import dotenv from 'dotenv';
+import express from 'express';
 
-import authRoutes from './routes/auth.route.ts';
-import userRoutes from './routes/user.route.ts';
-import postRoutes from './routes/post.route.ts';
-import notificationRoutes from './routes/notification.route.ts';
-import { connectDB } from './lib/db.ts';
-import { protectRoute } from './middleware/auth.middleware.ts';
-import { connectRedis } from './lib/redis.ts';
+import { connectDB } from '@/lib/db.ts';
+import { connectRedis } from '@/lib/redis.ts';
+import { protectRoute } from '@/middleware/auth.middleware.ts';
+import authRoutes from '@/routes/auth.route.ts';
+import notificationRoutes from '@/routes/notification.route.ts';
+import postRoutes from '@/routes/post.route.ts';
+import userRoutes from '@/routes/user.route.ts';
 
 dotenv.config();
 
