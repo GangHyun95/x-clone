@@ -1,13 +1,14 @@
 import { useMutation } from '@tanstack/react-query';
+import type { UseFormSetError } from 'react-hook-form';
+
 import { login, sendEmailCode, signup, verifyEmailCode } from '@/service/auth';
-import { handleFormErrors } from '@/utils/handleFormErrors';
 import type {
     LoginPayload,
     SendCodePayload,
     SignupPayload,
     VerifyCodePayload,
 } from '@/types/auth';
-import type { UseFormSetError } from 'react-hook-form';
+import { handleFormErrors } from '@/utils/handleFormErrors';
 
 type SendCode = {
     setError: UseFormSetError<SendCodePayload>;
@@ -93,9 +94,7 @@ export function useResendCode({ onSuccess, onError }: ResendCode) {
 export function useSignup({ onSuccess, setError }: Signup) {
     const { mutate, isPending } = useMutation({
         mutationFn: (payload: SignupPayload) => signup(payload),
-        onSuccess: (data) => {
-            onSuccess(data);
-        },
+        onSuccess: (res) => onSuccess(res.data),
         onError: (err) => {
             handleFormErrors(err, setError);
         },
@@ -110,7 +109,7 @@ export function useSignup({ onSuccess, setError }: Signup) {
 export function useLogin({ onSuccess, setError }: Signup) {
     const { mutate, isPending } = useMutation({
         mutationFn: (payload: LoginPayload) => login(payload),
-        onSuccess,
+        onSuccess: (res) => onSuccess(res.data),
         onError: (err) => {
             handleFormErrors(err, setError);
         },

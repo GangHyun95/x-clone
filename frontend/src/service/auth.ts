@@ -1,101 +1,83 @@
 import type { LoginPayload, ResendCodePayload, SendCodePayload, SignupPayload, VerifyCodePayload } from '@/types/auth';
 
-export async function sendEmailCode(payload: SendCodePayload | ResendCodePayload) {
-    const res = await fetch('/api/auth/email-code', {
+type ApiResponse<T> = {
+    success: boolean;
+    message: string;
+    data: T;
+};
+
+async function post<TPayload, TData>(
+    url: string,
+    payload: TPayload,
+    options?: RequestInit
+): Promise<ApiResponse<TData>> {
+    const res = await fetch(url, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
         },
+        ...options,
         body: JSON.stringify(payload),
     });
-
     const data = await res.json();
     if (!data.success) throw new Error(JSON.stringify(data));
 
     return data;
-};
+}
+
+export async function sendEmailCode(
+    payload: SendCodePayload | ResendCodePayload
+) {
+    return post<SendCodePayload | ResendCodePayload, { expiresAt: number }>(
+        '/api/auth/email-code/send',
+        payload
+    );
+}
 
 export async function verifyEmailCode(payload: VerifyCodePayload) {
-    const res = await fetch('/api/auth/email-code/verify', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(payload),
-    });
-
-    const data = await res.json();
-    if (!data.success) throw new Error(JSON.stringify(data));
-
-    return data;
-};
+    return post<VerifyCodePayload, {}>('/api/auth/email-code/verify', payload);
+}
 
 export async function signup(payload: SignupPayload) {
-    const res = await fetch('/api/auth/signup', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(payload),
-    });
-
-    const data = await res.json();
-    if (!data.success) throw new Error(JSON.stringify(data));
-
-    return data.data;
-};
+    return post<SignupPayload, { accessToken: string }>(
+        '/api/auth/signup',
+        payload
+    );
+}
 
 export async function login(payload: LoginPayload) {
-    const res = await fetch('/api/auth/login', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(payload),
-    });
-
-    const data = await res.json();
-    if (!data.success) throw new Error(JSON.stringify(data));
-
-    return data.data;
+    return post<LoginPayload, { accessToken: string }>(
+        '/api/auth/login',
+        payload
+    );
 }
 
 export async function logout() {
-    const res = await fetch('/api/auth/logout', {
-        method: 'POST',
+    return post<void, { message: string }>('/api/auth/logout', undefined, {
         credentials: 'include',
     });
+}
 
-    const data = await res.json();
-    
-    if (!data.success) throw new Error(JSON.stringify(data));
-    return data;
+export async function refreshAccessToken() {
+    return post<void, { accessToken: string }>('/api/auth/refresh', undefined, {
+        credentials: 'include',
+    });
 }
 
 export async function checkEmailExists(payload: { email: string }) {
     const { email } = payload;
-    const res = await fetch(`/api/auth/email/check?email=${encodeURIComponent(email)}`, {
-        method: 'GET',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-    });
+    const res = await fetch(
+        `/api/auth/email/check?email=${encodeURIComponent(email)}`,
+        {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        }
+    );
 
     const data = await res.json();
     if (!data.success) throw new Error(JSON.stringify(data));
 
-    return { exists: data.data.exists, email }
-};
-
-export async function refreshAccessToken() {
-    const res = await fetch('/api/auth/refresh', {
-        method: 'POST',
-        credentials: 'include',
-    });
-
-    const data = await res.json();
-
-    if (!data.success) throw new Error(data.message || '인증 확인 중 오류가 발생했습니다.');
-
-    return data.data;
-};
+    return { exists: data.data.exists, email };
+}
