@@ -39,11 +39,13 @@ function App() {
                     />
                     <Route path='signup' element={null} />
                     <Route path='login' element={null} />
+                    <Route path='reset-password' element={<ResetPasswordModal />} />
                 </Route>
             </Routes>
 
             {location.pathname === '/signup' && <SignUpModal />}
             {location.pathname === '/login' && <LoginModal />}
+            {location.pathname === '/reset-password' && <ResetPasswordModal />}
             <Toaster />
         </>
     );
