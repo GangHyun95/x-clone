@@ -10,7 +10,7 @@ import {
     sendEmailCode,
     signup,
     verifyEmailCode,
-} from '@/controllers/auth.controller.ts';
+} from '../controllers/auth.controller.ts';
 
 const router = express.Router();
 

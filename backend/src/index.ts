@@ -3,13 +3,14 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import express from 'express';
 
-import { connectDB } from '@/lib/db.ts';
-import { connectRedis } from '@/lib/redis.ts';
-import { protectRoute } from '@/middleware/auth.middleware.ts';
-import authRoutes from '@/routes/auth.route.ts';
-import notificationRoutes from '@/routes/notification.route.ts';
-import postRoutes from '@/routes/post.route.ts';
-import userRoutes from '@/routes/user.route.ts';
+import { connectDB } from './lib/db.ts';
+import { connectToPostgres } from './lib/pg.ts';
+import { connectRedis } from './lib/redis.ts';
+import { protectRoute } from './middleware/auth.middleware.ts';
+import authRoutes from './routes/auth.route.ts';
+import notificationRoutes from './routes/notification.route.ts';
+import postRoutes from './routes/post.route.ts';
+import userRoutes from './routes/user.route.ts';
 
 dotenv.config();
 

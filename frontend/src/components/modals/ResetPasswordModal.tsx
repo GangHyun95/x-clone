@@ -9,7 +9,7 @@ import {
 import ModalLayout from '@/layouts/ModalLayout';
 
 export default function ResetPasswordModal() {
-    const [step, setStep] = useState<1 | 2 | 3 | 4>(4);
+    const [step, setStep] = useState<1 | 2 | 3 | 4>(1);
     const steps: Record<number, JSX.Element> = {
         1: <StepOne onNext={() => setStep(2)} />,
         2: <StepTwo onNext={() => setStep(3)} />,

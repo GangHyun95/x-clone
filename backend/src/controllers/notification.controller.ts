@@ -1,7 +1,6 @@
 import type { Request, Response } from 'express';
 
-import Notification from '@/models/notification.model.ts';
-
+import Notification from '../models/notification.model.ts';
 
 export const getNotifications = async (req: Request, res: Response): Promise<void> => {
     if (!req.user) throw new Error('사용자를 찾을 수 없습니다.');

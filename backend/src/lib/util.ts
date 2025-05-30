@@ -1,7 +1,7 @@
 import jwt from 'jsonwebtoken';
 
-import cloudinary from '@/lib/cloudinary.ts';
-import type { IUser } from '@/models/user.model.ts';
+import cloudinary from './cloudinary.ts';
+import type { IUser } from '../models/user.model.ts';
 
 export const generateToken = (
     id: string,

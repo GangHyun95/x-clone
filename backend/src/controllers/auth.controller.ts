@@ -2,11 +2,10 @@ import bcrypt from 'bcryptjs';
 import type { Request, Response } from 'express';
 import jwt from 'jsonwebtoken';
 
-import { sendVerificationEmail } from '@/lib/email.ts';
-import { redis } from '@/lib/redis.ts';
-import { buildUserResponse, generateToken, generateVerificationCode } from '@/lib/util.ts';
-import User from '@/models/user.model.ts';
-
+import { sendVerificationEmail } from '../lib/email.ts';
+import { redis } from '../lib/redis.ts';
+import { buildUserResponse, generateToken, generateVerificationCode } from '../lib/util.ts';
+import User from '../models/user.model.ts';
 
 // signup, login, logout
 export const signup = async (req: Request, res: Response): Promise<void> => {

@@ -1,9 +1,9 @@
 import type { Request, Response } from 'express';
 
-import { deleteImage, uploadAndReplaceImage } from '@/lib/util.ts';
-import Notification from '@/models/notification.model.ts';
-import Post from '@/models/post.model.ts';
-import User from '@/models/user.model.ts';
+import { deleteImage, uploadAndReplaceImage } from '../lib/util.ts';
+import Notification from '../models/notification.model.ts';
+import Post from '../models/post.model.ts';
+import User from '../models/user.model.ts';
 
 export const createPost = async (req: Request, res: Response): Promise<void> => {
     if (!req.user) throw new Error('사용자를 찾을 수 없습니다.');
