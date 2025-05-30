@@ -2,10 +2,10 @@ import bcrypt from 'bcryptjs';
 import type { Request, Response } from 'express';
 import jwt from 'jsonwebtoken';
 
+import { pool } from '../lib/db.ts';
 import { sendVerificationEmail } from '../lib/email.ts';
 import { redis } from '../lib/redis.ts';
 import { buildUserResponse, generateToken, generateVerificationCode } from '../lib/util.ts';
-import User from '../models/user.model.ts';
 
 // signup, login, logout
 export const signup = async (req: Request, res: Response): Promise<void> => {
@@ -19,11 +19,7 @@ export const signup = async (req: Request, res: Response): Promise<void> => {
     if (password && password.length < 6) errors.push({ field: 'password', message: '비밀번호는 최소 6자 이상이어야 합니다.' });
 
     if (errors.length > 0) {
-        res.status(400).json({
-            success: false,
-            message: '회원가입에 실패했습니다.',
-            errors,
-        });
+        res.status(400).json({ success: false, message: '회원가입에 실패했습니다.', errors });
         return;
     }
 
@@ -38,8 +34,8 @@ export const signup = async (req: Request, res: Response): Promise<void> => {
             return;
         }
 
-        const existingUser = await User.findOne({ nickname });
-        if (existingUser) {
+        const nicknameCheck = await pool.query('SELECT 1 FROM users WHERE nickname = $1', [nickname]);
+        if (nicknameCheck.rows.length > 0) {
             res.status(400).json({
                 success: false,
                 message: '이미 사용 중인 닉네임입니다.',
@@ -51,23 +47,22 @@ export const signup = async (req: Request, res: Response): Promise<void> => {
         const salt = await bcrypt.genSalt(10);
         const hashedPassword = await bcrypt.hash(password, salt);
 
-        const newUser = new User({
-            fullName,
-            nickname,
-            email,
-            password: hashedPassword,
-        });
+        const insertResult = await pool.query(
+            `INSERT INTO users (email, full_name, nickname, password) 
+            VALUES ($1, $2, $3, $4) 
+            RETURNING *`,
+            [email, fullName, nickname, hashedPassword]
+        );
 
-        await newUser.save();
-
-        const accessToken = generateToken(newUser._id.toString(), 'access');
-        const refreshToken = generateToken(newUser._id.toString(), 'refresh');
+        const newUser = insertResult.rows[0];
+        const accessToken = generateToken(newUser.id.toString(), 'access');
+        const refreshToken = generateToken(newUser.id.toString(), 'refresh');
 
         res.cookie('x_clone_refresh_token', refreshToken, {
             httpOnly: true,
             secure: process.env.NODE_ENV === 'production',
             sameSite: 'strict',
-            maxAge: 2 * 24 * 60 * 60 * 1000, // 2 days
+            maxAge: 2 * 24 * 60 * 60 * 1000,
         });
 
         res.status(201).json({
@@ -81,11 +76,8 @@ export const signup = async (req: Request, res: Response): Promise<void> => {
 
         await redis.del(`email_verified:${email}`);
     } catch (error) {
-        console.log('Error in signup controller:', error);
-        res.status(500).json({
-            success: false,
-            message: '서버 오류가 발생했습니다.',
-        });
+        console.error('Error in signup:', error);
+        res.status(500).json({ success: false, message: '서버 오류가 발생했습니다.' });
     }
 };
 
@@ -100,8 +92,11 @@ export const login = async (req: Request, res: Response): Promise<void> => {
         res.status(400).json({ success: false, message: '로그인에 실패했습니다.', errors });
         return;
     }
+
     try {
-        const user = await User.findOne({ email });
+        const userResult = await pool.query('SELECT * FROM users WHERE email = $1', [email]);
+        const user = userResult.rows[0];
+
         if (!user || !user.password) {
             res.status(401).json({
                 success: false,
@@ -126,14 +121,14 @@ export const login = async (req: Request, res: Response): Promise<void> => {
             return;
         }
 
-        const accessToken = generateToken(user._id.toString(), 'access');
-        const refreshToken = generateToken(user._id.toString(), 'refresh');
+        const accessToken = generateToken(user.id.toString(), 'access');
+        const refreshToken = generateToken(user.id.toString(), 'refresh');
 
         res.cookie('x_clone_refresh_token', refreshToken, {
             httpOnly: true,
             secure: process.env.NODE_ENV === 'production',
             sameSite: 'strict',
-            maxAge: 2 * 24 * 60 * 60 * 1000, // 2 days
+            maxAge: 2 * 24 * 60 * 60 * 1000,
         });
 
         res.status(200).json({
@@ -145,11 +140,8 @@ export const login = async (req: Request, res: Response): Promise<void> => {
             }
         });
     } catch (error) {
-        console.log('Error in login controller:', error);
-        res.status(500).json({
-            success: false,
-            message: '서버 오류가 발생했습니다.',
-        });
+        console.error('Error in login:', error);
+        res.status(500).json({ success: false, message: '서버 오류가 발생했습니다.' });
     }
 };
 
@@ -167,7 +159,7 @@ export const logout = async (req: Request, res: Response): Promise<void> => {
             data: {},
         });
     } catch (error) {
-        console.log('Error in logout controller:', error);
+        console.error('Error in logout:', error);
         res.status(500).json({
             success: false,
             message: '서버 오류가 발생했습니다.',
@@ -180,38 +172,28 @@ export const refreshAccessToken = async (req: Request, res: Response): Promise<v
     try {
         const refreshToken = req.cookies.x_clone_refresh_token;
         if (!refreshToken) {
-            res.status(401).json({
-                success: false,
-                message: '로그인이 필요합니다.',
-            });
+            res.status(401).json({ success: false, message: '로그인이 필요합니다.' });
             return;
         }
 
         const secret = process.env.REFRESH_TOKEN_SECRET;
-        if (!secret) {
-            throw new Error('Refresh token secret is not defined');
-        }
+        if (!secret) throw new Error('Refresh token secret is not defined');
 
         const decoded = jwt.verify(refreshToken, secret);
-
-        if (typeof decoded === 'string' || !('id' in decoded)) {
-            res.status(403).json({
-                success: false,
-                message: 'Refresh Token이 유효하지 않습니다.',
-            });
+        if (typeof decoded !== 'object' || !('id' in decoded)) {
+            res.status(403).json({ success: false, message: 'Refresh Token이 유효하지 않습니다.' });
             return;
         }
 
-        const user = await User.findById(decoded.id);
+        const userResult = await pool.query('SELECT id, email, full_name, nickname, profile_img FROM users WHERE id = $1', [decoded.id]);
+        const user = userResult.rows[0];
+
         if (!user) {
-            res.status(404).json({
-                success: false,
-                message: '사용자를 찾을 수 없습니다.',
-            });
+            res.status(404).json({ success: false, message: '사용자를 찾을 수 없습니다.' });
             return;
         }
 
-        const newAccessToken = generateToken(user._id.toString(), 'access');
+        const newAccessToken = generateToken(user.id.toString(), 'access');
         res.status(200).json({
             success: true,
             message: 'Access token이 갱신되었습니다.',
@@ -222,10 +204,7 @@ export const refreshAccessToken = async (req: Request, res: Response): Promise<v
         });
     } catch (error) {
         console.error('Access Token 갱신 오류:', error);
-        res.status(500).json({
-            success: false,
-            message: '서버 오류가 발생했습니다.',
-        });
+        res.status(500).json({ success: false, message: '서버 오류가 발생했습니다.' });
     }
 };
 
@@ -233,10 +212,7 @@ export const refreshAccessToken = async (req: Request, res: Response): Promise<v
 export const googleLogin = async (req: Request, res: Response): Promise<void> => {
     const { code } = req.body;
     if (!code) {
-        res.status(400).json({
-            success: false,
-            message: 'Google 로그인 코드가 필요합니다.',
-        });
+        res.status(400).json({ success: false, message: 'Google 로그인 코드가 필요합니다.' });
         return;
     }
 
@@ -254,79 +230,60 @@ export const googleLogin = async (req: Request, res: Response): Promise<void> =>
         });
 
         if (!tokenRes.ok) {
-            res.status(400).json({
-                success: false,
-                message: 'Google 토큰 요청에 실패했습니다.',
-            });
+            res.status(400).json({ success: false, message: 'Google 토큰 요청에 실패했습니다.' });
             return;
         }
 
         const tokenData = await tokenRes.json();
         const { access_token } = tokenData;
-
         if (!access_token) {
-            res.status(400).json({
-                success: false,
-                message: 'Google Access Token을 가져오지 못했습니다.',
-            });
+            res.status(400).json({ success: false, message: 'Google Access Token을 가져오지 못했습니다.' });
             return;
         }
 
         const userInfoRes = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
-            headers: {
-                Authorization: `Bearer ${access_token}`,
-            },
+            headers: { Authorization: `Bearer ${access_token}` },
         });
 
         if (!userInfoRes.ok) {
-            res.status(400).json({
-                success: false,
-                message: 'Google 사용자 정보 요청에 실패했습니다.',
-            });
+            res.status(400).json({ success: false, message: 'Google 사용자 정보 요청에 실패했습니다.' });
             return;
         }
 
         const userInfo = await userInfoRes.json();
         const { sub: googleId, email, name, picture } = userInfo;
-
         if (!googleId || !email) {
-            res.status(400).json({
-                success: false,
-                message: 'Google 사용자 정보가 유효하지 않습니다.',
-            });
+            res.status(400).json({ success: false, message: 'Google 사용자 정보가 유효하지 않습니다.' });
             return;
         }
 
-        let user = await User.findOne({ googleId });
+        const userResult = await pool.query('SELECT * FROM users WHERE google_id = $1', [googleId]);
+        let user = userResult.rows[0];
 
         if (!user) {
-            const emailOwner = await User.findOne({ email });
-            if (emailOwner) {
-                res.status(400).json({
-                    success: false,
-                    message: '이미 해당 이메일로 가입된 계정이 있습니다.',
-                });
+            const emailCheck = await pool.query('SELECT 1 FROM users WHERE email = $1', [email]);
+            if (emailCheck.rows.length > 0) {
+                res.status(400).json({ success: false, message: '이미 해당 이메일로 가입된 계정이 있습니다.' });
                 return;
             }
-            user = new User({
-                googleId,
-                email,
-                fullName: name,
-                nickname: email.split('@')[0],
-                profileImage: picture,
-            });
 
-            await user.save();
+            const nickname = email.split('@')[0];
+            const insertResult = await pool.query(
+                `INSERT INTO users (email, full_name, nickname, google_id, profile_img)
+                VALUES ($1, $2, $3, $4, $5) RETURNING *`,
+                [email, name, nickname, googleId, picture]
+            );
+            user = insertResult.rows[0];
         }
 
-        const accessToken = generateToken(user._id.toString(), 'access');
-        const refreshToken = generateToken(user._id.toString(), 'refresh');
+        const accessToken = generateToken(user.id.toString(), 'access');
+        const refreshToken = generateToken(user.id.toString(), 'refresh');
 
         res.cookie('x_clone_refresh_token', refreshToken, {
             httpOnly: true,
             secure: process.env.NODE_ENV === 'production',
             sameSite: 'strict',
-            maxAge: 2 * 24 * 60 * 60 * 1000, // 2 days
+            maxAge: 2 * 24 * 60 * 60 * 1000,
         });
 
         res.status(200).json({
@@ -339,21 +296,15 @@ export const googleLogin = async (req: Request, res: Response): Promise<void> =>
         });
     } catch (error) {
         console.error('Google 로그인 오류:', error);
-        res.status(500).json({
-            success: false,
-            message: '서버 오류가 발생했습니다.',
-        });
+        res.status(500).json({ success: false, message: '서버 오류가 발생했습니다.' });
     }
 };
 
-export const getGoogleClientId = async (req: Request, res: Response) => {
+export const getGoogleClientId = async (req: Request, res: Response): Promise<void> => {
     try {
         const googleClientId = process.env.GOOGLE_CLIENT_ID;
         if (!googleClientId) {
-            res.status(500).json({
-                success: false,
-                message: 'Google Client ID가 설정되어 있지 않습니다.',
-            });
+            res.status(500).json({ success: false, message: 'Google Client ID가 설정되어 있지 않습니다.' });
             return;
         }
 
@@ -364,25 +315,27 @@ export const getGoogleClientId = async (req: Request, res: Response) => {
         });
     } catch (error) {
         console.error('Google Client ID 가져오기 오류:', error);
-        res.status(500).json({
-            success: false,
-            message: '서버 오류가 발생했습니다.',
-        });
+        res.status(500).json({ success: false, message: '서버 오류가 발생했습니다.' });
     }
 };
 
 // email verification
 export const checkEmailExists = async (req: Request, res: Response): Promise<void> => {
     const { email } = req.query;
-    const errors: { field: string; message: string }[] = [];
-    if (!email) errors.push({ field: 'email', message: '이메일을 입력해 주세요.' });
-    if (errors.length > 0) {
-        res.status(400).json({ success: false, message: '이메일 확인에 실패했습니다.', errors });
+
+    if (!email) {
+        res.status(400).json({
+            success: false,
+            message: '이메일 확인에 실패했습니다.',
+            errors: [{ field: 'email', message: '이메일을 입력해 주세요.' }]
+        });
         return;
     }
+
     try {
-        const user = await User.findOne({ email });
-        if (!user) {
+        const userResult = await pool.query('SELECT 1 FROM users WHERE email = $1', [email]);
+
+        if (userResult.rows.length === 0) {
             res.status(404).json({
                 success: false,
                 message: '해당 이메일로 가입된 사용자가 없습니다.',
@@ -397,14 +350,10 @@ export const checkEmailExists = async (req: Request, res: Response): Promise<voi
             data: { exists: true },
         });
     } catch (error) {
-        console.error('Error in checkEmailExists controller:', error);
-        res.status(500).json({
-            success: false,
-            message: '서버 오류가 발생했습니다.',
-        });
-        return;
+        console.error('Error in checkEmailExists:', error);
+        res.status(500).json({ success: false, message: '서버 오류가 발생했습니다.' });
     }
-}
+};
 
 export const sendEmailCode = async (req: Request, res: Response): Promise<void> => {
     const { email, fullName, isResend } = req.body;
@@ -415,27 +364,23 @@ export const sendEmailCode = async (req: Request, res: Response): Promise<void> 
     if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) errors.push({ field: 'email', message: '이메일 형식이 올바르지 않습니다.' });
 
     if (errors.length > 0) {
-        res.status(400).json({ success: false, message: '이메일 인증 요청에 실패했습니다.', errors});
+        res.status(400).json({ success: false, message: '이메일 인증 요청에 실패했습니다.', errors });
         return;
     }
 
     try {
-        const existingUser = await User.findOne({ email });
-        if (existingUser) {
+        const emailCheck = await pool.query('SELECT 1 FROM users WHERE email = $1', [email]);
+        if (emailCheck.rows.length > 0) {
             res.status(400).json({
                 success: false,
                 message: '이미 사용 중인 이메일입니다.',
-                errors: [
-                    { field: 'email', message: '이미 사용 중인 이메일입니다.' },
-                ],
+                errors: [{ field: 'email', message: '이미 사용 중인 이메일입니다.' }],
             });
             return;
         }
 
         const code = generateVerificationCode();
-
         sendVerificationEmail(email, code);
-
         const expiresAt = Date.now() + 3 * 60 * 1000;
 
         await redis.set(`email_code:${email}`, code, { EX: 180 });
@@ -443,16 +388,11 @@ export const sendEmailCode = async (req: Request, res: Response): Promise<void> 
         res.status(200).json({
             success: true,
             message: '인증번호를 전송했습니다.',
-            data: {
-                expiresAt,
-            },
+            data: { expiresAt },
         });
     } catch (error) {
-        console.error('Error in requestEmailVerification controller:', error);
-        res.status(500).json({
-            success: false,
-            message: '서버 오류가 발생했습니다.',
-        });
+        console.error('Error in sendEmailCode:', error);
+        res.status(500).json({ success: false, message: '서버 오류가 발생했습니다.' });
     }
 };
 
@@ -469,6 +409,7 @@ export const verifyEmailCode = async (req: Request, res: Response): Promise<void
 
     try {
         const storedCode = await redis.get(`email_code:${email}`);
+
         if (!storedCode) {
             res.status(400).json({
                 success: false,
@@ -482,9 +423,7 @@ export const verifyEmailCode = async (req: Request, res: Response): Promise<void
             res.status(400).json({
                 success: false,
                 message: '인증번호가 일치하지 않습니다.',
-                errors: [
-                    { field: 'code', message: '인증번호가 일치하지 않습니다.' },
-                ],
+                errors: [{ field: 'code', message: '인증번호가 일치하지 않습니다.' }],
             });
             return;
         }
@@ -495,13 +434,10 @@ export const verifyEmailCode = async (req: Request, res: Response): Promise<void
         res.status(200).json({
             success: true,
             message: '인증번호가 확인되었습니다.',
-            data: {}
+            data: {},
         });
     } catch (error) {
-        console.error('Error in verifyEmailCode controller:', error);
-        res.status(500).json({
-            success: false,
-            message: '서버 오류가 발생했습니다.',
-        });
+        console.error('Error in verifyEmailCode:', error);
+        res.status(500).json({ success: false, message: '서버 오류가 발생했습니다.' });
     }
 };

@@ -1,23 +1,15 @@
 import bcrypt from 'bcryptjs';
 import type { Request, Response } from 'express';
 
+import { pool } from '../lib/db.ts';
 import { buildUserResponse, uploadAndReplaceImage } from '../lib/util.ts';
-import Notification from '../models/notification.model.ts';
-import User from '../models/user.model.ts';
 
 export const getUserProfile = async (req: Request, res: Response): Promise<void> => {
     const { nickname } = req.params;
 
     try {
-        const user = await User.findOne({ nickname });
-        if (!user) {
-            res.status(404).json({
-                success: false,
-                message: '사용자를 찾을 수 없습니다.',
-            });
-            return;
-        }
-
+        const { rows } = await pool.query('SELECT * FROM users WHERE nickname = $1', [nickname]);
+        const user = rows[0];
         res.status(200).json({
             success: true,
             data: {
@@ -34,14 +26,25 @@ export const getUserProfile = async (req: Request, res: Response): Promise<void>
 };
 
 export const followUnfollowUser = async (req: Request, res: Response): Promise<void> => {
-    const { id } = req.params;
-    if (!req.user) throw new Error('사용자를 찾을 수 없습니다.');
-    
+    if (!req.user) {
+        res.status(401).json({ success: false, message: '사용자를 찾을 수 없습니다.' });
+        return;
+    }
+
+    const currentUserId = req.user.id;
+    const targetUserId = Number(req.params.id);
+
+    if (currentUserId === targetUserId) {
+        res.status(400).json({
+            success: false,
+            message: '자기 자신을 팔로우할 수 없습니다.',
+        });
+        return;
+    }
+
     try {
-        const userToModify = await User.findById(id);
-        const currentUser = await User.findById(req.user._id);
-
-        if (!userToModify || !currentUser) {
+        const userCheck = await pool.query('SELECT id FROM users WHERE id = $1', [targetUserId]);
+        if (userCheck.rows.length === 0) {
             res.status(404).json({
                 success: false,
                 message: '사용자를 찾을 수 없습니다.',
@@ -49,33 +52,16 @@ export const followUnfollowUser = async (req: Request, res: Response): Promise<v
             return;
         }
 
-        if (id === req.user._id.toString()) {
-            res.status(400).json({
-                success: false,
-                message: '자기 자신을 팔로우할 수 없습니다.',
-            });
-            return;
-        }
-
-        if (!userToModify || !currentUser) {
-            res.status(404).json({
-                success: false,
-                message: '사용자를 찾을 수 없습니다.',
-            });
-        }
-        const isFollowing = currentUser.following.some((followedId) =>
-            followedId.equals(id)
+        const isFollowing = await pool.query(
+            'SELECT 1 FROM user_follows WHERE follower_id = $1 AND following_id = $2',
+            [currentUserId, targetUserId]
         );
 
-        if (isFollowing) {
-            await Promise.all([
-                User.findByIdAndUpdate(id, {
-                    $pull: { followers: req.user._id },
-                }),
-                User.findByIdAndUpdate(req.user._id, {
-                    $pull: { following: id },
-                }),
-            ]);
+        if (isFollowing.rows.length > 0) {
+            await pool.query(
+                'DELETE FROM user_follows WHERE follower_id = $1 AND following_id = $2',
+                [currentUserId, targetUserId]
+            );
 
             res.status(200).json({
                 success: true,
@@ -83,19 +69,18 @@ export const followUnfollowUser = async (req: Request, res: Response): Promise<v
                 data: {},
             });
         } else {
-            await Promise.all([
-                User.findByIdAndUpdate(id, {
-                    $push: { followers: req.user._id },
-                }),
-                User.findByIdAndUpdate(req.user._id, {
-                    $push: { following: id },
-                }),
-                new Notification({
-                    type: 'follow',
-                    from: req.user._id,
-                    to: id,
-                }).save(),
-            ]);
+            await pool.query(
+                'INSERT INTO user_follows (follower_id, following_id) VALUES ($1, $2)',
+                [currentUserId, targetUserId]
+            );
+
+            await pool.query(
+                `
+                INSERT INTO notifications (from_user_id, to_user_id, type, content)
+                VALUES ($1, $2, 'follow', '팔로우 되었습니다.')
+                `,
+                [currentUserId, targetUserId]
+            );
 
             res.status(200).json({
                 success: true,
@@ -113,38 +98,44 @@ export const followUnfollowUser = async (req: Request, res: Response): Promise<v
 };
 
 export const getSuggestedUsers = async (req: Request, res: Response): Promise<void> => {
-    if (!req.user) throw new Error('사용자를 찾을 수 없습니다.');
+    if (!req.user) {
+        res.status(401).json({ success: false, message: '사용자를 찾을 수 없습니다.' });
+        return;
+    }
+
+    const userId = req.user.id;
+
     try {
-        const usersFollowedByMe = await User.findById(req.user._id).select(
-            'following'
+        const followingResult = await pool.query(
+            'SELECT following_id FROM user_follows WHERE follower_id = $1',
+            [userId]
+        );
+        const followingIds = followingResult.rows.map(row => row.following_id);
+
+        const randomUserResult = await pool.query(
+            `SELECT id, nickname, full_name, profile_img
+            FROM users
+            WHERE id != $1
+            ORDER BY RANDOM()
+            LIMIT 10`,
+            [userId]
         );
 
-        const users = await User.aggregate([
-            {
-                $match: {
-                    _id: { $ne: req.user._id },
-                },
-            },
-            { $sample: { size: 10 } },
-        ]);
-
-        const filteredUsers = users.filter(
-            (user) => !usersFollowedByMe?.following.includes(user._id)
+        const filteredUsers = randomUserResult.rows.filter(
+            user => !followingIds.includes(user.id)
         );
+
         const suggestedUsers = filteredUsers.slice(0, 4);
 
         res.status(200).json({
             success: true,
             data: {
-                users: suggestedUsers.map((user) => buildUserResponse(user)),
-            }
+                users: suggestedUsers.map(user => buildUserResponse(user)),
+            },
         });
-    } catch (error) {
-        console.error('Error in getSuggestedUsers:', error);
-        res.status(500).json({
-            success: false,
-            message: '서버 오류가 발생했습니다.',
-        });
+    } catch (err) {
+        console.error('Error in getSuggestedUsers:', err);
+        res.status(500).json({ success: false, message: '서버 오류가 발생했습니다.' });
     }
 };
 
@@ -159,8 +150,8 @@ export const checkNickname = async (req: Request, res: Response): Promise<void> 
         return;
     }
     try {
-        const existingUser = await User.findOne({ nickname });
-        if (existingUser) {
+        const { rows } = await pool.query('SELECT 1 FROM users WHERE nickname = $1', [nickname]);
+        if (rows.length > 0) {
             res.status(400).json({
                 success: false,
                 message: '이미 사용중인 닉네임입니다.',
@@ -183,7 +174,10 @@ export const checkNickname = async (req: Request, res: Response): Promise<void> 
 };
 
 export const updateUserProfile = async (req: Request, res: Response): Promise<void> => {
-    if (!req.user) throw new Error('사용자를 찾을 수 없습니다.');
+    if (!req.user) {
+        res.status(401).json({ success: false, message: '사용자를 찾을 수 없습니다.' });
+        return;
+    }
 
     const {
         fullName,
@@ -196,110 +190,115 @@ export const updateUserProfile = async (req: Request, res: Response): Promise<vo
         link,
     } = req.body;
 
+    const userId = req.user.id;
+
     try {
-        const user = await User.findById(req.user._id);
+        const userResult = await pool.query('SELECT * FROM users WHERE id = $1', [userId]);
+        const user = userResult.rows[0];
 
         if (!user) {
-            res.status(404).json({
-                success: false,
-                message: '사용자를 찾을 수 없습니다.',
-            });
+            res.status(404).json({ success: false, message: '사용자를 찾을 수 없습니다.' });
             return;
         }
 
-        if (
-            (currentPassword && !newPassword) ||
-            (!currentPassword && newPassword)
-        ) {
-            res.status(400).json({
-                success: false,
-                message: '비밀번호를 모두 입력해 주세요.',
-            });
+        if ((currentPassword && !newPassword) || (!currentPassword && newPassword)) {
+            res.status(400).json({ success: false, message: '비밀번호를 모두 입력해 주세요.' });
             return;
         }
+
+        let hashedPassword = user.password;
 
         if (currentPassword && newPassword) {
-            if (!user.password)
-                throw new Error('비밀번호가 설정되어 있지 않은 계정입니다');
+            if (!user.password) {
+                res.status(400).json({ success: false, message: '비밀번호가 설정되어 있지 않은 계정입니다.' });
+                return;
+            }
 
-            const isMatch = await bcrypt.compare(
-                currentPassword,
-                user.password
-            );
+            const isMatch = await bcrypt.compare(currentPassword, user.password);
             if (!isMatch) {
-                res.status(401).json({
-                    success: false,
-                    message: '현재 비밀번호가 일치하지 않습니다.',
-                });
+                res.status(401).json({ success: false, message: '현재 비밀번호가 일치하지 않습니다.' });
                 return;
             }
 
             if (newPassword.length < 6) {
-                res.status(400).json({
-                    success: false,
-                    message: '비밀번호는 최소 6자 이상이어야 합니다.',
-                });
+                res.status(400).json({ success: false, message: '비밀번호는 최소 6자 이상이어야 합니다.' });
                 return;
             }
 
             const salt = await bcrypt.genSalt(10);
-            user.password = await bcrypt.hash(newPassword, salt);
-        }
-
-        if (profileImg) {
-            user.profileImg = await uploadAndReplaceImage(
-                user.profileImg ?? null,
-                profileImg
-            );
-        }
-
-        if (coverImg) {
-            user.coverImg = await uploadAndReplaceImage(
-                user.coverImg ?? null,
-                coverImg
-            );
+            hashedPassword = await bcrypt.hash(newPassword, salt);
         }
 
         if (nickname && nickname !== user.nickname) {
-            const existingUser = await User.findOne({ nickname });
-            if (existingUser) {
-                res.status(400).json({
-                    success: false,
-                    message: '이미 사용중인 닉네임입니다.',
-                });
+            const nicknameCheckResult = await pool.query(
+                'SELECT 1 FROM users WHERE nickname = $1 AND id != $2 LIMIT 1',
+                [nickname, userId]
+            );
+            if (nicknameCheckResult.rows.length > 0) {
+                res.status(400).json({ success: false, message: '이미 사용중인 닉네임입니다.' });
                 return;
             }
-            user.nickname = nickname;
         }
 
-        user.fullName = fullName || user.fullName;
-        user.bio = bio || user.bio;
-        user.link = link || user.link;
+        const newProfileImg = profileImg
+            ? await uploadAndReplaceImage(user.profile_img, profileImg)
+            : user.profile_img;
 
-        await user.save();
+        const newCoverImg = coverImg
+            ? await uploadAndReplaceImage(user.cover_img, coverImg)
+            : user.cover_img;
+
+        const updatedUserResult = await pool.query(
+            `
+            UPDATE users
+            SET
+                full_name = COALESCE($1, full_name),
+                nickname = COALESCE($2, nickname),
+                password = $3,
+                profile_img = $4,
+                cover_img = $5,
+                bio = COALESCE($6, bio),
+                link = COALESCE($7, link),
+                updated_at = NOW()
+            WHERE id = $8
+            RETURNING *
+            `,
+            [
+                fullName,
+                nickname || user.nickname,
+                hashedPassword,
+                newProfileImg,
+                newCoverImg,
+                bio,
+                link,
+                userId
+            ]
+        );
+
+        const updatedUser = updatedUserResult.rows[0];
 
         res.status(200).json({
             success: true,
             message: '프로필이 업데이트 되었습니다.',
-            data: {
-                user: buildUserResponse(user),
-            }
+            data: { user: buildUserResponse(updatedUser) }
         });
     } catch (error) {
         console.error('Error in updateUserProfile:', error);
-        res.status(500).json({
-            success: false,
-            message: '서버 오류가 발생했습니다.',
-        });
+        res.status(500).json({ success: false, message: '서버 오류가 발생했습니다.' });
     }
 };
 
 export const deleteAccount = async (req: Request, res: Response): Promise<void> => {
-    if (!req.user) throw new Error('사용자를 찾을 수 없습니다.');
+    if (!req.user) {
+        res.status(401).json({ success: false, message: '사용자를 찾을 수 없습니다.' });
+        return;
+    }
+
+    const userId = req.user.id;
 
     try {
-        const user = await User.findById(req.user._id);
-        if (!user) {
+        const { rows } = await pool.query('SELECT 1 FROM users WHERE id = $1', [userId]);
+        if (rows.length === 0) {
             res.status(404).json({
                 success: false,
                 message: '사용자를 찾을 수 없습니다.',
@@ -307,18 +306,12 @@ export const deleteAccount = async (req: Request, res: Response): Promise<void> 
             return;
         }
 
-        await Promise.all([
-            User.updateMany(
-                { followers: req.user._id },
-                { $pull: { followers: req.user._id } }
-            ),
-            User.updateMany(
-                { following: req.user._id },
-                { $pull: { following: req.user._id } }
-            ),
-        ]);
+        await pool.query(
+            'DELETE FROM user_follows WHERE follower_id = $1 OR following_id = $1',
+            [userId]
+        );
 
-        await User.findByIdAndDelete(req.user._id);
+        await pool.query('DELETE FROM users WHERE id = $1', [userId]);
 
         res.status(200).json({
             success: true,
@@ -333,3 +326,4 @@ export const deleteAccount = async (req: Request, res: Response): Promise<void> 
         });
     }
 };
+

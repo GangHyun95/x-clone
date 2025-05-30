@@ -1,13 +1,22 @@
-import mongoose from 'mongoose';
+import { config } from 'dotenv';
+import { Pool } from 'pg';
+
+config();
+
+export const pool = new Pool({
+    user: process.env.PG_USER,
+    host: process.env.PG_HOST,
+    database: 'xclone',
+    password: process.env.PG_PASSWORD,
+    port: Number(process.env.PG_PORT) || 5432,
+});
 
 export const connectDB = async () => {
     try {
-        if (!process.env.MONGO_URI) throw new Error('MongoDB URI is not defined');
-        
-        const conn = await mongoose.connect(process.env.MONGO_URI);
-        console.log(`MongoDB Connected: ${conn.connection.host}`);
+        const client = await pool.connect();
+        client.release();
     } catch (error) {
-        console.error(`MongoDB Error: ${(error as Error).message}`);
+        console.error(`PostgreSQL Error: ${(error as Error).message}`);
         process.exit(1);
     }
 };

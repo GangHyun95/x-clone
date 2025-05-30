@@ -1,7 +1,7 @@
 import jwt from 'jsonwebtoken';
 
 import cloudinary from './cloudinary.ts';
-import type { IUser } from '../models/user.model.ts';
+import type { IUser } from '../models/user.ts';
 
 export const generateToken = (
     id: string,
@@ -26,17 +26,16 @@ export const generateToken = (
 
 export const buildUserResponse = (user: IUser): IUser => {
     return {
-        _id: user._id,
+        id: user.id,
         fullName: user.fullName,
         nickname: user.nickname,
         email: user.email,
-        followers: user.followers,
-        following: user.following,
         profileImg: user.profileImg,
         coverImg: user.coverImg,
         bio: user.bio,
         link: user.link,
-        likedPosts: user.likedPosts,
+        createdAt: user.createdAt,
+        updatedAt: user.updatedAt,
     };
 };
 

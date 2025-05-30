@@ -1,7 +1,7 @@
 import type { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
 
-import User from '../models/user.model.ts';
+import { pool } from '../lib/db.ts';
 
 export const protectRoute = async (
     req: Request,
@@ -29,7 +29,8 @@ export const protectRoute = async (
                 return;
             }
 
-            const user = await User.findById(decoded.id);
+            const result = await pool.query('SELECT * FROM users WHERE id = $1', [decoded.id]);
+            const user = result.rows[0];
             if (!user) {
                 res.status(404).json({
                     success: false,

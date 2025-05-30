@@ -1,37 +1,56 @@
 import type { Request, Response } from 'express';
 
-import Notification from '../models/notification.model.ts';
+import { pool } from '../lib/db.ts';
 
 export const getNotifications = async (req: Request, res: Response): Promise<void> => {
-    if (!req.user) throw new Error('사용자를 찾을 수 없습니다.');
-    try {
-        const notifications = await Notification.find({
-            to: req.user._id,
-        }).populate('from', 'username profileImg');
+    if (!req.user) {
+        res.status(401).json({ success: false, message: '사용자를 찾을 수 없습니다.' });
+        return;
+    }
 
-        await Notification.updateMany(
-            { to: req.user._id },
-            { $set: { read: true } }
+    const userId = req.user.id;
+
+    try {
+        const notificationsResult = await pool.query(
+            `SELECT n.id, n.type, n.content, n.read, n.created_at,
+                    json_build_object(
+                        'id', u.id,
+                        'nickname', u.nickname,
+                        'profileImg', u.profile_img
+                    ) as from_user
+             FROM notifications n
+             JOIN users u ON n.from_user_id = u.id
+             WHERE n.to_user_id = $1
+             ORDER BY n.created_at DESC`,
+            [userId]
+        );
+
+        await pool.query(
+            `UPDATE notifications SET read = true WHERE to_user_id = $1`,
+            [userId]
         );
 
         res.status(200).json({
             success: true,
             message: '알림을 가져왔습니다.',
-            data: { notifications}
+            data: { notifications: notificationsResult.rows },
         });
     } catch (error) {
         console.error('Error in getNotifications:', error);
-        res.status(500).json({
-            success: false,
-            message: '서버 오류가 발생했습니다.',
-        });
+        res.status(500).json({ success: false, message: '서버 오류가 발생했습니다.' });
     }
 };
 
 export const deleteNotifications = async (req: Request, res: Response): Promise<void> => {
-    if (!req.user) throw new Error('사용자를 찾을 수 없습니다.');
+    if (!req.user) {
+        res.status(401).json({ success: false, message: '사용자를 찾을 수 없습니다.' });
+        return;
+    }
+
+    const userId = req.user.id;
+
     try {
-        await Notification.deleteMany({ to: req.user._id });
+        await pool.query(`DELETE FROM notifications WHERE to_user_id = $1`, [userId]);
 
         res.status(200).json({
             success: true,
@@ -40,36 +59,35 @@ export const deleteNotifications = async (req: Request, res: Response): Promise<
         });
     } catch (error) {
         console.error('Error in deleteNotifications:', error);
-        res.status(500).json({
-            success: false,
-            message: '서버 오류가 발생했습니다.',
-        });
+        res.status(500).json({ success: false, message: '서버 오류가 발생했습니다.' });
     }
 };
 
 export const deleteNotification = async (req: Request, res: Response): Promise<void> => {
-    if (!req.user) throw new Error('사용자를 찾을 수 없습니다.');
+    if (!req.user) {
+        res.status(401).json({ success: false, message: '사용자를 찾을 수 없습니다.' });
+        return;
+    }
+
+    const userId = req.user.id;
+    const { id } = req.params;
+
     try {
-        const { id } = req.params;
-        const notification = await Notification.findById(id);
+        const result = await pool.query(`SELECT * FROM notifications WHERE id = $1`, [id]);
+        const notification = result.rows[0];
 
         if (!notification) {
-            res.status(404).json({
-                success: false,
-                message: '알림을 찾을 수 없습니다.',
-            });
+            res.status(404).json({ success: false, message: '알림을 찾을 수 없습니다.' });
             return;
         }
 
-        if (!notification.to.equals(req.user._id)) {
-            res.status(403).json({
-                success: false,
-                message: '권한이 없습니다.',
-            });
+        if (notification.to_user_id !== userId) {
+            res.status(403).json({ success: false, message: '권한이 없습니다.' });
             return;
         }
 
-        await Notification.findByIdAndDelete(id);
+        await pool.query(`DELETE FROM notifications WHERE id = $1`, [id]);
+
         res.status(200).json({
             success: true,
             message: '알림을 삭제했습니다.',
@@ -77,9 +95,6 @@ export const deleteNotification = async (req: Request, res: Response): Promise<v
         });
     } catch (error) {
         console.error('Error in deleteNotification:', error);
-        res.status(500).json({
-            success: false,
-            message: '서버 오류가 발생했습니다.',
-        });
+        res.status(500).json({ success: false, message: '서버 오류가 발생했습니다.' });
     }
 };

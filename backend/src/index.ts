@@ -4,7 +4,6 @@ import dotenv from 'dotenv';
 import express from 'express';
 
 import { connectDB } from './lib/db.ts';
-import { connectToPostgres } from './lib/pg.ts';
 import { connectRedis } from './lib/redis.ts';
 import { protectRoute } from './middleware/auth.middleware.ts';
 import authRoutes from './routes/auth.route.ts';
