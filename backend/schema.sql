@@ -13,7 +13,8 @@ CREATE TABLE users (
     bio TEXT DEFAULT '',
     link TEXT DEFAULT '',
     created_at TIMESTAMP DEFAULT NOW(),
-    updated_at TIMESTAMP DEFAULT NOW()
+    updated_at TIMESTAMP DEFAULT NOW(),
+    last_password_change TIMESTAMPTZ DEFAULT NOW()
 );
 
 CREATE TABLE posts (

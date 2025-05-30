@@ -6,7 +6,9 @@ import Spinner from '@/components/commons/Spinner';
 import { useResendCode, useVerifyCode } from '@/hooks/auth/useAuthMutations';
 import useCountdown from '@/hooks/useCountdown';
 import type { VerifyCodePayload } from '@/types/auth';
-import { formatTime } from '@/utils/time';
+import { formatTime } from '@/utils/formatters';
+import { CgSpinner } from 'react-icons/cg';
+import { TextInput } from '@/components/commons/input';
 
 type Props = {
     onNext: () => void;
@@ -34,7 +36,6 @@ export default function StepTwo({ onNext, email, expiresAt, setExpiresAt }: Prop
             setFocus('code');
             setShowMenu(false);
             toast.success(message);
-            console.log(message);
         },
         onError: () => {
             setShowMenu(false);
@@ -53,13 +54,12 @@ export default function StepTwo({ onNext, email, expiresAt, setExpiresAt }: Prop
         return () => clearTimeout(timer);
     }, [setFocus]);
 
-    if (isVerifying || isResending) return <Spinner />
+    if (isVerifying) return <Spinner />
 
     return (
         <>
             <Toaster />
             <form className='flex flex-col h-full' onSubmit={handleSubmit(onSubmit)}>
-                <input type='hidden' name='isResend' value='true' />
                 <div className='flex-1 overflow-auto px-8 md:px-20'>
                     <div className='my-5'>
                         <h1 className='text-2xl md:text-4xl font-bold'>
@@ -70,36 +70,14 @@ export default function StepTwo({ onNext, email, expiresAt, setExpiresAt }: Prop
                         </h3>
                     </div>
 
-                    <div className='py-3'>
-                        <label htmlFor='code' className='floating-label'>
-                            <input
-                                {...register('code', {
-                                    required: '인증번호를 입력해 주세요.'
-                                })}
-                                id='code'
-                                type='text'
-                                placeholder='Verification code'
-                                className={`input input-xl w-full text-base peer placeholder:text-base focus:outline-0 focus:border-primary focus:ring-primary ${
-                                    errors.code ? 'border-red-500' : ''
-                                }`}
-                            />
-                            <span className='floating-label label-text peer-focus:text-primary peer-focus:text-sm'>
-                                Verification code
-                            </span>
-                            {errors.code && (
-                                <p className='text-sm text-red-500'>
-                                    {errors.code.message}
-                                </p>
-                            )}
-
-                            <div
-                                className='text-sm text-primary px-2 pt-1 hover:underline decoration-primary cursor-pointer'
-                                onClick={() => setShowMenu(prev => !prev)}
-                            >
-                                Didn't receive email?
-                            </div>
-                        </label>
-                    </div>
+                    <TextInput
+                        id='code'
+                        label='Verification code'
+                        register={register('code', {
+                            required: '인증번호를 입력해 주세요.',
+                        })}
+                        error={errors.code}
+                    />
 
                     <ul
                         className={`
@@ -135,7 +113,14 @@ export default function StepTwo({ onNext, email, expiresAt, setExpiresAt }: Prop
                         className='btn w-full min-h-14 rounded-full text-base text-white bg-secondary hover:bg-secondary/90'
                         disabled={!isValid || isVerifying || isResending}
                     >
-                        Next
+                        {isResending ? (
+                            <>
+                                <CgSpinner className='animate-spin text-primary h-5 w-5' />
+                                Resending...
+                            </>
+                        ) : (
+                            'Next'
+                        )}
                     </button>
                 </div>
             </form>

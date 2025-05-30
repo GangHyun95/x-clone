@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import Spinner from '@/components/commons/Spinner';
 import { useSendCode } from '@/hooks/auth/useAuthMutations';
 import type { SendCodePayload } from '@/types/auth';
+import { TextInput } from '@/components/commons/input';
 
 type Props = {
     onNext: (data: {email: string, fullName: string, expiresAt: number}) => void;
@@ -42,60 +43,27 @@ export default function StepOne({ onNext }: Props) {
                     Create your account
                 </h1>
 
-                <div className='py-3'>
-                    <label htmlFor='fullName' className='floating-label'>
-                        <input
-                            {...register('fullName', {
-                                required: '이름을 입력해 주세요.',
-                            })}
-                            id='fullName'
-                            type='text'
-                            placeholder='Name'
-                            className={`input input-xl w-full text-base peer placeholder:text-base focus:outline-0 focus:border-primary focus:ring-primary ${
-                                errors.fullName ? 'border-red-500' : ''
-                            }`}
-                        />
-                        <span className='floating-label label-text peer-focus:text-primary peer-focus:text-sm'>
-                            Name
-                        </span>
-
-                        {errors.fullName && (
-                            <p className='text-sm text-red-500'>
-                                {errors.fullName.message}
-                            </p>
-                        )}
-                    </label>
-                </div>
-
-                <div className='py-3'>
-                    <label htmlFor='email' className='floating-label'>
-                        <input
-                            {...register('email', {
-                                required: '이메일을 입력해 주세요.',
-                                pattern: {
-                                    value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
-                                    message: '이메일 형식이 올바르지 않습니다.',
-                                },
-                            })}
-                            id='email'
-                            type='email'
-                            placeholder='Email'
-                            className={`input input-xl w-full text-base peer placeholder:text-base focus:outline-0 focus:border-primary focus:ring-primary ${
-                                errors.email ? 'border-red-500' : ''
-                            }`}
-                        />
-                        <span className='floating-label label-text peer-focus:text-primary'>
-                            Email
-                        </span>
-
-                        {errors.email && (
-                            <p className='text-sm text-red-500'>
-                                {errors.email.message}
-                            </p>
-                        )}
-                    </label>
-                </div>
-
+                <TextInput 
+                    id="fullName"
+                    label="Name"
+                    register={register('fullName', {
+                        required: '이름을 입력해 주세요.',
+                    })}
+                    error={errors.fullName}
+                />
+                <TextInput
+                    id='email'
+                    type='email'
+                    label='Email'
+                    register={register('email', {
+                        required: '이메일을 입력해 주세요.',
+                        pattern: {
+                            value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+                            message: '이메일 형식이 올바르지 않습니다.',
+                        },
+                    })}
+                    error={errors.email}
+                />
                 <div className='flex gap-1 mt-2'>
                     <span className='text-gray-500 text-sm'>
                         Already have an account?

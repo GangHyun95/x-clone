@@ -3,7 +3,7 @@ import { useForm } from 'react-hook-form';
 import toast from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
 
-import { PasswordInput } from '@/components/commons/input';
+import { PasswordInput, TextInput } from '@/components/commons/input';
 import Spinner from '@/components/commons/Spinner';
 import { useSignup } from '@/hooks/auth/useAuthMutations';
 import { useAppDispatch } from '@/store/hooks';
@@ -61,33 +61,18 @@ export default function StepThree({ email, fullName }: Props) {
                     </h3>
                 </div>
 
-                <div className='py-3'>
-                    <label htmlFor='nickname' className='floating-label'>
-                        <input
-                            {...register('nickname', {
-                                required: '닉네임을 입력해 주세요.',
-                                minLength: {
-                                    value: 2,
-                                    message: '닉네임은 최소 2자 이상이어야 합니다.',
-                                },
-                            })}
-                            id='nickname'
-                            type='text'
-                            placeholder='Nickname'
-                            className={`input input-xl w-full text-base peer placeholder:text-base focus:outline-0 focus:border-primary focus:ring-primary ${
-                                errors.nickname ? 'border-red-500' : ''
-                            }`}
-                        />
-                        <span className='floating-label label-text peer-focus:text-primary peer-focus:text-sm'>
-                            Nickname
-                        </span>
-                        {errors.nickname && (
-                            <p className='text-sm text-red-500'>
-                                {errors.nickname.message}
-                            </p>
-                        )}
-                    </label>
-                </div>
+                <TextInput
+                    id='nickname'
+                    label='Nickname'
+                    register={register('nickname', {
+                        required: '닉네임을 입력해 주세요.',
+                        minLength: {
+                            value: 2,
+                            message: '닉네임은 최소 2자 이상이어야 합니다.',
+                        },
+                    })}
+                    error={errors.nickname}
+                />
                 <PasswordInput
                     id='password'
                     label='Password'

@@ -1,4 +1,4 @@
-import type { LoginPayload, ResendCodePayload, SendCodePayload, SignupPayload, VerifyCodePayload } from '@/types/auth';
+import type { LoginPayload, ResendCodePayload, ResetCodePayload, ResetPasswordPayload, SendCodePayload, SignupPayload, VerifyCodePayload } from '@/types/auth';
 
 type ApiResponse<T> = {
     success: boolean;
@@ -26,9 +26,9 @@ async function post<TPayload, TData>(
 }
 
 export async function sendEmailCode(
-    payload: SendCodePayload | ResendCodePayload
+    payload: SendCodePayload | ResendCodePayload | ResetCodePayload
 ) {
-    return post<SendCodePayload | ResendCodePayload, { expiresAt: number }>(
+    return post<SendCodePayload | ResendCodePayload | ResetCodePayload, { expiresAt: number }>(
         '/api/auth/email-code',
         payload
     );
@@ -62,6 +62,13 @@ export async function refreshAccessToken() {
     return post<void, { accessToken: string }>('/api/auth/refresh', undefined, {
         credentials: 'include',
     });
+}
+
+export async function resetPassword(payload: ResetPasswordPayload) {
+    return post<ResetPasswordPayload, { message: string }>(
+        '/api/auth/password-reset',
+        payload
+    );
 }
 
 export async function checkEmailExists(payload: { email: string }) {

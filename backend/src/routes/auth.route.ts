@@ -7,6 +7,7 @@ import {
     login,
     logout,
     refreshAccessToken,
+    resetPassword,
     sendEmailCode,
     signup,
     verifyEmailCode,
@@ -26,5 +27,7 @@ router.get('/google', getGoogleClientId);
 router.post('/email-code', sendEmailCode);
 router.post('/email-code/verify', verifyEmailCode);
 router.get('/email/check', checkEmailExists);
+
+router.post('/password-reset', resetPassword);
 
 export default router;

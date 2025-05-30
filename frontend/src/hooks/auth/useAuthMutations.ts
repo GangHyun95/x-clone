@@ -1,9 +1,10 @@
 import { useMutation } from '@tanstack/react-query';
 import type { UseFormSetError } from 'react-hook-form';
 
-import { login, sendEmailCode, signup, verifyEmailCode } from '@/service/auth';
+import { login, resetPassword, sendEmailCode, signup, verifyEmailCode } from '@/service/auth';
 import type {
     LoginPayload,
+    ResetPasswordPayload,
     SendCodePayload,
     SignupPayload,
     VerifyCodePayload,
@@ -32,10 +33,51 @@ type ResendCode = {
     onError: () => void;
 };
 
+type ResetCode = {
+    onSuccess: (data: { expiresAt: number, message: string }) => void;
+    onError: () => void;
+}
+
 type Signup = {
     setError: UseFormSetError<SignupPayload>;
     onSuccess: (data: { accessToken: string }) => void;
 };
+
+type ResetPassword = {
+    setError: UseFormSetError<ResetPasswordPayload>;
+    onSuccess: (data: { message: string }) => void;
+}
+
+
+export function useSignup({ onSuccess, setError }: Signup) {
+    const { mutate, isPending } = useMutation({
+        mutationFn: (payload: SignupPayload) => signup(payload),
+        onSuccess: (res) => onSuccess(res.data),
+        onError: (err) => {
+            handleFormErrors(err, setError);
+        },
+    });
+
+    return {
+        signup: mutate,
+        isSigningUp: isPending,
+    };
+};
+
+export function useLogin({ onSuccess, setError }: Signup) {
+    const { mutate, isPending } = useMutation({
+        mutationFn: (payload: LoginPayload) => login(payload),
+        onSuccess: (res) => onSuccess(res.data),
+        onError: (err) => {
+            handleFormErrors(err, setError);
+        },
+    });
+
+    return {
+        login: mutate,
+        isLoggingIn: isPending,
+    };
+}
 
 export function useSendCode({ onSuccess, setError }: SendCode) {
     const { mutate, isPending } = useMutation({
@@ -91,32 +133,35 @@ export function useResendCode({ onSuccess, onError }: ResendCode) {
     };
 }
 
-export function useSignup({ onSuccess, setError }: Signup) {
+export function usePasswordResetCode({ onSuccess, onError }: ResetCode) {
     const { mutate, isPending } = useMutation({
-        mutationFn: (payload: SignupPayload) => signup(payload),
-        onSuccess: (res) => onSuccess(res.data),
-        onError: (err) => {
-            handleFormErrors(err, setError);
+        mutationFn: (email: string) => sendEmailCode({ email, isPasswordReset: true }),
+        onSuccess: (res) => {
+            onSuccess({
+                expiresAt: res.data.expiresAt,
+                message: res.message,
+            });
         },
-    });
+        onError,
+    })
 
     return {
-        signup: mutate,
-        isSigningUp: isPending,
+        sendPasswordResetCode: mutate,
+        isSending: isPending,
     };
-};
+}
 
-export function useLogin({ onSuccess, setError }: Signup) {
+export function useResetPassword({ onSuccess, setError }: ResetPassword) {
     const { mutate, isPending } = useMutation({
-        mutationFn: (payload: LoginPayload) => login(payload),
-        onSuccess: (res) => onSuccess(res.data),
+        mutationFn: (payload: ResetPasswordPayload) => resetPassword(payload),
+        onSuccess,
         onError: (err) => {
             handleFormErrors(err, setError);
-        },
-    });
+        }
+    })
 
     return {
-        login: mutate,
-        isLoggingIn: isPending,
-    };
+        resetPassword: mutate,
+        isResetting: isPending,
+    }
 }

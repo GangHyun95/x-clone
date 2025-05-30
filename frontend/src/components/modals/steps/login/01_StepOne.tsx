@@ -55,22 +55,20 @@ export default function StepOne({ onNext }: { onNext: (data: { email: string }) 
                         <div className='h-px flex-1 bg-gray-300'></div>
                     </div>
 
-                    <div className='py-3'>
-                        <TextInput
-                            id='email'
-                            type='email'
-                            label='Email'
-                            placeholder='Enter your email'
-                            register={register('email', {
-                                required: '이메일을 입력해 주세요.',
-                                pattern: {
-                                    value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
-                                    message: '이메일 형식이 올바르지 않습니다.',
-                                },
-                            })}
-                            error={errors.email}
-                        />
-                    </div>
+                    <TextInput
+                        id='email'
+                        type='email'
+                        label='Email'
+                        placeholder='Enter your email'
+                        register={register('email', {
+                            required: '이메일을 입력해 주세요.',
+                            pattern: {
+                                value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+                                message: '이메일 형식이 올바르지 않습니다.',
+                            },
+                        })}
+                        error={errors.email}
+                    />
 
                     <div className='flex flex-col items-stretch flex-none my-3'>
                         <button

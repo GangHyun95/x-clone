@@ -1,12 +1,12 @@
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
-import { IoEyeOffOutline, IoEyeOutline } from 'react-icons/io5';
 import { useNavigate } from 'react-router-dom';
 
 import Spinner from '@/components/commons/Spinner';
 import { useLogin } from '@/hooks/auth/useAuthMutations';
 import { useAppDispatch } from '@/store/hooks';
 import { setAccessToken } from '@/store/slices/authSlice';
+import { PasswordInput } from '@/components/commons/input';
 
 export default function StepTwo({ email }: { email: string }) {
     const form = useForm<{ password: string }>({
@@ -19,7 +19,6 @@ export default function StepTwo({ email }: { email: string }) {
     const { register, handleSubmit, setError, setFocus, formState: { errors, isValid } } = form;
     const navigate = useNavigate();
     const dispatch = useAppDispatch();
-    const [showPassword, setShowPassword] = useState(false);
 
     const { login, isLoggingIn } = useLogin({
         onSuccess: (data) => {
@@ -36,7 +35,7 @@ export default function StepTwo({ email }: { email: string }) {
         }, 100);
         return () => clearTimeout(timer);
     }, [setFocus]);
-
+    
     const onSubmit = (data: { password: string }) => {
         login({ email, password: data.password});
     }
@@ -65,42 +64,28 @@ export default function StepTwo({ email }: { email: string }) {
                         </div>
 
                         <div className='py-3 relative'>
-                            <label htmlFor='password' className='floating-label'>
-                                <input
-                                    {...register('password', {
-                                        required: '비밀번호를 입력해 주세요.',
-                                        minLength: {
-                                            value: 6,
-                                            message: '비밀번호는 최소 6자 이상이어야 합니다.',
-                                        },
-                                    })}
-                                    id='password'
-                                    type={showPassword ? 'text' : 'password'}
-                                    placeholder='Password'
-                                    className={`input input-xl w-full text-base peer placeholder:text-base focus:outline-0 focus:border-primary focus:ring-primary ${
-                                        errors.password ? 'border-red-500' : ''
-                                    }`}
-                                />
-                                <span className='floating-label label-text peer-focus:text-primary peer-focus:text-sm'>
-                                    Password
-                                </span>
-                                {errors.password && (
-                                    <p className='text-sm text-red-500'>
-                                        {errors.password.message}
-                                    </p>
-                                )}
-                            </label>
-                            <div
-                                className='absolute right-3 top-1/2 -translate-y-1/2 z-10 text-xl cursor-pointer'
-                                onClick={() => setShowPassword(!showPassword)}
+                            <PasswordInput
+                                id='password'
+                                label='비밀번호를 입력해 주세요.'
+                                register={register('password', {
+                                    required: '비밀번호를 입력해 주세요.',
+                                    minLength: {
+                                        value: 6,
+                                        message:
+                                            '비밀번호는 최소 6자 이상이어야 합니다.',
+                                    },
+                                })}
+                                error={errors.password}
+                            />
+                            <div 
+                                className='text-sm text-primary px-2 pt-1 hover:underline decoration-primary cursor-pointer'
+                                onClick={() =>
+                                    navigate('/reset-password', {
+                                        state: { backgroundLocation: '/' },
+                                        replace: true,
+                                    })
+                                }
                             >
-                                {showPassword ? (
-                                    <IoEyeOffOutline />
-                                ) : (
-                                    <IoEyeOutline />
-                                )}
-                            </div>
-                            <div className='text-sm text-primary px-2 pt-1 hover:underline decoration-primary cursor-pointer'>
                                 Forgot password?
                             </div>
                         </div>
@@ -109,6 +94,7 @@ export default function StepTwo({ email }: { email: string }) {
             </div>
             <div className='flex flex-col items-stretch flex-none my-6 px-8 md:px-20'>
                 <button
+                    type='submit'
                     className='btn w-full min-h-14 rounded-full text-base text-white bg-secondary hover:bg-secondary/90 mb-6'
                     disabled={!isValid || isLoggingIn}
                 >

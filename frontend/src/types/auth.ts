@@ -14,6 +14,15 @@ export type ResendCodePayload = EmailPayload & {
     isResend: true;
 };
 
+export type ResetCodePayload = EmailPayload & {
+    isPasswordReset: true;
+};
+
+export type ResetPasswordPayload = EmailPayload & {
+    password: string;
+    confirmPassword: string;
+}
+
 export type SignupPayload = EmailPayload & {
     fullName: string;
     nickname: string;
@@ -22,9 +31,4 @@ export type SignupPayload = EmailPayload & {
 
 export type LoginPayload = EmailPayload & {
     password: string;
-};
-
-export type ResetPasswordPayload = EmailPayload & {
-    password: string;
-    confirmPassword: string;
 };

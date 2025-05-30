@@ -85,7 +85,7 @@ export const login = async (req: Request, res: Response): Promise<void> => {
     const { email, password } = req.body;
 
     const errors: { field: string; message: string }[] = [];
-    if (!email) errors.push({ field: 'email', message: '이메일을 입력해 주세요.' });
+    if (!email) errors.push({ field: 'root', message: '이메일을 입력해 주세요.' });
     if (!password) errors.push({ field: 'password', message: '비밀번호를 입력해 주세요.' });
 
     if (errors.length > 0) {
@@ -101,7 +101,7 @@ export const login = async (req: Request, res: Response): Promise<void> => {
             res.status(401).json({
                 success: false,
                 errors: [
-                    { field: 'email', message: '이메일 또는 비밀번호가 올바르지 않습니다.' },
+                    { field: 'root', message: '이메일 또는 비밀번호가 올바르지 않습니다.' },
                     { field: 'password', message: '이메일 또는 비밀번호가 올바르지 않습니다.' },
                 ]
             });
@@ -114,7 +114,7 @@ export const login = async (req: Request, res: Response): Promise<void> => {
                 success: false,
                 message: '이메일 또는 비밀번호가 올바르지 않습니다.',
                 errors: [
-                    { field: 'email', message: '이메일 또는 비밀번호가 올바르지 않습니다.' },
+                    { field: 'root', message: '이메일 또는 비밀번호가 올바르지 않습니다.' },
                     { field: 'password', message: '이메일 또는 비밀번호가 올바르지 않습니다.' },
                 ]
             });
@@ -185,11 +185,25 @@ export const refreshAccessToken = async (req: Request, res: Response): Promise<v
             return;
         }
 
-        const userResult = await pool.query('SELECT id, email, full_name, nickname, profile_img FROM users WHERE id = $1', [decoded.id]);
+        const userResult = await pool.query(
+            'SELECT id, email, full_name, nickname, profile_img, last_password_change FROM users WHERE id = $1',
+            [decoded.id]
+        );
         const user = userResult.rows[0];
 
         if (!user) {
             res.status(404).json({ success: false, message: '사용자를 찾을 수 없습니다.' });
+            return;
+        }
+
+        const tokenIssuedAt = (decoded.iat as number) * 1000;
+        const lastChanged = user.last_password_change ? new Date(user.last_password_change).getTime() : 0;
+
+        if (tokenIssuedAt < lastChanged) {
+            res.status(401).json({
+                success: false,
+                message: '비밀번호가 변경되어 토큰이 만료되었습니다. 다시 로그인해 주세요.',
+            });
             return;
         }
 
@@ -356,11 +370,13 @@ export const checkEmailExists = async (req: Request, res: Response): Promise<voi
 };
 
 export const sendEmailCode = async (req: Request, res: Response): Promise<void> => {
-    const { email, fullName, isResend } = req.body;
+    const { email, fullName, isResend, isPasswordReset} = req.body;
 
     const errors: { field: string; message: string }[] = [];
     if (!email) errors.push({ field: 'email', message: '이메일을 입력해 주세요.' });
-    if (!isResend && !fullName) errors.push({ field: 'fullName', message: '이름을 입력해 주세요.' });
+    if (!isPasswordReset && !isResend && !fullName) {
+        errors.push({ field: 'fullName', message: '이름을 입력해 주세요.' });
+    }
     if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) errors.push({ field: 'email', message: '이메일 형식이 올바르지 않습니다.' });
 
     if (errors.length > 0) {
@@ -369,14 +385,16 @@ export const sendEmailCode = async (req: Request, res: Response): Promise<void> 
     }
 
     try {
-        const emailCheck = await pool.query('SELECT 1 FROM users WHERE email = $1', [email]);
-        if (emailCheck.rows.length > 0) {
-            res.status(400).json({
-                success: false,
-                message: '이미 사용 중인 이메일입니다.',
-                errors: [{ field: 'email', message: '이미 사용 중인 이메일입니다.' }],
-            });
-            return;
+        if (!isPasswordReset) {
+            const emailCheck = await pool.query('SELECT 1 FROM users WHERE email = $1', [email]);
+            if (emailCheck.rows.length > 0) {
+                res.status(400).json({
+                    success: false,
+                    message: '이미 사용 중인 이메일입니다.',
+                    errors: [{ field: 'email', message: '이미 사용 중인 이메일입니다.' }],
+                });
+                return;
+            }
         }
 
         const code = generateVerificationCode();
@@ -428,7 +446,7 @@ export const verifyEmailCode = async (req: Request, res: Response): Promise<void
             return;
         }
 
-        await redis.set(`email_verified:${email}`, 'true', { EX: 300 });
+        await redis.set(`email_verified:${email}`, 'true', { EX: 600 });
         await redis.del(`email_code:${email}`);
 
         res.status(200).json({
@@ -438,6 +456,59 @@ export const verifyEmailCode = async (req: Request, res: Response): Promise<void
         });
     } catch (error) {
         console.error('Error in verifyEmailCode:', error);
+        res.status(500).json({ success: false, message: '서버 오류가 발생했습니다.' });
+    }
+};
+
+export const resetPassword = async (req: Request, res: Response): Promise<void> => {
+    const { email, password: newPassword, confirmPassword } = req.body ;
+    const errors: { field: string; message: string }[] = [];
+    if (!email) errors.push({ field: 'root', message: '이메일을 입력해 주세요.' });
+    if (!newPassword) errors.push({ field: 'password', message: '새 비밀번호를 입력해 주세요.' });
+    if (newPassword && newPassword.length < 6) {
+        errors.push({ field: 'password', message: '비밀번호는 최소 6자 이상이어야 합니다.' });
+    }
+    if (newPassword !== confirmPassword) {
+        errors.push({ field: 'confirmPassword', message: '비밀번호가 일치하지 않습니다.' });
+    }
+    if (errors.length > 0) {
+        res.status(400).json({ success: false, message: '비밀번호 재설정에 실패했습니다.', errors });
+        return;
+    }
+    try {
+        const isVerified = await redis.get(`email_verified:${email}`);
+        if (!isVerified) {
+            res.status(400).json({
+                success: false,
+                message: '이메일 인증이 필요합니다.',
+                errors: [{ field: 'root', message: '이메일 인증이 필요합니다.' }],
+            });
+            return;
+        }
+
+        const result = await pool.query('SELECT id FROM users WHERE email = $1', [email]);
+        if (result.rows.length === 0) {
+            res.status(404).json({
+                success: false,
+                message: '해당 이메일로 가입된 사용자가 없습니다.',
+                errors: [{ field: 'email', message: '해당 이메일로 가입된 사용자가 없습니다.' }],
+            });
+            return;
+        }
+
+        const salt = await bcrypt.genSalt(10);
+        const hashedPassword = await bcrypt.hash(newPassword, salt);
+
+        await pool.query('UPDATE users SET password = $1, last_password_change = NOW() WHERE email = $2',[hashedPassword, email]);
+
+        await redis.del(`email_verified:${email}`);
+        res.status(200).json({
+            success: true,
+            message: '비밀번호가 성공적으로 재설정되었습니다.',
+            data: {},
+        });
+    } catch (error) {
+        console.error('Error in resetPassword:', error);
         res.status(500).json({ success: false, message: '서버 오류가 발생했습니다.' });
     }
 };
