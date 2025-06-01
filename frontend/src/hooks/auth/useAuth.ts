@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import type { FieldValues, UseFormSetError } from 'react-hook-form'
 
-import { login, logout, signup, sendEmailCode, verifyEmailCode, checkEmailExists, resetPassword } from '@/service/auth';
+import { login, logout, signup, sendEmailCode, verifyEmailCode, checkEmailExists, resetPassword, refreshAccessToken } from '@/service/auth';
 import type { LoginPayload, SignupPayload, SendCodePayload, VerifyCodePayload, ResetPasswordPayload } from '@/types/auth';
 import { handleFormErrors } from '@/utils/handleFormErrors';
 
@@ -180,4 +180,21 @@ export function useCheckEmail({ onSuccess, setError }: WithSetError<{ email: str
     };
 
     return { checkEmail, isCheckingEmail };
+}
+
+export default function useCheckAuth({ onSuccess, onError }: { onSuccess: (data: { accessToken: string }) => void; onError: () => void }) {
+    const [isCheckingAuth, setIsCheckingAuth] = useState(true);
+
+    const checkAuth = async () => {
+        try {
+            const res = await refreshAccessToken();
+            onSuccess({ accessToken: res.data.accessToken });
+        } catch {
+            onError();
+        } finally {
+            setIsCheckingAuth(false);
+        }
+    };
+
+    return { checkAuth, isCheckingAuth };
 }

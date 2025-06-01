@@ -6,18 +6,27 @@ import { Route, Routes, useLocation } from 'react-router-dom';
 import LoginModal from '@/components/modals/LoginModal';
 import ResetPasswordModal from '@/components/modals/ResetPasswordModal';
 import SignUpModal from '@/components/modals/SignUpModal';
-import useCheckAuth from '@/hooks/auth/useCheckAuth';
+import useCheckAuth from '@/hooks/auth/useAuth';
 import AppLayout from '@/layouts/AppLayout';
 import AuthLanding from '@/pages/home/AuthLanding';
 import HomeScreen from '@/pages/home/HomeScreen';
-import { useAppSelector } from '@/store/hooks';
+import { useAppDispatch, useAppSelector } from '@/store/hooks';
+import { setAccessToken } from '@/store/slices/authSlice';
 
 function App() {
     const location = useLocation();
     const state = location.state;
-
+    const dispatch = useAppDispatch();
     const accessToken = useAppSelector((state) => state.auth.accessToken);
-    const { checkAuth, isCheckingAuth } = useCheckAuth();
+    
+    const { checkAuth, isCheckingAuth } = useCheckAuth({
+        onSuccess: ({ accessToken }) => {
+            dispatch(setAccessToken({ accessToken }));
+        },
+        onError: () => {
+            dispatch(setAccessToken({ accessToken: null }));
+        },
+    });
 
     useEffect(() => {
         checkAuth();

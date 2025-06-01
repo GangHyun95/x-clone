@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 
 import { TextInput } from '@/components/commons/input';
 import { AppleSvg, GoogleSvg } from '@/components/svgs';
-import { useCheckEmail } from '@/hooks/auth/useCheckEmail';
+import { useCheckEmail } from '@/hooks/auth/useAuth';
 
 
 export default function StepOne({ onNext }: { onNext: (data: { email: string }) => void; }) {
