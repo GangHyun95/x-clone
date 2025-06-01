@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router-dom';
 
 import { PasswordInput, TextInput } from '@/components/commons/input';
 import Spinner from '@/components/commons/Spinner';
-import { useSignup } from '@/hooks/auth/useAuthMutations';
+import { useSignup } from '@/hooks/auth/useAuth';
 import { useAppDispatch } from '@/store/hooks';
 import { setAccessToken } from '@/store/slices/authSlice';
 import type { SignupPayload } from '@/types/auth';

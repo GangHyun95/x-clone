@@ -1,8 +1,9 @@
-import { usePasswordResetCode } from '@/hooks/auth/useAuthMutations';
-import { maskEmail } from '@/utils/formatters';
 import toast, { Toaster } from 'react-hot-toast';
 import { CgSpinner } from 'react-icons/cg';
 import { useNavigate } from 'react-router-dom';
+
+import { usePasswordResetCode } from '@/hooks/auth/useAuth';
+import { maskEmail } from '@/utils/formatters';
 
 type Props = {
     email: string;

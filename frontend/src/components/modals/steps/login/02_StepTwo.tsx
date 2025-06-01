@@ -2,11 +2,11 @@ import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
 
+import { PasswordInput } from '@/components/commons/input';
 import Spinner from '@/components/commons/Spinner';
-import { useLogin } from '@/hooks/auth/useAuthMutations';
+import { useLogin } from '@/hooks/auth/useAuth';
 import { useAppDispatch } from '@/store/hooks';
 import { setAccessToken } from '@/store/slices/authSlice';
-import { PasswordInput } from '@/components/commons/input';
 
 export default function StepTwo({ email }: { email: string }) {
     const form = useForm<{ password: string }>({

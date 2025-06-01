@@ -14,7 +14,7 @@ CREATE TABLE users (
     link TEXT DEFAULT '',
     created_at TIMESTAMP DEFAULT NOW(),
     updated_at TIMESTAMP DEFAULT NOW(),
-    last_password_change TIMESTAMPTZ DEFAULT NOW()
+    last_password_change TIMESTAMP DEFAULT NOW()
 );
 
 CREATE TABLE posts (

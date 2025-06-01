@@ -35,7 +35,7 @@ export async function sendEmailCode(
 }
 
 export async function verifyEmailCode(payload: VerifyCodePayload) {
-    return post<VerifyCodePayload, object>('/api/auth/email-code/verify', payload);
+    return post<VerifyCodePayload, void>('/api/auth/email-code/verify', payload);
 }
 
 export async function signup(payload: SignupPayload) {
@@ -65,7 +65,7 @@ export async function refreshAccessToken() {
 }
 
 export async function resetPassword(payload: ResetPasswordPayload) {
-    return post<ResetPasswordPayload, { message: string }>(
+    return post<ResetPasswordPayload, void>(
         '/api/auth/password-reset',
         payload
     );

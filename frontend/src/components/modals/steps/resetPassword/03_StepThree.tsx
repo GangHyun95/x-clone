@@ -1,10 +1,12 @@
+import { useEffect } from 'react';
+
+import { useForm } from 'react-hook-form';
+
 import { TextInput } from '@/components/commons/input';
-import { useVerifyCode } from '@/hooks/auth/useAuthMutations';
+import { useVerifyCode } from '@/hooks/auth/useAuth';
 import useCountdown from '@/hooks/useCountdown';
 import type { VerifyCodePayload } from '@/types/auth';
 import { formatTime } from '@/utils/formatters';
-import { useEffect } from 'react';
-import { useForm } from 'react-hook-form';
 
 type Props = {
     email: string;

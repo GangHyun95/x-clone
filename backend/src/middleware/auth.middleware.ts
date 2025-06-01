@@ -42,10 +42,11 @@ export const protectRoute = async (
             const lastChanged = new Date(user.last_password_change).getTime();
             const tokenIssuedAt = (decoded.iat as number) * 1000; 
             if (tokenIssuedAt < lastChanged) {
-                return res.status(401).json({
+                res.status(401).json({
                     success: false,
                     message: '비밀번호가 변경되어 토큰이 만료되었습니다. 다시 로그인해 주세요.',
                 });
+                return;
             }
 
             req.user = user;

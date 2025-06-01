@@ -1,4 +1,5 @@
 import { useState, type JSX } from 'react';
+
 import { StepFour, StepOne, StepThree, StepTwo } from '@/components/modals/steps/resetPassword';
 
 import ModalLayout from '@/layouts/ModalLayout';

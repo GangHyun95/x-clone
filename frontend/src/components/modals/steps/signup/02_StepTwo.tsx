@@ -2,13 +2,14 @@ import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import toast, { Toaster } from 'react-hot-toast';
 
+import { CgSpinner } from 'react-icons/cg';
+
+import { TextInput } from '@/components/commons/input';
 import Spinner from '@/components/commons/Spinner';
-import { useResendCode, useVerifyCode } from '@/hooks/auth/useAuthMutations';
+import { useResendCode, useVerifyCode } from '@/hooks/auth/useAuth';
 import useCountdown from '@/hooks/useCountdown';
 import type { VerifyCodePayload } from '@/types/auth';
 import { formatTime } from '@/utils/formatters';
-import { CgSpinner } from 'react-icons/cg';
-import { TextInput } from '@/components/commons/input';
 
 type Props = {
     onNext: () => void;
@@ -79,6 +80,12 @@ export default function StepTwo({ onNext, email, expiresAt, setExpiresAt }: Prop
                         error={errors.code}
                     />
 
+                    <div
+                        className='text-sm text-primary px-2 pt-1 hover:underline decoration-primary cursor-pointer'
+                        onClick={() => setShowMenu(prev => !prev)}
+                    >
+                        Didn't receive email?
+                    </div>
                     <ul
                         className={`
                                 list bg-base-100 border border-base-300 shadow rounded-box fixed top-0 right-0 z-50 p-0
@@ -91,6 +98,7 @@ export default function StepTwo({ onNext, email, expiresAt, setExpiresAt }: Prop
                             `}
                     >
                             <li className='p-4'>Didn't receive email?</li>
+
                             <li
                                 className='px-4 py-3 hover:bg-base-300 cursor-pointer font-bold'
                                 onClick={() => {

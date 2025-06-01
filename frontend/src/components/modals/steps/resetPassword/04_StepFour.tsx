@@ -1,11 +1,13 @@
+import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 
-import { PasswordInput } from '@/components/commons/input';
-import type { ResetPasswordPayload } from '@/types/auth';
-import { useEffect } from 'react';
-import { useResetPassword } from '@/hooks/auth/useAuthMutations';
-import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
+import { useNavigate } from 'react-router-dom';
+
+import { PasswordInput } from '@/components/commons/input';
+import { useResetPassword } from '@/hooks/auth/useAuth';
+import type { ResetPasswordPayload } from '@/types/auth';
+
 
 export default function StepFour({ email }: { email: string }) {
     const navigate = useNavigate();
@@ -20,9 +22,9 @@ export default function StepFour({ email }: { email: string }) {
     const { register, watch, handleSubmit, setError, setFocus, formState: { errors, isValid } } = form;
 
     const { resetPassword, isResetting } = useResetPassword({
-        onSuccess: (data) => {
+        onSuccess: () => {
             navigate(-1);
-            toast.success(data.message || '비밀번호가 성공적으로 변경되었습니다.');
+            toast.success('비밀번호가 성공적으로 변경되었습니다.');
         },
         setError,
     })

@@ -1,8 +1,9 @@
-import { TextInput } from '@/components/commons/input';
-import { useCheckEmail } from '@/hooks/auth/useCheckEmail';
 import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { CgSpinner } from 'react-icons/cg';
+
+import { TextInput } from '@/components/commons/input';
+import { useCheckEmail } from '@/hooks/auth/useCheckEmail';
 
 type Props = {
     onNext: (data: { email: string }) => void;

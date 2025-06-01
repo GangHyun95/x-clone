@@ -2,10 +2,10 @@ import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
 
-import Spinner from '@/components/commons/Spinner';
-import { useSendCode } from '@/hooks/auth/useAuthMutations';
-import type { SendCodePayload } from '@/types/auth';
 import { TextInput } from '@/components/commons/input';
+import Spinner from '@/components/commons/Spinner';
+import { useSendCode } from '@/hooks/auth/useAuth';
+import type { SendCodePayload } from '@/types/auth';
 
 type Props = {
     onNext: (data: {email: string, fullName: string, expiresAt: number}) => void;
