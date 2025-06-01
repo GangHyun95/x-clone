@@ -39,7 +39,7 @@ export const protectRoute = async (
                 return;
             }
 
-            const lastChanged = new Date(user.last_password_change).getTime();
+            const lastChanged = user.last_password_change ? Math.floor(user.last_password_change.getTime() / 1000) : 0;
             const tokenIssuedAt = (decoded.iat as number) * 1000; 
             if (tokenIssuedAt < lastChanged) {
                 res.status(401).json({

@@ -197,9 +197,9 @@ export const refreshAccessToken = async (req: Request, res: Response): Promise<v
         }
 
         const tokenIssuedAt = (decoded.iat as number) * 1000;
-        const lastChanged = user.last_password_change ? new Date(user.last_password_change).getTime() : 0;
+        const lastChanged = user.last_password_change ? Math.floor(user.last_password_change.getTime() / 1000) : 0;
 
-        if (tokenIssuedAt < lastChanged) {
+        if (tokenIssuedAt <= lastChanged) {
             res.status(401).json({
                 success: false,
                 message: '비밀번호가 변경되어 토큰이 만료되었습니다. 다시 로그인해 주세요.',
