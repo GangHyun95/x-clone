@@ -50,7 +50,7 @@ export default function ModalLayout({
                             <IoCloseOutline className='text-2xl' />
                         </button>
                     </form>
-                    <div className='flex flex-1 basis-auto min-w-8 items-center'>
+                    <div className='flex flex-auto min-w-8 items-center'>
                         <XSvg />
                     </div>
                     <div className='flex-1 basis-1/2 min-h-8' />

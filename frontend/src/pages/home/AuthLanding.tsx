@@ -15,7 +15,7 @@ export default function AuthLanding() {
 
     return (
         <>
-            <section className='flex h-full'>
+            <section className='flex-1 flex h-full'>
                 <div className='hidden flex-1 flex-col justify-center lg:flex'>
                     <XSvg className='h-1/2 max-h-96 max-w-full' />
                 </div>

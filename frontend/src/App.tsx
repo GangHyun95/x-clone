@@ -10,6 +10,9 @@ import useCheckAuth from '@/hooks/auth/useAuth';
 import AppLayout from '@/layouts/AppLayout';
 import AuthLanding from '@/pages/home/AuthLanding';
 import HomeScreen from '@/pages/home/HomeScreen';
+import NotificationsPage from '@/pages/NotificationsPage';
+import ProfilePage from '@/pages/ProfilePage';
+import SettingsPage from '@/pages/SettingsPage';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { setAccessToken } from '@/store/slices/authSlice';
 
@@ -46,9 +49,13 @@ function App() {
                         index
                         element={accessToken ? <HomeScreen /> : <AuthLanding />}
                     />
+                    <Route path='notifications' element={<NotificationsPage />} />
+                    <Route path='profile' element={<ProfilePage />} />
+                    <Route path='settings' element={<SettingsPage />} />
+
                     <Route path='signup' element={null} />
                     <Route path='login' element={null} />
-                    <Route path='reset-password' element={<ResetPasswordModal />} />
+                    <Route path='reset-password' element={null} />
                 </Route>
             </Routes>
 
