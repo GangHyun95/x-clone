@@ -18,3 +18,9 @@ body {
 .floating-label input:not(:placeholder-shown) + span {
     font-size: 1.125rem;
 }
+
+@layer components {
+    .btn {
+        box-shadow: none !important;
+    }
+}

@@ -33,7 +33,7 @@ export default function StepOne({ onNext }: { onNext: (data: { email: string }) 
                 <div className='my-3'>
                     <button
                         type='button'
-                        className='btn mb-4 w-full rounded-full bg-transparent transition-colors duration-300 hover:bg-gray-200'
+                        className='btn btn-ghost btn-circle border-base-300 mb-4 w-full'
                     >
                         <GoogleSvg className='mr-1 h-[18px] w-[18px]' />
                         <span>Sign in with Google</span>
@@ -41,7 +41,7 @@ export default function StepOne({ onNext }: { onNext: (data: { email: string }) 
 
                     <button
                         type='button'
-                        className='btn flex w-full rounded-full bg-transparent duration-300 hover:bg-gray-200'
+                        className='btn btn-ghost btn-circle border-base-300 w-full'
                     >
                         <AppleSvg className='mr-1 h-5 w-5' />
                         <span>Sign in with Apple</span>
@@ -72,7 +72,7 @@ export default function StepOne({ onNext }: { onNext: (data: { email: string }) 
 
                     <div className='flex flex-col items-stretch flex-none my-3'>
                         <button
-                            className='btn w-full rounded-full text-white bg-secondary hover:bg-secondary/90'
+                            className='btn btn-secondary btn-circle w-full hover:bg-secondary/90'
                             disabled={!isValid || isCheckingEmail}
                         >
                             {isCheckingEmail ? (
@@ -89,7 +89,7 @@ export default function StepOne({ onNext }: { onNext: (data: { email: string }) 
                     <div className='flex flex-col items-stretch flex-none my-3'>
                         <button
                             type='button'
-                            className='btn w-full rounded-full'
+                            className='btn btn-circle w-full'
                             onClick={() =>
                                 navigate('/reset-password', {
                                     state: { backgroundLocation: '/' },

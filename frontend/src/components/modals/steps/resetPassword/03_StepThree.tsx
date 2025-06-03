@@ -71,7 +71,7 @@ export default function StepThree({ email, expiresAt, onPrev, onNext }: Props) {
             <div className='flex flex-col items-stretch flex-none my-6 px-8 md:px-20'>
                 {isValid ? (
                     <button
-                        className='btn w-full min-h-14 rounded-full text-base text-white bg-secondary hover:bg-secondary/90'
+                        className='btn btn-secondary btn-circle w-full min-h-14 text-base hover:bg-secondary/90'
                         disabled={!isValid || isVerifying}
                     >
                         Next
@@ -79,7 +79,7 @@ export default function StepThree({ email, expiresAt, onPrev, onNext }: Props) {
                 ) : (
                     <button
                         type='button'
-                        className='btn w-full min-h-14 rounded-full text-base bg-transparent duration-300 hover:bg-gray-200'
+                        className='btn btn-ghost btn-circle border-base-300 w-full min-h-14 text-base'
                         onClick={onPrev}
                     >
                         Back

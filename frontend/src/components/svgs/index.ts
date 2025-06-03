@@ -6,3 +6,4 @@ export { default as BellSvg } from './Bell';
 export { default as UserSvg } from './User';
 export { default as SettingsSvg } from './Settings';
 export { default as MoreSvg } from './More';
+export { default as PostSvg} from './PostIcon';
