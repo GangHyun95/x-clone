@@ -44,7 +44,7 @@ export default function HomeScreen() {
                             <SingleLineEditor
                                 onTextChange={(text) => setIsDisabled(text.trim().length === 0)}
                             />
-                            <div className='flex items-center justify-between border-t border-base-300 pb-2'>
+                            <div className='flex items-center justify-between pb-2'>
                                 <section className='mt-2 grow'>
                                     <button className='btn btn-sm btn-ghost btn-circle hover:bg-primary/10 border-0'>
                                         <MediaSvg className='w-5 fill-primary' />
@@ -95,12 +95,15 @@ export default function HomeScreen() {
                                 <div className='mt-3 flex justify-between gap-1'>
                                     {postActions.map((el, i) => {
                                         const { count, icon: Icon, color = 'primary' } = el;
+                                        const hoverBgClass = `group-hover:bg-${color ?? 'primary'}/10`;
+                                        const hoverFillClass = `group-hover:fill-${color ?? 'primary'}`;
+                                                
                                         return (
                                             <div key={i} className='flex-1 flex items-center cursor-pointer group'>
-                                                <button className={`btn btn-sm btn-ghost btn-circle border-0 group-hover:bg-${color}/10`}>
-                                                    <Icon className={`h-5 fill-gray-500 group-hover:fill-${color}`} />
-                                                </button>
-                                                {count !== null && <span className='text-sm px-1'>{count}</span>}
+                                            <button className={`btn btn-sm btn-ghost btn-circle border-0 ${hoverBgClass}`}>
+                                                <Icon className={`h-5 fill-gray-500 ${hoverFillClass}`} />
+                                            </button>
+                                            {count != null && <span className='text-sm px-1'>{count}</span>}
                                             </div>
                                         );
                                     })}

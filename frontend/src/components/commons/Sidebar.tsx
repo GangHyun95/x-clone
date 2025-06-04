@@ -1,9 +1,10 @@
 import { Link, NavLink } from 'react-router-dom';
-import { BellSvg, HomeSvg, MoreSvg, PostSvg, SettingsSvg, UserSvg, XSvg } from '@/components/svgs';
+import { BellSvg, BookmarkSvg, HomeSvg, MoreSvg, PostSvg, SettingsSvg, UserSvg, XSvg } from '@/components/svgs';
 
 const navItems = [
     { name: 'home', label: 'Home', path: '/', icon: HomeSvg },
     { name: 'notifications', label: 'Notifications', path: '/notifications', icon: BellSvg },
+    { name: 'bookmarks', label: 'Bookmarks', path: '/bookmarks', icon: BookmarkSvg },
     { name: 'profile', label: 'Profile', path: '/profile', icon: UserSvg },
     { name: 'settings', label: 'Settings', path: '/settings', icon: SettingsSvg },
 ];

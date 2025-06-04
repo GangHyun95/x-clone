@@ -1,6 +1,6 @@
 // components/SingleLineEditor.tsx
 import { Editor, EditorState } from 'draft-js';
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef } from 'react';
 
 export default function SingleLineEditor({ onTextChange }: {onTextChange: (text: string) => void}) {
     const [editorState, setEditorState] = useState(() =>

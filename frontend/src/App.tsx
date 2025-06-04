@@ -13,6 +13,7 @@ import HomeScreen from '@/pages/home/HomeScreen';
 import NotificationsPage from '@/pages/NotificationsPage';
 import ProfilePage from '@/pages/ProfilePage';
 import SettingsPage from '@/pages/SettingsPage';
+import BookmarkPage from '@/pages/BookmarkPage';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { setAccessToken } from '@/store/slices/authSlice';
 
@@ -51,6 +52,7 @@ function App() {
                     />
                     <Route path='notifications' element={<NotificationsPage />} />
                     <Route path='profile' element={<ProfilePage />} />
+                    <Route path='bookmarks' element={<BookmarkPage />} />
                     <Route path='settings' element={<SettingsPage />} />
 
                     <Route path='signup' element={null} />
