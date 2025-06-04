@@ -30,12 +30,12 @@ export default function AuthLanding() {
                     </h2>
 
                     <div className='flex flex-col'>
-                        <button className='btn btn-circle btn-ghost border-base-300 mb-4 w-[300px]'>
+                        <button className='bn btn-circle btn-ghost border-base-300 mb-4 w-[300px]'>
                             <GoogleSvg className='mr-1 h-[18px] w-[18px]' />
                             <span>Sign up in with Google</span>
                         </button>
 
-                        <button className='btn btn-circle btn-ghost border-base-300 w-[300px]'>
+                        <button className='bn btn-circle btn-ghost border-base-300 w-[300px]'>
                             <AppleSvg className='mr-1 h-5 w-5' />
                             <span>Sign up with Apple</span>
                         </button>
@@ -49,7 +49,7 @@ export default function AuthLanding() {
                         </div>
 
                         <button
-                            className='btn btn-primary w-[300px] rounded-full px-4 text-white'
+                            className='btn btn-primary w-[300px] rounded-full px-4 text-white font-bold'
                             onClick={() => openModal('/signup')}
                         >
                             <span>Create account</span>

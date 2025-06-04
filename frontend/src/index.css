@@ -23,4 +23,61 @@ body {
     .btn {
         box-shadow: none !important;
     }
+
+    .bn {
+        @apply btn font-normal;
+        box-shadow: none !important;
+    }
+}
+
+.public-DraftEditor-content[contenteditable='true'] {
+    -moz-user-modify: read-write-plaintext-only;
+    -webkit-user-modify: read-write-plaintext-only;
+}
+
+.DraftEditor-root {
+    width: 100%;
+    position: relative;
+    -webkit-user-select: none;
+}
+
+.DraftEditor-editorContainer {
+    background-color: rgba(255, 255, 255, 0);
+    border-left: 0.1px solid transparent;
+    position: relative;
+    z-index: 1;
+}
+
+.public-DraftEditorPlaceholder-root {
+    padding-bottom: 2px;
+    padding-top: 2px;
+    position: absolute;
+    z-index: 1;
+    color: #6b7280;
+}
+
+.public-DraftEditorPlaceholder-inner {
+    user-select: none;
+    -webkit-user-select: none;
+}
+
+.public-DraftStyleDefault-block {
+    overflow: hidden;
+    padding-bottom: 2px;
+    padding-top: 2px;
+    position: relative;
+
+    white-space: pre-wrap;
+    word-break: break-word;
+}
+
+.public-DraftStyleDefault-rtl {
+    direction: rtl;
+    text-align: right;
+}
+
+.public-DraftEditorPlaceholder-root,
+.public-DraftEditorPlaceholder-inner,
+.public-DraftEditor-content {
+    font-size: 20px;
 }

@@ -12,7 +12,7 @@ export default function Sidebar() {
     return (
         <header className='flex flex-col items-end grow'>
             <div className='relative flex w-[88px] xl:w-[275px] xl:ml-[60px]'>
-                <div className='fixed top-0 flex h-full flex-col pb-14'>
+                <div className='fixed top-0 flex h-full flex-col'>
                     <div className='flex flex-col justify-between h-full w-[88px] px-2 overflow-y-auto xl:w-[275px]'>
                         <section className='flex flex-col items-center w-full xl:items-start'>
                             <div className='py-0.5'>
@@ -51,7 +51,7 @@ export default function Sidebar() {
                             </nav>
 
                             <button className='btn btn-secondary btn-circle my-3 p-0 text-lg min-w-[52px] min-h-[52px] hover:bg-secondary/90 xl:w-[90%]'>
-                                <span className='hidden xl:block'>Post</span>
+                                <span className='hidden font-bold xl:block'>Post</span>
                                 <PostSvg className='w-6 fill-white xl:hidden' />
                             </button>
                         </section>

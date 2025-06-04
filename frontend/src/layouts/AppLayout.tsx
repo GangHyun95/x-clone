@@ -1,6 +1,5 @@
 import { Outlet } from 'react-router-dom';
 
-import Footer from '@/components/commons/Footer';
 import Sidebar from '@/components/commons/Sidebar';
 import { useAppSelector } from '@/store/hooks';
 
@@ -14,7 +13,7 @@ export default function AppLayout() {
                     {accessToken ? <div className='w-[660px] lg:w-[990px] xl:w-[1050px] flex flex-col grow'><Outlet /></div> : <Outlet />}
                 </main>
             </div>
-            <Footer />
+            {/* <Footer /> */}
         </div>
     );
 }

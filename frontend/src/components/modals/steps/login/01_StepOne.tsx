@@ -33,7 +33,7 @@ export default function StepOne({ onNext }: { onNext: (data: { email: string }) 
                 <div className='my-3'>
                     <button
                         type='button'
-                        className='btn btn-ghost btn-circle border-base-300 mb-4 w-full'
+                        className='bn btn-ghost btn-circle border-base-300 mb-4 w-full'
                     >
                         <GoogleSvg className='mr-1 h-[18px] w-[18px]' />
                         <span>Sign in with Google</span>
@@ -41,7 +41,7 @@ export default function StepOne({ onNext }: { onNext: (data: { email: string }) 
 
                     <button
                         type='button'
-                        className='btn btn-ghost btn-circle border-base-300 w-full'
+                        className='bn btn-ghost btn-circle border-base-300 w-full'
                     >
                         <AppleSvg className='mr-1 h-5 w-5' />
                         <span>Sign in with Apple</span>
