@@ -15,11 +15,11 @@ export default function AuthLanding() {
 
     return (
         <>
-            <section className='flex-1 flex h-full'>
+            <section className='flex-1 flex'>
                 <div className='hidden flex-1 flex-col justify-center lg:flex'>
                     <XSvg className='h-1/2 max-h-96 max-w-full' />
                 </div>
-                <div className='mx-auto flex items-stretch min-w-[45vw] max-w-2xl flex-col p-9 lg:justify-center'>
+                <div className='mx-auto flex min-w-[45vw] max-w-2xl flex-col p-9 lg:justify-center'>
                     <XSvg className='block h-12 max-w-full self-start lg:hidden' />
 
                     <h1 className='font-pyeojin my-10 text-4xl font-bold sm:text-6xl lg:my-12'>

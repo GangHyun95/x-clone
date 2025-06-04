@@ -39,7 +39,7 @@ export default function ModalLayout({
                         md:min-w-[600px] md:h-[650px] md:min-h-[400px] md:max-h-[90vh] md:rounded-2xl md:max-w-[600px] ${className}`}
             >
                 {/* header */}
-                <div className='shrink-0 flex h-14 items-stretch justify-center px-4'>
+                <div className='flex h-14 justify-center px-4'>
                     <form
                         method='dialog'
                         className='flex flex-1 basis-1/2 items-center'
@@ -57,7 +57,7 @@ export default function ModalLayout({
                 </div>
 
                 {/* content */}
-                <div className='flex-1 overflow-hidden'>
+                <div className='flex-1 flex flex-col overflow-hidden'>
                     {children}
                 </div>
             </div>

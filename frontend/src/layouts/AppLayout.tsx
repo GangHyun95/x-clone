@@ -10,8 +10,8 @@ export default function AppLayout() {
         <div className='flex flex-col h-screen'>
             <div className={`flex flex-1 ${accessToken ? 'flex-row' : 'flex-col'}`}>
                 {accessToken && <Sidebar />}
-                <main className='grow shrink'>
-                    {accessToken ? <div className='w-[660px] lg:w-[990px] xl:w-[1050px] flex'><Outlet /></div> : <Outlet />}
+                <main className='flex-auto flex flex-col'>
+                    {accessToken ? <div className='w-[660px] lg:w-[990px] xl:w-[1050px] flex flex-col grow'><Outlet /></div> : <Outlet />}
                 </main>
             </div>
             <Footer />

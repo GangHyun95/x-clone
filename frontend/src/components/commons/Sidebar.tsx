@@ -10,9 +10,9 @@ const navItems = [
 
 export default function Sidebar() {
     return (
-        <header className='flex flex-col items-end grow shrink-0'>
+        <header className='flex flex-col items-end grow'>
             <div className='relative flex w-[88px] xl:w-[275px] xl:ml-[60px]'>
-                <div className='fixed top-0 flex h-full flex-col shrink-0 pb-14'>
+                <div className='fixed top-0 flex h-full flex-col pb-14'>
                     <div className='flex flex-col justify-between h-full w-[88px] px-2 overflow-y-auto xl:w-[275px]'>
                         <section className='flex flex-col items-center w-full xl:items-start'>
                             <div className='py-0.5'>
@@ -21,7 +21,7 @@ export default function Sidebar() {
                                 </Link>
                             </div>
 
-                            <nav className='flex flex-col items-center w-full mt-0.5 mb-1 xl:items-start'>
+                            <nav className='flex flex-col items-center mt-0.5 mb-1 xl:items-start'>
                                 {navItems.map(({ name, label, path, icon: Icon }) => (
                                     <NavLink
                                         key={name}
@@ -67,7 +67,7 @@ export default function Sidebar() {
                                     <span className='text-gray-500 font-normal shrink-1'>@hgh6128</span>
                                 </div>
                                 <div className='grow flex-col hidden xl:flex'>
-                                    <MoreSvg className='w-5 h-5 shrink-0 self-end' />
+                                    <MoreSvg className='w-5 h-5 self-end' />
                                 </div>
                             </button>
                         </section>

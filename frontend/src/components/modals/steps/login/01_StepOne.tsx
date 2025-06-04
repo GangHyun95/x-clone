@@ -26,7 +26,7 @@ export default function StepOne({ onNext }: { onNext: (data: { email: string }) 
 
     return (
         <form className='flex-1 overflow-auto h-full' onSubmit={handleSubmit(onSubmit)}>
-            <div className='flex flex-col justify-center items-stretch basis-auto shrink-0 max-w-96 h-full md:h-auto px-8 pb-12 mx-auto'>
+            <div className='flex flex-col justify-center max-w-96 h-full md:h-auto px-8 pb-12 mx-auto'>
                 <h1 className='font-pyeojin text-3xl font-bold my-5 '>
                     Sign in to X
                 </h1>
@@ -70,7 +70,7 @@ export default function StepOne({ onNext }: { onNext: (data: { email: string }) 
                         error={errors.email}
                     />
 
-                    <div className='flex flex-col items-stretch flex-none my-3'>
+                    <div className='flex flex-col flex-none my-3'>
                         <button
                             className='btn btn-secondary btn-circle w-full hover:bg-secondary/90'
                             disabled={!isValid || isCheckingEmail}
@@ -86,7 +86,7 @@ export default function StepOne({ onNext }: { onNext: (data: { email: string }) 
                         </button>
                     </div>
 
-                    <div className='flex flex-col items-stretch flex-none my-3'>
+                    <div className='flex flex-col flex-none my-3'>
                         <button
                             type='button'
                             className='btn btn-circle w-full'

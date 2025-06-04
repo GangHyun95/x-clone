@@ -44,7 +44,7 @@ export default function StepTwo({ email }: { email: string }) {
     return (
         <form className='flex flex-col h-full' onSubmit={handleSubmit(onSubmit)}>
             <div className='flex-1 overflow-auto'>
-                <div className='flex flex-col items-stretch basis-auto shrink-0 max-w-full h-full md:h-auto px-8 md:px-20 pb-12 mx-auto'>
+                <div className='flex flex-col max-w-full h-full md:h-auto px-8 md:px-20 pb-12 mx-auto'>
                     <h1 className='font-pyeojin text-3xl font-bold my-5 '>
                         Enter your password
                     </h1>
@@ -92,7 +92,7 @@ export default function StepTwo({ email }: { email: string }) {
                     </div>
                 </div>
             </div>
-            <div className='flex flex-col items-stretch flex-none my-6 px-8 md:px-20'>
+            <div className='flex flex-col flex-none my-6 px-8 md:px-20'>
                 <button
                     type='submit'
                     className='btn btn-secondary btn-circle w-full min-h-14 text-base hover:bg-secondary/90 mb-6'

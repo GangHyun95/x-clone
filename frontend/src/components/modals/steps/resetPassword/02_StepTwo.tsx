@@ -65,7 +65,7 @@ export default function StepTwo({ onNext, email }: Props) {
                         </label>
                     </div>
                 </div>
-                <div className='flex flex-col items-stretch flex-none my-6 px-8 md:px-20'>
+                <div className='flex flex-col flex-none my-6 px-8 md:px-20'>
                     <button className='btn btn-secondary btn-circle w-full min-h-14 text-base hover:bg-secondary/90 mb-4'>
                         {isSending ? (
                             <>
