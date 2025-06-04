@@ -8,12 +8,12 @@ import ResetPasswordModal from '@/components/modals/ResetPasswordModal';
 import SignUpModal from '@/components/modals/SignUpModal';
 import useCheckAuth from '@/hooks/auth/useAuth';
 import AppLayout from '@/layouts/AppLayout';
+import BookmarkPage from '@/pages/BookmarkPage';
 import AuthLanding from '@/pages/home/AuthLanding';
 import HomeScreen from '@/pages/home/HomeScreen';
 import NotificationsPage from '@/pages/NotificationsPage';
 import ProfilePage from '@/pages/ProfilePage';
 import SettingsPage from '@/pages/SettingsPage';
-import BookmarkPage from '@/pages/BookmarkPage';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { setAccessToken } from '@/store/slices/authSlice';
 

@@ -1,4 +1,5 @@
 import { Link, NavLink } from 'react-router-dom';
+
 import { BellSvg, BookmarkSvg, HomeSvg, MoreSvg, PostSvg, SettingsSvg, UserSvg, XSvg } from '@/components/svgs';
 
 const navItems = [

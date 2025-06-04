@@ -64,56 +64,55 @@ export default function HomeScreen() {
                             </div>
                         </div>
                     </div>
-                </div>
-
-                <div className='w-full max-w-[600px]'>
-                    <article className='flex flex-col px-4 border-b border-base-300'>
-                        <div className='pt-3' />
-                        <div className='flex'>
-                            <div className='mr-2'>
-                                <div className='relative w-10 overflow-hidden rounded-full'>
-                                    <div className='pb-[100%]' />
-                                    <img src='/temp.png' alt='avatar' className='absolute inset-0 object-cover' />
+                    <div className='w-full max-w-[600px]'>
+                        <article className='flex flex-col px-4 border-b border-base-300'>
+                            <div className='pt-3' />
+                            <div className='flex'>
+                                <div className='mr-2'>
+                                    <div className='relative w-10 overflow-hidden rounded-full'>
+                                        <div className='pb-[100%]' />
+                                        <img src='/temp.png' alt='avatar' className='absolute inset-0 object-cover' />
+                                    </div>
+                                </div>
+                                <div className='flex grow flex-col'>
+                                    <ul className='flex items-center'>
+                                        <li><span className='font-extrabold'>테스트계정</span></li>
+                                        <li className='ml-1.5 text-gray-500'>
+                                            <span>@test</span>
+                                            <span className='px-1'>·</span>
+                                            <span>23h</span>
+                                        </li>
+                                    </ul>
+                                    <div className='flex flex-col'>
+                                        <p>자녀분이 선물을 받고 기뻐하시겠어요</p>
+                                    </div>
+                                    <div className='relative mt-3 cursor-pointer border border-base-300'>
+                                        <div className='w-full pb-[100%]' />
+                                        <img src='/test.jpeg' alt='test' className='absolute inset-0' />
+                                    </div>
+                                    <div className='mt-3 flex justify-between gap-1'>
+                                        {postActions.map((el, i) => {
+                                            const { count, icon: Icon, color = 'primary' } = el;
+                                            const hoverBgClass =
+                                                color === 'red-500' ? 'group-hover:bg-red-500/10' : 'group-hover:bg-primary/10';
+                                            const hoverFillClass =
+                                                color === 'red-500' ? 'group-hover:fill-red-500' : 'group-hover:fill-primary';
+                                                    
+                                            return (
+                                                <div key={i} className='flex-1 flex items-center cursor-pointer group'>
+                                                <button className={`btn btn-sm btn-ghost btn-circle border-0 ${hoverBgClass}`}>
+                                                    <Icon className={`h-5 fill-gray-500 ${hoverFillClass}`} />
+                                                </button>
+                                                {count != null && <span className='text-sm px-1'>{count}</span>}
+                                                </div>
+                                            );
+                                        })}
+                                    </div>
                                 </div>
                             </div>
-                            <div className='flex grow flex-col'>
-                                <ul className='flex items-center'>
-                                    <li><span className='font-extrabold'>테스트계정</span></li>
-                                    <li className='ml-1.5 text-gray-500'>
-                                        <span>@test</span>
-                                        <span className='px-1'>·</span>
-                                        <span>23h</span>
-                                    </li>
-                                </ul>
-                                <div className='flex flex-col'>
-                                    <p>자녀분이 선물을 받고 기뻐하시겠어요</p>
-                                </div>
-                                <div className='relative mt-3 cursor-pointer border border-base-300'>
-                                    <div className='w-full pb-[100%]' />
-                                    <img src='/test.jpeg' alt='test' className='absolute inset-0' />
-                                </div>
-                                <div className='mt-3 flex justify-between gap-1'>
-                                    {postActions.map((el, i) => {
-                                        const { count, icon: Icon, color = 'primary' } = el;
-                                        const hoverBgClass =
-                                            color === 'red-500' ? 'group-hover:bg-red-500/10' : 'group-hover:bg-primary/10';
-                                        const hoverFillClass =
-                                            color === 'red-500' ? 'group-hover:fill-red-500' : 'group-hover:fill-primary';
-                                                
-                                        return (
-                                            <div key={i} className='flex-1 flex items-center cursor-pointer group'>
-                                            <button className={`btn btn-sm btn-ghost btn-circle border-0 ${hoverBgClass}`}>
-                                                <Icon className={`h-5 fill-gray-500 ${hoverFillClass}`} />
-                                            </button>
-                                            {count != null && <span className='text-sm px-1'>{count}</span>}
-                                            </div>
-                                        );
-                                    })}
-                                </div>
-                            </div>
-                        </div>
-                        <div className='pb-3' />
-                    </article>
+                            <div className='pb-3' />
+                        </article>
+                    </div>
                 </div>
             </div>
 
