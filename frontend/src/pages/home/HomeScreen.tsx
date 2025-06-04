@@ -95,8 +95,10 @@ export default function HomeScreen() {
                                 <div className='mt-3 flex justify-between gap-1'>
                                     {postActions.map((el, i) => {
                                         const { count, icon: Icon, color = 'primary' } = el;
-                                        const hoverBgClass = `group-hover:bg-${color ?? 'primary'}/10`;
-                                        const hoverFillClass = `group-hover:fill-${color ?? 'primary'}`;
+                                        const hoverBgClass =
+                                            color === 'red-500' ? 'group-hover:bg-red-500/10' : 'group-hover:bg-primary/10';
+                                        const hoverFillClass =
+                                            color === 'red-500' ? 'group-hover:fill-red-500' : 'group-hover:fill-primary';
                                                 
                                         return (
                                             <div key={i} className='flex-1 flex items-center cursor-pointer group'>
