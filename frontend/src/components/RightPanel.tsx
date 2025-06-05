@@ -1,3 +1,5 @@
+import Avatar from '@/components/Avatar'
+
 export default function RightPanel() {
     return (
         <div className='flex flex-col'>
@@ -9,11 +11,7 @@ export default function RightPanel() {
                             {[1, 2, 3, 4].map((_, i) => (
                                 <li key={i} className='px-4 py-3 leading-5'>
                                     <div className='flex'>
-                                        <div className='relative flex w-10 h-10 overflow-hidden rounded-full group mr-2'>
-                                            <div className='pb-[100%]' />
-                                            <img src='/temp.png' alt='avatar' className='absolute inset-0 object-cover' />
-                                            <div className='absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer' />
-                                        </div>
+                                        <Avatar src='/temp.png' className='mr-2' />
                                         <div className='flex grow items-center justify-between'>
                                             <div className='flex flex-col w-full'>
                                                 <h2 className='font-bold'>테스트계정</h2>

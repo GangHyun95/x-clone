@@ -2,7 +2,9 @@ import { useState } from 'react';
 
 import { Link } from 'react-router-dom';
 
+import Avatar from '@/components/Avatar';
 import SingleLineEditor from '@/components/editor/SingleLineEditor';
+import StickyHeader from '@/components/layout/StickyHeader';
 import { BookmarkSvg, CommentSvg, EmojiSvg, HeartSvg, MediaSvg, ShareSvg } from '@/components/svgs';
 
 export default function HomePage() {
@@ -15,28 +17,25 @@ export default function HomePage() {
     ];
 
     return (
-        <div className='flex flex-col'>
-            <div className='sticky top-0 z-10 border-b border-base-300 bg-white/85 backdrop-blur-md'>
-                <div className='flex h-full'>
-                    <div className='flex h-full grow flex-col items-center justify-center'>
+        <div className='flex flex-col h-full'>
+            <StickyHeader>
+                <div className='flex'>
+                    <div className='flex grow flex-col items-center justify-center'>
                         <Link to='/' className='relative h-auto w-full grow bn btn-ghost rounded-none border-0 px-4 font-bold'>
                             <span className='py-4'>For you</span>
                             <span className='absolute bottom-0 left-1/2 h-1 w-14 -translate-x-1/2 rounded-full bg-primary' />
                         </Link>
                     </div>
-                    <div className='flex h-full grow flex-col items-center justify-center'>
+                    <div className='flex grow flex-col items-center justify-center'>
                         <Link to='/' className='relative h-auto w-full grow bn btn-ghost rounded-none border-0 px-4 font-medium text-gray-500'>
                             <span className='py-4'>Following</span>
                         </Link>
                     </div>
                 </div>
-            </div>
+            </StickyHeader>
             <div className='flex px-4 border-b border-base-300'>
                 <div className='mr-2 pt-3'>
-                    <div className='relative w-10 overflow-hidden rounded-full'>
-                        <div className='pb-[100%]' />
-                        <img src='/temp.png' alt='avatar' className='absolute inset-0 object-cover' />
-                    </div>
+                    <Avatar src='/temp.png'/>
                 </div>
                 <div className='flex grow flex-col pt-1'>
                     <SingleLineEditor
@@ -62,15 +61,11 @@ export default function HomePage() {
                     </div>
                 </div>
             </div>
-            <div className='w-full max-w-[600px]'>
-                <article className='flex flex-col px-4 border-b border-base-300'>
-                    <div className='pt-3' />
+            <div className='w-full max-w-[600px] grow'>
+                <article className='flex flex-col px-4 py-3 border-b border-base-300'>
                     <div className='flex'>
                         <div className='mr-2'>
-                            <div className='relative w-10 overflow-hidden rounded-full'>
-                                <div className='pb-[100%]' />
-                                <img src='/temp.png' alt='avatar' className='absolute inset-0 object-cover' />
-                            </div>
+                            <Avatar src='/temp.png'/>
                         </div>
                         <div className='flex grow flex-col'>
                             <ul className='flex items-center'>
@@ -108,7 +103,6 @@ export default function HomePage() {
                             </div>
                         </div>
                     </div>
-                    <div className='pb-3' />
                 </article>
             </div>
         </div>

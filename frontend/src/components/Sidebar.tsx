@@ -1,5 +1,6 @@
 import { Link, NavLink } from 'react-router-dom';
 
+import Avatar from '@/components/Avatar';
 import { BellSvg, BookmarkSvg, HomeSvg, MoreSvg, PostSvg, SettingsSvg, UserSvg, XSvg } from '@/components/svgs';
 
 const navItems = [
@@ -60,10 +61,7 @@ export default function Sidebar() {
 
                         <section className='flex flex-col items-stretch my-3 xl:items-start'>
                             <button className='btn btn-ghost btn-circle w-max p-3 h-auto border-none xl:w-full'>
-                                <div className='relative w-10 rounded-full overflow-hidden'>
-                                    <div className='pb-[100%]' />
-                                    <img src='/temp.png' alt='avatar' className='absolute inset-0 object-cover' />
-                                </div>
+                                <Avatar src='temp.png' overlay={false}/>
                                 <div className='mx-3 shrink-1 flex-col hidden xl:flex'>
                                     <span className='text-start font-semibold shrink-1'>ㅇㅅㅇ</span>
                                     <span className='text-gray-500 font-normal shrink-1'>@hgh6128</span>
