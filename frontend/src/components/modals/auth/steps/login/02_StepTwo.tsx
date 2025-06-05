@@ -2,8 +2,9 @@ import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
 
-import { PasswordInput } from '@/components/commons/input';
-import Spinner from '@/components/commons/Spinner';
+import AuthSubmitButton from '@/components/auth/button/AuthSubmitButton';
+import { PasswordInput } from '@/components/auth/input';
+import Spinner from '@/components/auth/Spinner';
 import { useLogin } from '@/hooks/auth/useAuth';
 import { useAppDispatch } from '@/store/hooks';
 import { setAccessToken } from '@/store/slices/authSlice';
@@ -93,13 +94,7 @@ export default function StepTwo({ email }: { email: string }) {
                 </div>
             </div>
             <div className='flex flex-col flex-none my-6 px-8 md:px-20'>
-                <button
-                    type='submit'
-                    className='btn btn-secondary btn-circle w-full min-h-14 text-base hover:bg-secondary/90 mb-6'
-                    disabled={!isValid || isLoggingIn}
-                >
-                    Login
-                </button>
+                <AuthSubmitButton label='Login' isLoading={isLoggingIn} loadingLabel='Logging in...' disabled={!isValid} className='mb-6' />
 
                 <div className='flex gap-1'>
                     <span className='text-gray-500 text-sm'>

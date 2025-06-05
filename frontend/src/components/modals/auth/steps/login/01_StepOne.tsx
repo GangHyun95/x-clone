@@ -1,8 +1,8 @@
 import { useForm } from 'react-hook-form';
-import { CgSpinner } from 'react-icons/cg';
 import { useNavigate } from 'react-router-dom';
 
-import { TextInput } from '@/components/commons/input';
+import AuthSubmitButton from '@/components/auth/button/AuthSubmitButton';
+import { TextInput } from '@/components/auth/input';
 import { AppleSvg, GoogleSvg } from '@/components/svgs';
 import { useCheckEmail } from '@/hooks/auth/useAuth';
 
@@ -33,7 +33,7 @@ export default function StepOne({ onNext }: { onNext: (data: { email: string }) 
                 <div className='my-3'>
                     <button
                         type='button'
-                        className='bn btn-ghost btn-circle border-base-300 mb-4 w-full'
+                        className='bn btn-ghost btn-circle border-gray-300 mb-4 w-full'
                     >
                         <GoogleSvg className='mr-1 h-[18px] w-[18px]' />
                         <span>Sign in with Google</span>
@@ -41,7 +41,7 @@ export default function StepOne({ onNext }: { onNext: (data: { email: string }) 
 
                     <button
                         type='button'
-                        className='bn btn-ghost btn-circle border-base-300 w-full'
+                        className='bn btn-ghost btn-circle border-gray-300 w-full'
                     >
                         <AppleSvg className='mr-1 h-5 w-5' />
                         <span>Sign in with Apple</span>
@@ -71,19 +71,7 @@ export default function StepOne({ onNext }: { onNext: (data: { email: string }) 
                     />
 
                     <div className='flex flex-col flex-none my-3'>
-                        <button
-                            className='btn btn-secondary btn-circle w-full hover:bg-secondary/90'
-                            disabled={!isValid || isCheckingEmail}
-                        >
-                            {isCheckingEmail ? (
-                                <>
-                                    <CgSpinner className='animate-spin text-primary h-5 w-5' />
-                                    Checking...
-                                </>
-                            ) : (
-                                'Next'
-                            )}
-                        </button>
+                        <AuthSubmitButton label='Next' isLoading={isCheckingEmail} loadingLabel='Checking...' disabled={!isValid} className='text-sm min-h-auto'/>
                     </div>
 
                     <div className='flex flex-col flex-none my-3'>

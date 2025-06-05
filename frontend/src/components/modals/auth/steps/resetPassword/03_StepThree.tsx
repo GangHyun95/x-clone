@@ -2,7 +2,8 @@ import { useEffect } from 'react';
 
 import { useForm } from 'react-hook-form';
 
-import { TextInput } from '@/components/commons/input';
+import AuthSubmitButton from '@/components/auth/button/AuthSubmitButton';
+import { TextInput } from '@/components/auth/input';
 import { useVerifyCode } from '@/hooks/auth/useAuth';
 import useCountdown from '@/hooks/useCountdown';
 import type { VerifyCodePayload } from '@/types/auth';
@@ -70,16 +71,11 @@ export default function StepThree({ email, expiresAt, onPrev, onNext }: Props) {
 
             <div className='flex flex-col flex-none my-6 px-8 md:px-20'>
                 {isValid ? (
-                    <button
-                        className='btn btn-secondary btn-circle w-full min-h-14 text-base hover:bg-secondary/90'
-                        disabled={!isValid || isVerifying}
-                    >
-                        Next
-                    </button>
+                    <AuthSubmitButton label='Next' isLoading={isVerifying} loadingLabel='Verifying...' disabled={!isValid}/>
                 ) : (
                     <button
                         type='button'
-                        className='btn btn-ghost btn-circle border-base-300 w-full min-h-14 text-base'
+                        className='btn btn-ghost btn-circle border-gray-300 w-full min-h-14 text-base'
                         onClick={onPrev}
                     >
                         Back

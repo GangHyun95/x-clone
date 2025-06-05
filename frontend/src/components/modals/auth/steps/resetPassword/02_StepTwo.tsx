@@ -1,7 +1,7 @@
 import toast, { Toaster } from 'react-hot-toast';
-import { CgSpinner } from 'react-icons/cg';
 import { useNavigate } from 'react-router-dom';
 
+import AuthSubmitButton from '@/components/auth/button/AuthSubmitButton';
 import { usePasswordResetCode } from '@/hooks/auth/useAuth';
 import { maskEmail } from '@/utils/formatters';
 
@@ -66,20 +66,11 @@ export default function StepTwo({ onNext, email }: Props) {
                     </div>
                 </div>
                 <div className='flex flex-col flex-none my-6 px-8 md:px-20'>
-                    <button className='btn btn-secondary btn-circle w-full min-h-14 text-base hover:bg-secondary/90 mb-4'>
-                        {isSending ? (
-                            <>
-                                <CgSpinner className='animate-spin text-primary h-5 w-5' />
-                                Resending...
-                            </>
-                        ) : (
-                            'Next'
-                        )}
-                    </button>
+                    <AuthSubmitButton label='Next' isLoading={isSending} loadingLabel='Resending...' disabled={false} className='mb-4' />
 
                     <button
                         type='button'
-                        className='btn btn-ghost btn-circle border-base-300 w-full min-h-14 text-base'
+                        className='btn btn-ghost btn-circle border-gray-300 w-full min-h-14 text-base'
                         onClick={() => navigate(-1)}
                     >
                         Cancel

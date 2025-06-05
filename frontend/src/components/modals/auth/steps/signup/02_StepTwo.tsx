@@ -2,10 +2,9 @@ import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import toast, { Toaster } from 'react-hot-toast';
 
-import { CgSpinner } from 'react-icons/cg';
-
-import { TextInput } from '@/components/commons/input';
-import Spinner from '@/components/commons/Spinner';
+import AuthSubmitButton from '@/components/auth/button/AuthSubmitButton';
+import { TextInput } from '@/components/auth/input';
+import Spinner from '@/components/auth/Spinner';
 import { useResendCode, useVerifyCode } from '@/hooks/auth/useAuth';
 import useCountdown from '@/hooks/useCountdown';
 import type { VerifyCodePayload } from '@/types/auth';
@@ -117,19 +116,7 @@ export default function StepTwo({ onNext, email, expiresAt, setExpiresAt }: Prop
                 </div>
 
                 <div className='flex flex-col flex-none my-6 px-8 md:px-20'>
-                    <button
-                        className='btn btn-secondary btn-circle w-full min-h-14 text-base hover:bg-secondary/90'
-                        disabled={!isValid || isVerifying || isResending}
-                    >
-                        {isResending ? (
-                            <>
-                                <CgSpinner className='animate-spin text-primary h-5 w-5' />
-                                Resending...
-                            </>
-                        ) : (
-                            'Next'
-                        )}
-                    </button>
+                    <AuthSubmitButton label='Next' isLoading={isResending} loadingLabel='Resending...' disabled={!isValid || isVerifying}/>
                 </div>
             </form>
         </>

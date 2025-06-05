@@ -13,3 +13,6 @@ export { default as HeartSvg } from './Heart';
 export { default as CommentSvg } from './Comment';
 export { default as BookmarkSvg } from './Bookmark';
 export { default as ShareSvg } from './Share';
+export { default as EyeSvg } from './Eye';
+export { default as CloseSvg } from './Close';
+export { default as SpinnerSvg } from './Spinner';

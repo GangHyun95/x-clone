@@ -3,8 +3,9 @@ import { useForm } from 'react-hook-form';
 import toast from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
 
-import { PasswordInput, TextInput } from '@/components/commons/input';
-import Spinner from '@/components/commons/Spinner';
+import AuthSubmitButton from '@/components/auth/button/AuthSubmitButton';
+import { PasswordInput, TextInput } from '@/components/auth/input';
+import Spinner from '@/components/auth/Spinner';
 import { useSignup } from '@/hooks/auth/useAuth';
 import { useAppDispatch } from '@/store/hooks';
 import { setAccessToken } from '@/store/slices/authSlice';
@@ -88,9 +89,7 @@ export default function StepThree({ email, fullName }: Props) {
             </div>
 
             <div className='flex flex-col flex-none my-6 px-8 md:px-20'>
-                <button className='btn btn-secondary btn-circle w-full min-h-14 text-base hover:bg-secondary/90' disabled={!isValid || isSigningUp}>
-                    Sign up
-                </button>
+                <AuthSubmitButton label='Sign up' isLoading={isSigningUp} loadingLabel='Signing up...' disabled={!isValid} />
             </div>
         </form>
     );

@@ -1,7 +1,8 @@
 import { useState, type JSX } from 'react';
 
-import { StepOne, StepTwo, StepThree } from '@/components/modals/steps/signup';
 import ModalLayout from '@/layouts/ModalLayout';
+
+import { StepOne, StepThree, StepTwo } from './steps/signup'
 
 export default function SignUpModal() {
     const [step, setStep] = useState<1 | 2 | 3>(1);

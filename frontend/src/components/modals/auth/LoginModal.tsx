@@ -1,10 +1,11 @@
 import { useState, type JSX } from 'react';
 
-import { StepOne, StepTwo } from '@/components/modals/steps/login';
 import ModalLayout from '@/layouts/ModalLayout';
 
+import { StepOne, StepTwo } from './steps/login'
+
 export default function LoginModal() {
-    const [step, setStep] = useState<1 | 2>(1);
+    const [step, setStep] = useState<1 | 2>(2);
     const [email, setEmail] = useState('');
 
     const steps: Record<1 | 2, () => JSX.Element> = {

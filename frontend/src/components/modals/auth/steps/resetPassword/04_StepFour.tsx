@@ -4,7 +4,8 @@ import { useForm } from 'react-hook-form';
 import toast from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
 
-import { PasswordInput } from '@/components/commons/input';
+import AuthSubmitButton from '@/components/auth/button/AuthSubmitButton';
+import { PasswordInput } from '@/components/auth/input';
 import { useResetPassword } from '@/hooks/auth/useAuth';
 import type { ResetPasswordPayload } from '@/types/auth';
 
@@ -86,12 +87,7 @@ export default function StepFour({ email }: { email: string }) {
             </div>
 
             <div className='flex flex-col flex-none my-6 px-8 md:px-20'>
-                <button 
-                    className='btn btn-secondary btn-circle w-full min-h-14 text-base hover:bg-secondary/90' 
-                    disabled={!isValid || isResetting}
-                >
-                    Change Password
-                </button>
+                <AuthSubmitButton label='Change Password' isLoading={isResetting} loadingLabel='Changing password...' disabled={!isValid} />
             </div>
         </form>
     );

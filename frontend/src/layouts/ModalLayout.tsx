@@ -1,16 +1,9 @@
 import { useEffect, useRef } from 'react';
-import { IoCloseOutline } from 'react-icons/io5';
 import { useNavigate } from 'react-router-dom';
 
-import { XSvg } from '@/components/svgs';
+import { CloseSvg, XSvg } from '@/components/svgs';
 
-export default function ModalLayout({
-    children,
-    className = '',
-}: {
-    children: React.ReactNode;
-    className?: string;
-}) {
+export default function ModalLayout({ children, className = '' }: { children: React.ReactNode; className?: string }) {
     const modalRef = useRef<HTMLDialogElement | null>(null);
     const navigate = useNavigate();
 
@@ -45,9 +38,9 @@ export default function ModalLayout({
                         className='flex flex-1 basis-1/2 items-center'
                     >
                         <button
-                            className='btn btn-ghost btn-circle border-0'
+                            className='btn btn-ghost btn-circle border-0 font-normal'
                         >
-                            <IoCloseOutline className='text-2xl' />
+                            <CloseSvg className='w-5'/>
                         </button>
                     </form>
                     <div className='flex flex-auto min-w-8 items-center'>

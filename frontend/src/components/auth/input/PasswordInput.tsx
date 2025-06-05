@@ -1,6 +1,6 @@
+import { EyeSvg } from '@/components/svgs';
 import { useState } from 'react';
 import type { FieldError, UseFormRegisterReturn } from 'react-hook-form';
-import { IoEyeOffOutline, IoEyeOutline } from 'react-icons/io5';
 
 type Props = {
     id: string;
@@ -31,7 +31,7 @@ export default function PasswordInput({ id, label, register, error }: Props) {
                 className='absolute right-3 top-1/2 -translate-y-1/2 z-10 text-xl cursor-pointer'
                 onClick={() => setShowPassword(prev => !prev)}
             >
-                {showPassword ? <IoEyeOffOutline /> : <IoEyeOutline />}
+                <EyeSvg visible={showPassword} className='w-5' />
             </div>
         </div>
     );

@@ -1,8 +1,9 @@
 import { useState, type JSX } from 'react';
 
-import { StepFour, StepOne, StepThree, StepTwo } from '@/components/modals/steps/resetPassword';
-
 import ModalLayout from '@/layouts/ModalLayout';
+
+import { StepFour, StepOne, StepThree, StepTwo } from './steps/resetPassword'
+
 
 export default function ResetPasswordModal() {
     const [step, setStep] = useState<1 | 2 | 3 | 4>(1);

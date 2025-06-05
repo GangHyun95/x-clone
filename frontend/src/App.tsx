@@ -1,21 +1,14 @@
 import { useEffect } from 'react';
 import { Toaster } from 'react-hot-toast';
-import { CgSpinner } from 'react-icons/cg';
 import { Route, Routes, useLocation } from 'react-router-dom';
 
-import LoginModal from '@/components/modals/LoginModal';
-import ResetPasswordModal from '@/components/modals/ResetPasswordModal';
-import SignUpModal from '@/components/modals/SignUpModal';
+import { LoginModal, ResetPasswordModal, SignUpModal } from '@/components/modals/auth';
 import useCheckAuth from '@/hooks/auth/useAuth';
 import AppLayout from '@/layouts/AppLayout';
-import BookmarkPage from '@/pages/BookmarkPage';
-import AuthLanding from '@/pages/home/AuthLanding';
-import HomeScreen from '@/pages/home/HomeScreen';
-import NotificationsPage from '@/pages/NotificationsPage';
-import ProfilePage from '@/pages/ProfilePage';
-import SettingsPage from '@/pages/SettingsPage';
+import { AuthLanding, BookmarkPage, HomeScreen, NotificationsPage, ProfilePage, SettingsPage } from '@/pages';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { setAccessToken } from '@/store/slices/authSlice';
+import { SpinnerSvg } from '@/components/svgs';
 
 function App() {
     const location = useLocation();
@@ -39,7 +32,7 @@ function App() {
     if (isCheckingAuth && !accessToken)
         return (
             <div className='flex items-center justify-center h-screen'>
-                <CgSpinner className='size-10 animate-spin text-primary' />
+                <SpinnerSvg className='size-10 animate-spin text-primary'/>
             </div>
         );
     return (
