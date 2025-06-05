@@ -10,7 +10,7 @@ export default function NotificationsPage() {
         <div className='flex flex-col h-full'>
             <StickyHeader>
                 <div className='flex px-4'>
-                    <h2 className='py-3 grow text-xl font-bold'>Notifications</h2>
+                    <h2 className='font-pyeojin py-3 grow text-xl font-bold'>Notifications</h2>
                 </div>
 
                 <div className='flex'>
