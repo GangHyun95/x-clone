@@ -1,6 +1,7 @@
-import { EyeSvg } from '@/components/svgs';
 import { useState } from 'react';
 import type { FieldError, UseFormRegisterReturn } from 'react-hook-form';
+
+import { EyeSvg } from '@/components/svgs';
 
 type Props = {
     id: string;

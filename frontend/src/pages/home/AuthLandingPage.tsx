@@ -2,7 +2,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 
 import { AppleSvg, GoogleSvg, XSvg } from '@/components/svgs';
 
-export default function AuthLanding() {
+export default function AuthLandingPage() {
     const navigate = useNavigate();
     const location = useLocation();
 

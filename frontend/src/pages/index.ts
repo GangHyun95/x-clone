@@ -1,5 +1,5 @@
-export { default as HomeScreen } from './home/HomeScreen';
-export { default as AuthLanding } from './home/AuthLanding';
+export { default as HomePage } from './home/HomePage';
+export { default as AuthLandingPage } from './home/AuthLandingPage';
 export { default as BookmarkPage } from './BookmarkPage';
 export { default as NotificationsPage } from './NotificationsPage';
 export { default as ProfilePage } from './ProfilePage';

@@ -5,7 +5,7 @@ import { Link } from 'react-router-dom';
 import SingleLineEditor from '@/components/editor/SingleLineEditor';
 import { BookmarkSvg, CommentSvg, EmojiSvg, HeartSvg, MediaSvg, ShareSvg } from '@/components/svgs';
 
-export default function HomeScreen() {
+export default function HomePage() {
     const [isDisabled, setIsDisabled] = useState(true);
     const postActions = [
         { icon: CommentSvg, count: 3 },

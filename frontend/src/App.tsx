@@ -3,12 +3,12 @@ import { Toaster } from 'react-hot-toast';
 import { Route, Routes, useLocation } from 'react-router-dom';
 
 import { LoginModal, ResetPasswordModal, SignUpModal } from '@/components/modals/auth';
+import { SpinnerSvg } from '@/components/svgs';
 import useCheckAuth from '@/hooks/auth/useAuth';
 import AppLayout from '@/layouts/AppLayout';
-import { AuthLanding, BookmarkPage, HomeScreen, NotificationsPage, ProfilePage, SettingsPage } from '@/pages';
+import { AuthLandingPage, BookmarkPage, HomePage, NotificationsPage, ProfilePage, SettingsPage } from '@/pages';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { setAccessToken } from '@/store/slices/authSlice';
-import { SpinnerSvg } from '@/components/svgs';
 
 function App() {
     const location = useLocation();
@@ -41,7 +41,7 @@ function App() {
                 <Route path='/' element={<AppLayout />}>
                     <Route
                         index
-                        element={accessToken ? <HomeScreen /> : <AuthLanding />}
+                        element={accessToken ? <HomePage /> : <AuthLandingPage />}
                     />
                     <Route path='notifications' element={<NotificationsPage />} />
                     <Route path='profile' element={<ProfilePage />} />

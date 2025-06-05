@@ -27,6 +27,9 @@ export default tseslint.config(
         { allowConstantExport: true },
       ],
 
+      'quotes': ['warn', 'single', {'allowTemplateLiterals': true}],
+      "jsx-quotes": ["warn", "prefer-single"],
+
       'import/order': [
         'warn',
         {

@@ -45,8 +45,8 @@ export default function StepOne({ onNext }: Props) {
                 </h1>
 
                 <TextInput 
-                    id="fullName"
-                    label="Name"
+                    id='fullName'
+                    label='Name'
                     register={register('fullName', {
                         required: '이름을 입력해 주세요.',
                     })}
