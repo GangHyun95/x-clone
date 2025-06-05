@@ -1,8 +1,18 @@
-import Avatar from '@/components/Avatar';
+import { useNavigate } from 'react-router-dom';
+
+import PageLayout from '@/components/layout/PageLayout';
 import StickyHeader from '@/components/layout/StickyHeader';
-import { BackArrowSvg, BookmarkSvg, CommentSvg, HeartSvg, SearchSvg, ShareSvg } from '@/components/svgs';
+import PostCard from '@/components/PostCard';
+import { BookmarkSvg, CommentSvg, HeartSvg, SearchSvg, ShareSvg } from '@/components/svgs';
 
 export default function BookmarkPage() {
+    const navigate = useNavigate();
+
+    const user = {
+        profile_img: '/temp.png',
+        name: '테스트계정',
+        nickname: 'test',
+    }
     const postActions = [
         { icon: CommentSvg, count: 3 },
         { icon: HeartSvg, count: 523, color: 'red-500' },
@@ -10,19 +20,12 @@ export default function BookmarkPage() {
         { icon: ShareSvg },
     ];
     return (
-        <div className='flex flex-col h-full'>
+        <PageLayout>
             <StickyHeader>
-                <div className='flex items-center px-4'>
-                    <div className='min-w-[53px]'>
-                        <div className='btn btn-ghost btn-circle min-w-6 min-h-6'>
-                            <BackArrowSvg className='size-5'/>
-                        </div>
-                    </div>
-                    <h2 className='font-pyeojin py-3 grow text-xl font-bold'>Bookmarks</h2>
-                </div>
+                <StickyHeader.Header onPrev={() => navigate(-1)}>Bookmarks</StickyHeader.Header>
             </StickyHeader>
             
-            <div className='w-full max-w-[600px] grow'>
+            <PageLayout.Content>
                 <div className='flex flex-col items-center my-2'>
                     <div className='w-[95%] min-h-10'>
                         <div className='border border-gray-300 rounded-full focus-within:border-primary'>
@@ -42,52 +45,15 @@ export default function BookmarkPage() {
                     </div>
                 </div> */}
 
-                <div className='w-full max-w-[600px] grow'>
-                    <article className='flex flex-col px-4 py-3 border-b border-base-300'>
-                        <div className='flex'>
-                            <div className='mr-2'>
-                                <Avatar src='/temp.png'/>
-                            </div>
-                            <div className='flex grow flex-col'>
-                                <ul className='flex items-center'>
-                                    <li><span className='font-extrabold'>테스트계정</span></li>
-                                    <li className='ml-1.5 text-gray-500'>
-                                        <span>@test</span>
-                                        <span className='px-1'>·</span>
-                                        <span>23h</span>
-                                    </li>
-                                </ul>
-                                <div className='flex flex-col'>
-                                    <p>자녀분이 선물을 받고 기뻐하시겠어요</p>
-                                </div>
-                                <div className='relative mt-3 cursor-pointer border border-base-300'>
-                                    <div className='w-full pb-[100%]' />
-                                    <img src='/test.jpeg' alt='test' className='absolute inset-0' />
-                                </div>
-                                <div className='mt-3 flex justify-between gap-1'>
-                                    {postActions.map((el, i) => {
-                                        const { count, icon: Icon, color = 'primary' } = el;
-                                        const hoverBgClass =
-                                            color === 'red-500' ? 'group-hover:bg-red-500/10' : 'group-hover:bg-primary/10';
-                                        const hoverFillClass =
-                                            color === 'red-500' ? 'group-hover:fill-red-500' : 'group-hover:fill-primary';
-                                    
-                                        return (
-                                            <div key={i} className='flex-1 flex items-center cursor-pointer group'>
-                                                <button className={`btn btn-sm btn-ghost btn-circle border-0 ${hoverBgClass}`}>
-                                                    <Icon className={`h-5 fill-gray-500 ${hoverFillClass}`} />
-                                                </button>
-                                                {count != null && <span className='text-sm px-1'>{count}</span>}
-                                            </div>
-                                        );
-                                    })}
-                                </div>
-                            </div>
-                        </div>
-                    </article>
-                </div>
-            </div>
-        </div>
+                <PostCard
+                    user={user}
+                    content='자녀분이 선물을 받고 기뻐하시겠어요.'
+                    image='/test.jpeg'
+                    created_at='2025-06-04T12:30:00.000Z'
+                    actions={postActions}
+                />
+            </PageLayout.Content>
+        </PageLayout>
     );
 }
 

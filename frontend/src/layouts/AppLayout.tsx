@@ -1,6 +1,6 @@
 import { Outlet } from 'react-router-dom';
 
-import Sidebar from '@/components/Sidebar';
+import Sidebar from '@/components/layout/Sidebar';
 import MainLayout from '@/layouts/MainLayout';
 import { useAppSelector } from '@/store/hooks';
 
