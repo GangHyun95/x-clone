@@ -14,7 +14,8 @@ import type { SignupPayload } from '@/types/auth';
 type Props = {
     email: string;
     fullName: string;
-}
+};
+
 export default function StepThree({ email, fullName }: Props) {
     const navigate = useNavigate();
     const form = useForm<SignupPayload>({
@@ -24,22 +25,22 @@ export default function StepThree({ email, fullName }: Props) {
             password: '',
         },
     });
-    const { register, handleSubmit, setError, setFocus, formState: { errors, isValid } } = form;  
+    const { register, handleSubmit, setError, setFocus, formState: { errors, isValid } } = form;
 
     const dispatch = useAppDispatch();
 
     const { signup, isSigningUp } = useSignup({
         onSuccess: (data) => {
             toast.success('회원가입이 완료되었습니다.');
-            dispatch(setAccessToken({ accessToken: data.accessToken}))
+            dispatch(setAccessToken({ accessToken: data.accessToken }));
             navigate(-1);
         },
         setError,
-    })
+    });
 
     const onSubmit = (data: SignupPayload) => {
-        signup({...data, email, fullName });
-    }
+        signup({ ...data, email, fullName });
+    };
 
     useEffect(() => {
         const timer = setTimeout(() => {
@@ -48,11 +49,11 @@ export default function StepThree({ email, fullName }: Props) {
         return () => clearTimeout(timer);
     }, [setFocus]);
 
-    if (isSigningUp) return <Spinner />
+    if (isSigningUp) return <Spinner />;
 
     return (
         <form className='flex flex-col h-full' onSubmit={handleSubmit(onSubmit)}>
-            <div className='flex-1 overflow-auto px-8 md:px-20'>
+            <section className='flex-1 overflow-auto px-8 md:px-20'>
                 <div className='my-5'>
                     <h1 className='text-2xl md:text-4xl font-bold'>
                         You'll need a password
@@ -86,11 +87,16 @@ export default function StepThree({ email, fullName }: Props) {
                     })}
                     error={errors.password}
                 />
-            </div>
+            </section>
 
-            <div className='flex flex-col flex-none my-6 px-8 md:px-20'>
-                <AuthSubmitButton label='Sign up' isLoading={isSigningUp} loadingLabel='Signing up...' disabled={!isValid} />
-            </div>
+            <footer className='flex flex-col flex-none my-6 px-8 md:px-20'>
+                <AuthSubmitButton
+                    label='Sign up'
+                    isLoading={isSigningUp}
+                    loadingLabel='Signing up...'
+                    disabled={!isValid}
+                />
+            </footer>
         </form>
     );
 }

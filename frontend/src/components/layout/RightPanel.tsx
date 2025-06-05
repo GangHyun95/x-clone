@@ -4,17 +4,17 @@ export default function RightPanel() {
     return (
         <div className='flex flex-col'>
             <aside className='sticky top-0 flex flex-col w-[350px] mr-[70px]'>
-                <div className='flex flex-col pt-3'>
+                <section className='flex flex-col pt-3'>
                     <div className='flex flex-col mb-4 rounded-2xl border border-base-300'>
                         <h2 className='px-4 py-3 text-xl font-extrabold'>Who to follow</h2>
                         <ul className='flex flex-col'>
                             {[1, 2, 3, 4].map((_, i) => (
                                 <li key={i} className='px-4 py-3 leading-5'>
-                                    <div className='flex'>
+                                    <article className='flex'>
                                         <Avatar src='/temp.png' className='mr-2' />
                                         <div className='flex grow items-center justify-between'>
                                             <div className='flex flex-col w-full'>
-                                                <h2 className='font-bold'>테스트계정</h2>
+                                                <h3 className='font-bold'>테스트계정</h3>
                                                 <span className='text-gray-500'>@testtest</span>
                                             </div>
                                             <div className='ml-4'>
@@ -23,7 +23,7 @@ export default function RightPanel() {
                                                 </button>
                                             </div>
                                         </div>
-                                    </div>
+                                    </article>
                                 </li>
                             ))}
                         </ul>
@@ -31,7 +31,7 @@ export default function RightPanel() {
                             Show more
                         </button>
                     </div>
-                </div>
+                </section>
             </aside>
         </div>
     );

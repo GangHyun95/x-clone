@@ -9,6 +9,7 @@ import { BookmarkSvg, CommentSvg, EmojiSvg, HeartSvg, MediaSvg, ShareSvg } from 
 
 export default function HomePage() {
     const [isDisabled, setIsDisabled] = useState(true);
+
     const tabs = [
         { label: 'For you', to: '/', active: true },
         { label: 'Following', to: '/', active: false },
@@ -18,7 +19,7 @@ export default function HomePage() {
         profile_img: '/temp.png',
         name: '테스트계정',
         nickname: 'test',
-    }
+    };
 
     const postActions = [
         { icon: CommentSvg, count: 3 },
@@ -32,34 +33,42 @@ export default function HomePage() {
             <StickyHeader>
                 <StickyHeader.Tabs tabs={tabs} />
             </StickyHeader>
-            <div className='flex px-4 border-b border-base-300'>
+
+            <form className='flex px-4 border-b border-base-300'>
                 <div className='mr-2 pt-3'>
-                    <Avatar src='/temp.png'/>
+                    <Avatar src='/temp.png' />
                 </div>
                 <div className='flex grow flex-col pt-1'>
                     <SingleLineEditor
                         onTextChange={(text) => setIsDisabled(text.trim().length === 0)}
                     />
-                    <div className='flex items-center justify-between pb-2'>
-                        <section className='mt-2 grow'>
-                            <button className='btn btn-sm btn-ghost btn-circle hover:bg-primary/10 border-0'>
+                    <footer className='flex items-center justify-between pb-2'>
+                        <div className='mt-2 grow'>
+                            <button
+                                type='button'
+                                className='btn btn-sm btn-ghost btn-circle hover:bg-primary/10 border-0'
+                            >
                                 <MediaSvg className='w-5 fill-primary' />
                             </button>
-                            <button className='btn btn-sm btn-ghost btn-circle hover:bg-primary/10 border-0'>
+                            <button
+                                type='button'
+                                className='btn btn-sm btn-ghost btn-circle hover:bg-primary/10 border-0'
+                            >
                                 <EmojiSvg className='w-5 fill-primary' />
                             </button>
-                        </section>
+                        </div>
                         <div className='ml-4 mt-2'>
                             <button
+                                type='submit'
                                 className='btn btn-secondary btn-circle w-auto h-auto min-h-[36px] px-4'
                                 disabled={isDisabled}
                             >
                                 Post
                             </button>
                         </div>
-                    </div>
+                    </footer>
                 </div>
-            </div>
+            </form>
             <PageLayout.Content>
                 <PostCard 
                     user={user}

@@ -24,5 +24,6 @@ export default function TextInput({ id, label, type = 'text', placeholder, regis
                 </span>
                 {error && <p className='text-sm text-red-500'>{error.message}</p>}
             </label>
-        </div>)
+        </div>
+    );
 }

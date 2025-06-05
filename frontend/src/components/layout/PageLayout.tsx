@@ -3,5 +3,5 @@ export default function PageLayout({ children }: { children: React.ReactNode }) 
 }
 
 PageLayout.Content = function Content({ children }: { children: React.ReactNode }) {
-    return <div className='w-full max-w-[600px] grow'>{children}</div>;
+    return <section className='w-full max-w-[600px] grow'>{children}</section>;
 }

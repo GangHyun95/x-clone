@@ -9,7 +9,6 @@ import { PasswordInput } from '@/components/auth/input';
 import { useResetPassword } from '@/hooks/auth/useAuth';
 import type { ResetPasswordPayload } from '@/types/auth';
 
-
 export default function StepFour({ email }: { email: string }) {
     const navigate = useNavigate();
     const form = useForm<ResetPasswordPayload>({
@@ -28,13 +27,10 @@ export default function StepFour({ email }: { email: string }) {
             toast.success('비밀번호가 성공적으로 변경되었습니다.');
         },
         setError,
-    })
+    });
 
     const onSubmit = (data: ResetPasswordPayload) => {
-        resetPassword({
-            ...data,
-            email
-        });
+        resetPassword({ ...data, email });
     };
 
     useEffect(() => {
@@ -42,23 +38,19 @@ export default function StepFour({ email }: { email: string }) {
             setFocus('password');
         }, 100);
         return () => clearTimeout(timer);
-    }, [setFocus])
+    }, [setFocus]);
+
     return (
         <form className='flex flex-col h-full' onSubmit={handleSubmit(onSubmit)}>
-            <div className='flex-1 overflow-auto px-8 md:px-20'>
+            <section className='flex-1 overflow-auto px-8 md:px-20'>
                 <div className='my-5'>
                     <h1 className='text-2xl md:text-4xl font-bold'>
                         Choose a new password
                     </h1>
                     <div className='text-sm text-gray-500 mt-2'>
-                        <p>
-                            Make sure your new password is 6 characters or more.
-                        </p>
+                        <p>Make sure your new password is 6 characters or more.</p>
                         <br />
-                        <p>
-                            You'll be logged out of all active X sessions after
-                            your password is changed.
-                        </p>
+                        <p>You'll be logged out of all active X sessions after your password is changed.</p>
                     </div>
                 </div>
 
@@ -74,21 +66,27 @@ export default function StepFour({ email }: { email: string }) {
                     })}
                     error={errors.password}
                 />
-                
+
                 <PasswordInput
                     id='confirmPassword'
                     label='Confirm your password'
                     register={register('confirmPassword', {
                         required: '비밀번호 확인을 입력해 주세요.',
-                        validate: (value) => value === watch('password') || '비밀번호가 일치하지 않습니다.',
+                        validate: (value) =>
+                            value === watch('password') || '비밀번호가 일치하지 않습니다.',
                     })}
                     error={errors.confirmPassword}
                 />
-            </div>
+            </section>
 
-            <div className='flex flex-col flex-none my-6 px-8 md:px-20'>
-                <AuthSubmitButton label='Change Password' isLoading={isResetting} loadingLabel='Changing password...' disabled={!isValid} />
-            </div>
+            <footer className='flex flex-col flex-none my-6 px-8 md:px-20'>
+                <AuthSubmitButton
+                    label='Change Password'
+                    isLoading={isResetting}
+                    loadingLabel='Changing password...'
+                    disabled={!isValid}
+                />
+            </footer>
         </form>
     );
 }

@@ -7,7 +7,8 @@ import { useCheckEmail } from '@/hooks/auth/useAuth';
 
 type Props = {
     onNext: (data: { email: string }) => void;
-}
+};
+
 export default function StepOne({ onNext }: Props) {
     const form = useForm<{ email: string }>({
         mode: 'onChange',
@@ -18,11 +19,11 @@ export default function StepOne({ onNext }: Props) {
 
     const { register, handleSubmit, setFocus, setError, formState: { errors, isValid } } = form;
 
-    const { checkEmail, isCheckingEmail } = useCheckEmail({ onSuccess: onNext, setError})
+    const { checkEmail, isCheckingEmail } = useCheckEmail({ onSuccess: onNext, setError });
 
     const onSubmit = (data: { email: string }) => {
         checkEmail(data);
-    }
+    };
 
     useEffect(() => {
         const timer = setTimeout(() => {
@@ -32,9 +33,8 @@ export default function StepOne({ onNext }: Props) {
     }, [setFocus]);
 
     return (
-        <>
         <form className='flex flex-col h-full' onSubmit={handleSubmit(onSubmit)}>
-            <div className='flex-1 overflow-auto px-8 md:px-20'>
+            <section className='flex-1 overflow-auto px-8 md:px-20'>
                 <div className='my-5'>
                     <h1 className='text-2xl md:text-4xl font-bold'>
                         Find your X account
@@ -59,11 +59,15 @@ export default function StepOne({ onNext }: Props) {
                     })}
                     error={errors.email}
                 />
-            </div>
-            <div className='flex flex-col flex-none my-6 px-8 md:px-20'>
-                <AuthSubmitButton label='Next' isLoading={isCheckingEmail} loadingLabel='Checking...' disabled={!isValid} />
-            </div>
+            </section>
+            <footer className='flex flex-col flex-none my-6 px-8 md:px-20'>
+                <AuthSubmitButton
+                    label='Next'
+                    isLoading={isCheckingEmail}
+                    loadingLabel='Checking...'
+                    disabled={!isValid}
+                />
+            </footer>
         </form>
-        </>
     );
 }

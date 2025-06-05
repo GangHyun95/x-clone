@@ -1,5 +1,4 @@
 import { useEffect } from 'react';
-
 import { useForm } from 'react-hook-form';
 
 import AuthSubmitButton from '@/components/auth/button/AuthSubmitButton';
@@ -15,6 +14,7 @@ type Props = {
     onPrev: () => void;
     onNext: () => void;
 };
+
 export default function StepThree({ email, expiresAt, onPrev, onNext }: Props) {
     const timeLeft = useCountdown(expiresAt);
     const form = useForm<VerifyCodePayload>({
@@ -24,32 +24,26 @@ export default function StepThree({ email, expiresAt, onPrev, onNext }: Props) {
         },
     });
     const { register, handleSubmit, setError, setFocus, formState: { errors, isValid } } = form;
-    const { verifyCode, isVerifying } = useVerifyCode({
-        onSuccess: onNext,
-        setError,
-    })
+    const { verifyCode, isVerifying } = useVerifyCode({ onSuccess: onNext, setError });
 
     const onSubmit = (data: VerifyCodePayload) => {
         verifyCode({ ...data, email });
-    }
+    };
+
     useEffect(() => {
         const timer = setTimeout(() => {
             setFocus('code');
         }, 100);
         return () => clearTimeout(timer);
-    }, [setFocus])
+    }, [setFocus]);
 
     return (
         <form className='flex flex-col h-full' onSubmit={handleSubmit(onSubmit)}>
-            <div className='flex-1 overflow-auto px-8 md:px-20'>
+            <section className='flex-1 overflow-auto px-8 md:px-20'>
                 <div className='my-5'>
-                    <h1 className='text-2xl md:text-4xl font-bold'>
-                        We sent you a code
-                    </h1>
+                    <h1 className='text-2xl md:text-4xl font-bold'>We sent you a code</h1>
                     <h3 className='text-sm text-gray-500 mt-2'>
-                        Check your email to get your confirmation code. If you
-                        need to request a new code, go back and reselect a
-                        confirmation.
+                        Check your email to get your confirmation code. If you need to request a new code, go back and reselect a confirmation.
                     </h3>
                 </div>
 
@@ -63,15 +57,13 @@ export default function StepThree({ email, expiresAt, onPrev, onNext }: Props) {
                 />
 
                 <div className='mt-3'>
-                    <span className='text-sm text-gray-500'>
-                        Time remaining: {formatTime(timeLeft)}
-                    </span>
+                    <span className='text-sm text-gray-500'>Time remaining: {formatTime(timeLeft)}</span>
                 </div>
-            </div>
+            </section>
 
-            <div className='flex flex-col flex-none my-6 px-8 md:px-20'>
+            <footer className='flex flex-col flex-none my-6 px-8 md:px-20'>
                 {isValid ? (
-                    <AuthSubmitButton label='Next' isLoading={isVerifying} loadingLabel='Verifying...' disabled={!isValid}/>
+                    <AuthSubmitButton label='Next' isLoading={isVerifying} loadingLabel='Verifying...' disabled={!isValid} />
                 ) : (
                     <button
                         type='button'
@@ -81,7 +73,7 @@ export default function StepThree({ email, expiresAt, onPrev, onNext }: Props) {
                         Back
                     </button>
                 )}
-            </div>
+            </footer>
         </form>
     );
 }

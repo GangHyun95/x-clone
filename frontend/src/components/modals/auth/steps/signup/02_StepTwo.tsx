@@ -15,7 +15,7 @@ type Props = {
     email: string;
     expiresAt: number;
     setExpiresAt: (expiresAt: number) => void;
-}
+};
 
 export default function StepTwo({ onNext, email, expiresAt, setExpiresAt }: Props) {
     const [showMenu, setShowMenu] = useState(false);
@@ -24,14 +24,14 @@ export default function StepTwo({ onNext, email, expiresAt, setExpiresAt }: Prop
         defaultValues: {
             code: '',
         }
-    })
-    const { register, handleSubmit, setError, setFocus, formState: { errors, isValid } } = form;  
+    });
+    const { register, handleSubmit, setError, setFocus, formState: { errors, isValid } } = form;
     const timeLeft = useCountdown(expiresAt);
 
     const { verifyCode, isVerifying } = useVerifyCode({ onSuccess: onNext, setError });
-    
+
     const { resendCode, isResending } = useResendCode({
-        onSuccess: ({ expiresAt, message}) => {
+        onSuccess: ({ expiresAt, message }) => {
             setExpiresAt(expiresAt);
             setFocus('code');
             setShowMenu(false);
@@ -45,7 +45,7 @@ export default function StepTwo({ onNext, email, expiresAt, setExpiresAt }: Prop
 
     const onSubmit = (data: VerifyCodePayload) => {
         verifyCode({ ...data, email });
-    }
+    };
 
     useEffect(() => {
         const timer = setTimeout(() => {
@@ -54,13 +54,13 @@ export default function StepTwo({ onNext, email, expiresAt, setExpiresAt }: Prop
         return () => clearTimeout(timer);
     }, [setFocus]);
 
-    if (isVerifying) return <Spinner />
+    if (isVerifying) return <Spinner />;
 
     return (
         <>
             <Toaster />
             <form className='flex flex-col h-full' onSubmit={handleSubmit(onSubmit)}>
-                <div className='flex-1 overflow-auto px-8 md:px-20'>
+                <section className='flex-1 overflow-auto px-8 md:px-20'>
                     <div className='my-5'>
                         <h1 className='text-2xl md:text-4xl font-bold'>
                             We sent you a code
@@ -87,37 +87,36 @@ export default function StepTwo({ onNext, email, expiresAt, setExpiresAt }: Prop
                     </div>
                     <ul
                         className={`
-                                list bg-base-100 border border-base-300 shadow rounded-box fixed top-0 right-0 z-50 p-0
-                                transition-all duration-200
-                                ${
-                                    showMenu
-                                        ? 'opacity-100 scale-100 visible'
-                                        : 'opacity-0 scale-95 invisible pointer-events-none'
-                                }
-                            `}
+                            list bg-base-100 border border-base-300 shadow rounded-box fixed top-0 right-0 z-50 p-0
+                            transition-all duration-200
+                            ${
+                                showMenu
+                                    ? 'opacity-100 scale-100 visible'
+                                    : 'opacity-0 scale-95 invisible pointer-events-none'
+                            }
+                        `}
                     >
-                            <li className='p-4'>Didn't receive email?</li>
-
-                            <li
-                                className='px-4 py-3 hover:bg-base-300 cursor-pointer font-bold'
-                                onClick={() => {
-                                    resendCode(email);
-                                }}
-                            >
-                                <span>Resend email</span>
-                            </li>
-                        </ul>
+                        <li className='p-4'>Didn't receive email?</li>
+                        <li
+                            className='px-4 py-3 hover:bg-base-300 cursor-pointer font-bold'
+                            onClick={() => {
+                                resendCode(email);
+                            }}
+                        >
+                            <span>Resend email</span>
+                        </li>
+                    </ul>
 
                     <div className='mt-3'>
                         <span className='text-sm text-gray-500'>
                             Time remaining: {formatTime(timeLeft)}
                         </span>
                     </div>
-                </div>
+                </section>
 
-                <div className='flex flex-col flex-none my-6 px-8 md:px-20'>
-                    <AuthSubmitButton label='Next' isLoading={isResending} loadingLabel='Resending...' disabled={!isValid || isVerifying}/>
-                </div>
+                <footer className='flex flex-col flex-none my-6 px-8 md:px-20'>
+                    <AuthSubmitButton label='Next' isLoading={isResending} loadingLabel='Resending...' disabled={!isValid || isVerifying} />
+                </footer>
             </form>
         </>
     );

@@ -11,9 +11,7 @@ export default function StepOne({ onNext }: { onNext: (data: { email: string }) 
     const navigate = useNavigate();
     const form = useForm<{ email: string }>({
         mode: 'onChange',
-        defaultValues: {
-            email: '',
-        },
+        defaultValues: { email: '' },
     })
 
     const { register, handleSubmit, setError, formState: { errors, isValid } } = form;
@@ -30,7 +28,7 @@ export default function StepOne({ onNext }: { onNext: (data: { email: string }) 
                 <h1 className='font-pyeojin text-3xl font-bold my-5 '>
                     Sign in to X
                 </h1>
-                <div className='my-3'>
+                <section className='my-3'>
                     <button
                         type='button'
                         className='bn btn-ghost btn-circle border-gray-300 mb-4 w-full'
@@ -49,9 +47,7 @@ export default function StepOne({ onNext }: { onNext: (data: { email: string }) 
 
                     <div className='my-2 flex w-full items-center gap-2'>
                         <div className='h-px flex-1 bg-gray-300'></div>
-                        <span className='text-base text-muted-foreground'>
-                            or
-                        </span>
+                        <span className='text-base text-muted-foreground'>or</span>
                         <div className='h-px flex-1 bg-gray-300'></div>
                     </div>
 
@@ -89,12 +85,8 @@ export default function StepOne({ onNext }: { onNext: (data: { email: string }) 
                         </button>
                     </div>
 
-                    <div className='flex gap-1 mt-10'>
-                        <span
-                            className='text-gray-500 text-sm'
-                        >
-                            Don't have an account?
-                        </span>
+                    <nav className='flex gap-1 mt-10'>
+                        <span className='text-gray-500 text-sm'>Don't have an account?</span>
                         <button
                             type='button'
                             className='text-sm text-primary cursor-pointer hover:underline decoration-primary underline-offset-4'
@@ -107,8 +99,8 @@ export default function StepOne({ onNext }: { onNext: (data: { email: string }) 
                         >
                             Sign up
                         </button>
-                    </div>
-                </div>
+                    </nav>
+                </section>
             </div>
         </form>
     );

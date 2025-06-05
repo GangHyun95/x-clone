@@ -12,15 +12,15 @@ export default function StickyHeader({ children }: { children: React.ReactNode }
 
 StickyHeader.Header = function Header({ children, onPrev }: { children: React.ReactNode; onPrev?: () => void }) {
     return (
-        <div className='flex items-center px-4'>
+        <div className='flex items-center px-4 h-[53px]'>
             {onPrev && (
                 <div className='min-w-[53px]'>
-                    <button onClick={onPrev} className='btn btn-ghost btn-circle min-w-6 min-h-6'>
+                    <button onClick={onPrev} className='btn btn-ghost btn-circle min-w-6 min-h-6 -m-2'>
                         <BackArrowSvg className='size-5' />
                     </button>
                 </div>
             )}
-            <h2 className='font-pyeojin py-3 grow text-xl font-bold'>{children}</h2>
+            <h2 className='flex flex-col justify-center shrink-1 grow text-xl font-bold h-full'>{children}</h2>
         </div>
     );
 };

@@ -9,8 +9,9 @@ import { useSendCode } from '@/hooks/auth/useAuth';
 import type { SendCodePayload } from '@/types/auth';
 
 type Props = {
-    onNext: (data: {email: string, fullName: string, expiresAt: number}) => void;
-}
+    onNext: (data: { email: string; fullName: string; expiresAt: number }) => void;
+};
+
 export default function StepOne({ onNext }: Props) {
     const form = useForm<SendCodePayload>({
         mode: 'onChange',
@@ -19,10 +20,10 @@ export default function StepOne({ onNext }: Props) {
             fullName: '',
         },
     });
+
     const { register, handleSubmit, setError, setFocus, formState: { errors, isValid } } = form;
     const navigate = useNavigate();
-
-    const { sendCode, isSending } = useSendCode({ onSuccess: onNext, setError});
+    const { sendCode, isSending } = useSendCode({ onSuccess: onNext, setError });
 
     useEffect(() => {
         const timer = setTimeout(() => {
@@ -39,12 +40,10 @@ export default function StepOne({ onNext }: Props) {
 
     return (
         <form className='flex flex-col h-full' onSubmit={handleSubmit(onSubmit)}>
-            <div className='flex-1 overflow-auto px-8 md:px-20'>
-                <h1 className='my-5 text-2xl md:text-4xl font-bold'>
-                    Create your account
-                </h1>
+            <section className='flex-1 overflow-auto px-8 md:px-20'>
+                <h1 className='my-5 text-2xl md:text-4xl font-bold'>Create your account</h1>
 
-                <TextInput 
+                <TextInput
                     id='fullName'
                     label='Name'
                     register={register('fullName', {
@@ -66,9 +65,7 @@ export default function StepOne({ onNext }: Props) {
                     error={errors.email}
                 />
                 <div className='flex gap-1 mt-2'>
-                    <span className='text-gray-500 text-sm'>
-                        Already have an account?
-                    </span>
+                    <span className='text-gray-500 text-sm'>Already have an account?</span>
                     <button
                         type='button'
                         className='text-sm text-primary cursor-pointer hover:underline decoration-primary underline-offset-4'
@@ -82,11 +79,11 @@ export default function StepOne({ onNext }: Props) {
                         Sign In
                     </button>
                 </div>
-            </div>
+            </section>
 
-            <div className='flex flex-col flex-none my-6 px-8 md:px-20'>
-                <AuthSubmitButton label='Next' isLoading={isSending} loadingLabel='Sending...' disabled={!isValid}/>
-            </div>
+            <footer className='flex flex-col flex-none my-6 px-8 md:px-20'>
+                <AuthSubmitButton label='Next' isLoading={isSending} loadingLabel='Sending...' disabled={!isValid} />
+            </footer>
         </form>
     );
 }

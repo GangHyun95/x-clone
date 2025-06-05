@@ -9,6 +9,7 @@ type Props = {
     email: string;
     onNext: (data: { expiresAt: number }) => void;
 };
+
 export default function StepTwo({ onNext, email }: Props) {
     const navigate = useNavigate();
 
@@ -25,11 +26,12 @@ export default function StepTwo({ onNext, email }: Props) {
         e.preventDefault();
         sendPasswordResetCode(email);  
     };
+
     return (
         <>
             <Toaster />
             <form className='flex flex-col h-full' onSubmit={handleSubmit}>
-                <div className='flex-1 overflow-auto px-8 md:px-20'>
+                <section className='flex-1 overflow-auto px-8 md:px-20'>
                     <div className='my-5'>
                         <h1 className='text-2xl md:text-4xl font-bold'>
                             Where should we send a confirmation code?
@@ -54,7 +56,6 @@ export default function StepTwo({ onNext, email }: Props) {
                                     {maskEmail(email)}
                                 </span>
                             </span>
-
                             <div className='flex justify-center items-center p-1.5 rounded-full group-hover:bg-primary/10 transition-colors'>
                                 <input
                                     type='radio'
@@ -64,10 +65,15 @@ export default function StepTwo({ onNext, email }: Props) {
                             </div>
                         </label>
                     </div>
-                </div>
-                <div className='flex flex-col flex-none my-6 px-8 md:px-20'>
-                    <AuthSubmitButton label='Next' isLoading={isSending} loadingLabel='Resending...' disabled={false} className='mb-4' />
-
+                </section>
+                <footer className='flex flex-col flex-none my-6 px-8 md:px-20'>
+                    <AuthSubmitButton
+                        label='Next'
+                        isLoading={isSending}
+                        loadingLabel='Resending...'
+                        disabled={false}
+                        className='mb-4'
+                    />
                     <button
                         type='button'
                         className='btn btn-ghost btn-circle border-gray-300 w-full min-h-14 text-base'
@@ -75,7 +81,7 @@ export default function StepTwo({ onNext, email }: Props) {
                     >
                         Cancel
                     </button>
-                </div>
+                </footer>
             </form>
         </>
     );
