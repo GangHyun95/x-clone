@@ -8,7 +8,7 @@ type Props = {
     className?: string;
 }
 
-export default function AuthSubmitButton({ label, isLoading, loadingLabel,  disabled, className = '' }: Props) {
+export default function AuthSubmitBtn({ label, isLoading, loadingLabel,  disabled, className = '' }: Props) {
     return (
         <button
             type='submit'

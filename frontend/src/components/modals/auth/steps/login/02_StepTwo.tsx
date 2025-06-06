@@ -2,9 +2,9 @@ import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
 
-import AuthSubmitButton from '@/components/auth/button/AuthSubmitButton';
 import { PasswordInput } from '@/components/auth/input';
 import Spinner from '@/components/auth/Spinner';
+import { AuthSubmitBtn, ModalRouteBtn } from '@/components/button';
 import { useLogin } from '@/hooks/auth/useAuth';
 import { useAppDispatch } from '@/store/hooks';
 import { setAccessToken } from '@/store/slices/authSlice';
@@ -70,37 +70,28 @@ export default function StepTwo({ email }: { email: string }) {
                                 })}
                                 error={errors.password}
                             />
-                            <div 
+                            <ModalRouteBtn
+                                to='/reset-password'
+                                replace={true}
                                 className='text-sm text-primary px-2 pt-1 hover:underline decoration-primary cursor-pointer'
-                                onClick={() =>
-                                    navigate('/reset-password', {
-                                        state: { backgroundLocation: '/' },
-                                        replace: true,
-                                    })
-                                }
                             >
-                                Forgot password?
-                            </div>
+                                Forgot Password?
+                            </ModalRouteBtn>
                         </div>
                     </div>
                 </section>
             </div>
             <footer className='flex flex-col flex-none my-6 px-8 md:px-20'>
-                <AuthSubmitButton label='Login' isLoading={isLoggingIn} loadingLabel='Logging in...' disabled={!isValid} className='mb-6' />
+                <AuthSubmitBtn label='Login' isLoading={isLoggingIn} loadingLabel='Logging in...' disabled={!isValid} className='mb-6' />
                 <nav className='flex gap-1'>
                     <span className='text-gray-500 text-sm'>Don't have an account?</span>
-                    <button
-                        type='button'
+                    <ModalRouteBtn
+                        to='/signup'
+                        replace={true}
                         className='text-sm text-primary cursor-pointer hover:underline decoration-primary underline-offset-4'
-                        onClick={() =>
-                            navigate('/signup', {
-                                state: { backgroundLocation: '/' },
-                                replace: true,
-                            })
-                        }
                     >
                         Sign up
-                    </button>
+                    </ModalRouteBtn>
                 </nav>
             </footer>
         </form>

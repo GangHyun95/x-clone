@@ -3,9 +3,9 @@ import { useForm } from 'react-hook-form';
 import toast from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
 
-import AuthSubmitButton from '@/components/auth/button/AuthSubmitButton';
 import { PasswordInput, TextInput } from '@/components/auth/input';
 import Spinner from '@/components/auth/Spinner';
+import { AuthSubmitBtn } from '@/components/button';
 import { useSignup } from '@/hooks/auth/useAuth';
 import { useAppDispatch } from '@/store/hooks';
 import { setAccessToken } from '@/store/slices/authSlice';
@@ -90,7 +90,7 @@ export default function StepThree({ email, fullName }: Props) {
             </section>
 
             <footer className='flex flex-col flex-none my-6 px-8 md:px-20'>
-                <AuthSubmitButton
+                <AuthSubmitBtn
                     label='Sign up'
                     isLoading={isSigningUp}
                     loadingLabel='Signing up...'

@@ -30,6 +30,13 @@ body {
     }
 }
 
+@theme {
+    --breakpoint-xs: 31.25rem;
+    --breakpoint-xl: 79.9375rem;
+    --breakpoint-lg-plus: 67.5rem;
+    --breakpoint-xl-plus: 86.25rem;
+}
+
 .public-DraftEditor-content[contenteditable='true'] {
     -moz-user-modify: read-write-plaintext-only;
     -webkit-user-modify: read-write-plaintext-only;

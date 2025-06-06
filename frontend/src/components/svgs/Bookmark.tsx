@@ -1,4 +1,5 @@
-export default function Bookmark(props: React.SVGProps<SVGSVGElement>) {
+type Props = React.SVGProps<SVGSVGElement> & { filled?: boolean }
+export default function Bookmark({ filled, ...props}: Props) {
     return (
         <svg
             viewBox='0 0 24 24'

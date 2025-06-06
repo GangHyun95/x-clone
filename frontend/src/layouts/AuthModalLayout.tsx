@@ -1,32 +1,9 @@
-import { useEffect, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
-
 import { CloseSvg, XSvg } from '@/components/svgs';
+import RouteModal from '@/layouts/RouteModal';
 
-export default function ModalLayout({ children, className = '' }: { children: React.ReactNode; className?: string }) {
-    const modalRef = useRef<HTMLDialogElement | null>(null);
-    const navigate = useNavigate();
-
-    useEffect(() => {
-        const modal = modalRef.current;
-        if (!modal) return;
-
-        if (!modal.open) {
-            modal.showModal();
-        }
-
-        const handleClose = () => {
-            navigate(-1);
-        };
-
-        modal.addEventListener('close', handleClose);
-        return () => {
-            modal.removeEventListener('close', handleClose);
-        };
-    }, [navigate]);
-
+export default function AuthModalLayout({ children, className = '' }: { children: React.ReactNode; className?: string }) {
     return (
-        <dialog ref={modalRef} className='modal'>
+        <RouteModal>
             <div
                 className={`modal-box flex flex-col w-full h-full max-w-none p-0 rounded-none 
                         md:min-w-[600px] md:h-[650px] md:min-h-[400px] md:max-h-[90vh] md:rounded-2xl md:max-w-[600px] ${className}`}
@@ -47,6 +24,6 @@ export default function ModalLayout({ children, className = '' }: { children: Re
                     {children}
                 </section>
             </div>
-        </dialog>
+        </RouteModal>
     );
 }

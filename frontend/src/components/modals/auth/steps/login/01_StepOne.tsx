@@ -1,14 +1,11 @@
 import { useForm } from 'react-hook-form';
-import { useNavigate } from 'react-router-dom';
 
-import AuthSubmitButton from '@/components/auth/button/AuthSubmitButton';
 import { TextInput } from '@/components/auth/input';
+import { AuthSubmitBtn, ModalRouteBtn } from '@/components/button';
 import { AppleSvg, GoogleSvg } from '@/components/svgs';
 import { useCheckEmail } from '@/hooks/auth/useAuth';
 
-
 export default function StepOne({ onNext }: { onNext: (data: { email: string }) => void; }) {
-    const navigate = useNavigate();
     const form = useForm<{ email: string }>({
         mode: 'onChange',
         defaultValues: { email: '' },
@@ -67,38 +64,24 @@ export default function StepOne({ onNext }: { onNext: (data: { email: string }) 
                     />
 
                     <div className='flex flex-col flex-none my-3'>
-                        <AuthSubmitButton label='Next' isLoading={isCheckingEmail} loadingLabel='Checking...' disabled={!isValid} className='text-sm min-h-auto'/>
+                        <AuthSubmitBtn label='Next' isLoading={isCheckingEmail} loadingLabel='Checking...' disabled={!isValid} className='text-sm min-h-auto'/>
                     </div>
 
                     <div className='flex flex-col flex-none my-3'>
-                        <button
-                            type='button'
-                            className='btn btn-circle w-full'
-                            onClick={() =>
-                                navigate('/reset-password', {
-                                    state: { backgroundLocation: '/' },
-                                    replace: true,
-                                })
-                            }
-                        >
+                        <ModalRouteBtn to='/reset-password' replace={true} className='btn btn-circle w-full'>
                             Forgot Password?
-                        </button>
+                        </ModalRouteBtn>
                     </div>
 
                     <nav className='flex gap-1 mt-10'>
                         <span className='text-gray-500 text-sm'>Don't have an account?</span>
-                        <button
-                            type='button'
+                        <ModalRouteBtn
+                            to='/reset-password'
+                            replace={true}
                             className='text-sm text-primary cursor-pointer hover:underline decoration-primary underline-offset-4'
-                            onClick={() =>
-                                navigate('/signup', {
-                                    state: { backgroundLocation: '/' },
-                                    replace: true,
-                                })
-                            }
                         >
                             Sign up
-                        </button>
+                        </ModalRouteBtn>
                     </nav>
                 </section>
             </div>

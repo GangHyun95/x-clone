@@ -2,9 +2,9 @@ import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import toast, { Toaster } from 'react-hot-toast';
 
-import AuthSubmitButton from '@/components/auth/button/AuthSubmitButton';
 import { TextInput } from '@/components/auth/input';
 import Spinner from '@/components/auth/Spinner';
+import { AuthSubmitBtn } from '@/components/button';
 import { useResendCode, useVerifyCode } from '@/hooks/auth/useAuth';
 import useCountdown from '@/hooks/useCountdown';
 import type { VerifyCodePayload } from '@/types/auth';
@@ -115,7 +115,7 @@ export default function StepTwo({ onNext, email, expiresAt, setExpiresAt }: Prop
                 </section>
 
                 <footer className='flex flex-col flex-none my-6 px-8 md:px-20'>
-                    <AuthSubmitButton label='Next' isLoading={isResending} loadingLabel='Resending...' disabled={!isValid || isVerifying} />
+                    <AuthSubmitBtn label='Next' isLoading={isResending} loadingLabel='Resending...' disabled={!isValid || isVerifying} />
                 </footer>
             </form>
         </>

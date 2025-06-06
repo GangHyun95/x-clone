@@ -1,10 +1,9 @@
 import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
-import { useNavigate } from 'react-router-dom';
 
-import AuthSubmitButton from '@/components/auth/button/AuthSubmitButton';
 import { TextInput } from '@/components/auth/input';
 import Spinner from '@/components/auth/Spinner';
+import { AuthSubmitBtn, ModalRouteBtn } from '@/components/button';
 import { useSendCode } from '@/hooks/auth/useAuth';
 import type { SendCodePayload } from '@/types/auth';
 
@@ -22,7 +21,6 @@ export default function StepOne({ onNext }: Props) {
     });
 
     const { register, handleSubmit, setError, setFocus, formState: { errors, isValid } } = form;
-    const navigate = useNavigate();
     const { sendCode, isSending } = useSendCode({ onSuccess: onNext, setError });
 
     useEffect(() => {
@@ -66,23 +64,18 @@ export default function StepOne({ onNext }: Props) {
                 />
                 <div className='flex gap-1 mt-2'>
                     <span className='text-gray-500 text-sm'>Already have an account?</span>
-                    <button
-                        type='button'
+                    <ModalRouteBtn
+                        to='/login'
+                        replace={true}
                         className='text-sm text-primary cursor-pointer hover:underline decoration-primary underline-offset-4'
-                        onClick={() =>
-                            navigate('/login', {
-                                state: { backgroundLocation: '/' },
-                                replace: true,
-                            })
-                        }
                     >
                         Sign In
-                    </button>
+                    </ModalRouteBtn>
                 </div>
             </section>
 
             <footer className='flex flex-col flex-none my-6 px-8 md:px-20'>
-                <AuthSubmitButton label='Next' isLoading={isSending} loadingLabel='Sending...' disabled={!isValid} />
+                <AuthSubmitBtn label='Next' isLoading={isSending} loadingLabel='Sending...' disabled={!isValid} />
             </footer>
         </form>
     );

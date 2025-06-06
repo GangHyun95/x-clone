@@ -1,7 +1,7 @@
 import toast, { Toaster } from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
 
-import AuthSubmitButton from '@/components/auth/button/AuthSubmitButton';
+import { AuthSubmitBtn } from '@/components/button';
 import { usePasswordResetCode } from '@/hooks/auth/useAuth';
 import { maskEmail } from '@/utils/formatters';
 
@@ -67,7 +67,7 @@ export default function StepTwo({ onNext, email }: Props) {
                     </div>
                 </section>
                 <footer className='flex flex-col flex-none my-6 px-8 md:px-20'>
-                    <AuthSubmitButton
+                    <AuthSubmitBtn
                         label='Next'
                         isLoading={isSending}
                         loadingLabel='Resending...'

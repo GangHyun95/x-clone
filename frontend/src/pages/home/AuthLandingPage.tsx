@@ -1,18 +1,7 @@
-import { useLocation, useNavigate } from 'react-router-dom';
-
+import { ModalRouteBtn } from '@/components/button';
 import { AppleSvg, GoogleSvg, XSvg } from '@/components/svgs';
 
 export default function AuthLandingPage() {
-    const navigate = useNavigate();
-    const location = useLocation();
-
-    const openModal = (path: string) => {
-        navigate(path, {
-            state: { backgroundLocation: location },
-            replace: false,
-        });
-    };
-
     return (
         <section className='flex-1 flex'>
             <div className='hidden flex-1 flex-col justify-center lg:flex'>
@@ -41,22 +30,22 @@ export default function AuthLandingPage() {
                         <div className='h-px flex-1 bg-gray-100'></div>
                     </div>
 
-                    <button
+                    <ModalRouteBtn
+                        to='/signup'
                         className='btn btn-primary w-[300px] rounded-full px-4 text-white font-bold'
-                        onClick={() => openModal('/signup')}
                     >
                         <span>Create account</span>
-                    </button>
+                    </ModalRouteBtn>
                 </section>
 
                 <footer className='mt-10'>
                     <h2 className='mb-4 font-bold lg:mb-5'>Already have an account?</h2>
-                    <button
+                    <ModalRouteBtn
+                        to='/login'
                         className='btn btn-ghost btn-circle border-gray-300 w-[300px] text-primary hover:bg-primary/10'
-                        onClick={() => openModal('/login')}
                     >
-                        Sign in
-                    </button>
+                        <span>Sign in</span>
+                    </ModalRouteBtn>
                 </footer>
             </div>
         </section>

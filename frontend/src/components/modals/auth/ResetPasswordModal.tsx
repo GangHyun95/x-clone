@@ -1,6 +1,6 @@
 import { useState, type JSX } from 'react';
 
-import ModalLayout from '@/layouts/ModalLayout';
+import AuthModalLayout from '@/layouts/AuthModalLayout';
 
 import { StepFour, StepOne, StepThree, StepTwo } from './steps/resetPassword'
 
@@ -40,8 +40,8 @@ export default function ResetPasswordModal() {
         />,
     };
     return (
-        <ModalLayout>
+        <AuthModalLayout>
             {steps[step] || <div className='p-4'>잘못된 단계입니다</div>}
-        </ModalLayout>
+        </AuthModalLayout>
     );
 }
