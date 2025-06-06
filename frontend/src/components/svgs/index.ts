@@ -18,3 +18,4 @@ export { default as CloseSvg } from './Close';
 export { default as SpinnerSvg } from './Spinner';
 export { default as BackArrowSvg } from './BackArrow';
 export { default as SearchSvg } from './SearchIcon';
+export { default as CalendarSvg } from './Calendar';

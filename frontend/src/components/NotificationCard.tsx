@@ -1,6 +1,5 @@
 import Avatar from '@/components/Avatar';
-import Heart from '@/components/svgs/Heart';
-import User from '@/components/svgs/User';
+import { HeartSvg, UserSvg } from '@/components/svgs';
 
 type Props = {
     type: 'likes' | 'follows';
@@ -15,8 +14,8 @@ type Props = {
 
 export default function NotificationCard({ type, user, message, content, created_at }: Props) {
     const iconMap = {
-        likes: <Heart filled className='size-8 fill-red-500' />,
-        follows: <User filled className='size-8 fill-primary' />,
+        likes: <HeartSvg filled className='size-8 fill-red-500' />,
+        follows: <UserSvg filled className='size-8 fill-primary' />,
     };
 
     return (

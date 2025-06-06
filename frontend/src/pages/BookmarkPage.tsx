@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import PageLayout from '@/components/layout/PageLayout';
 import StickyHeader from '@/components/layout/StickyHeader';
 import PostCard from '@/components/PostCard';
-import { BookmarkSvg, CommentSvg, HeartSvg, SearchSvg, ShareSvg } from '@/components/svgs';
+import { SearchSvg} from '@/components/svgs';
 
 export default function BookmarkPage() {
     const navigate = useNavigate();
@@ -13,12 +13,6 @@ export default function BookmarkPage() {
         name: '테스트계정',
         nickname: 'test',
     }
-    const postActions = [
-        { icon: CommentSvg, count: 3 },
-        { icon: HeartSvg, count: 523, color: 'red-500' },
-        { icon: BookmarkSvg },
-        { icon: ShareSvg },
-    ];
     return (
         <PageLayout>
             <StickyHeader>
@@ -57,7 +51,7 @@ export default function BookmarkPage() {
                         content='자녀분이 선물을 받고 기뻐하시겠어요.'
                         image='/test.jpeg'
                         created_at='2025-06-04T12:30:00.000Z'
-                        actions={postActions}
+                        counts={{ comment: 3, like: 523 }}
                     />
                 </section>
 

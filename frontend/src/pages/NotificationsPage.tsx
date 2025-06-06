@@ -1,5 +1,6 @@
 import PageLayout from '@/components/layout/PageLayout';
 import StickyHeader from '@/components/layout/StickyHeader';
+import Tabs from '@/components/layout/Tabs';
 import NotificationCard from '@/components/NotificationCard';
 
 export default function NotificationsPage() {
@@ -13,7 +14,7 @@ export default function NotificationsPage() {
         <PageLayout>
             <StickyHeader>
                 <StickyHeader.Header>Notifications</StickyHeader.Header>
-                <StickyHeader.Tabs tabs={tabs} />
+                <Tabs tabs={tabs}/>
             </StickyHeader>
 
             <PageLayout.Content>

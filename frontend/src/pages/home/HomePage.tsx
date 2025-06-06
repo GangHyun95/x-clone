@@ -4,8 +4,9 @@ import Avatar from '@/components/Avatar';
 import SingleLineEditor from '@/components/editor/SingleLineEditor';
 import PageLayout from '@/components/layout/PageLayout';
 import StickyHeader from '@/components/layout/StickyHeader';
+import Tabs from '@/components/layout/Tabs';
 import PostCard from '@/components/PostCard';
-import { BookmarkSvg, CommentSvg, EmojiSvg, HeartSvg, MediaSvg, ShareSvg } from '@/components/svgs';
+import { EmojiSvg, MediaSvg} from '@/components/svgs';
 
 export default function HomePage() {
     const [isDisabled, setIsDisabled] = useState(true);
@@ -21,17 +22,10 @@ export default function HomePage() {
         nickname: 'test',
     };
 
-    const postActions = [
-        { icon: CommentSvg, count: 3 },
-        { icon: HeartSvg, count: 523, color: 'red-500' },
-        { icon: BookmarkSvg },
-        { icon: ShareSvg },
-    ];
-
     return (
         <PageLayout>
             <StickyHeader>
-                <StickyHeader.Tabs tabs={tabs} />
+                <Tabs tabs={tabs}/>
             </StickyHeader>
 
             <form className='flex px-4 border-b border-base-300'>
@@ -75,7 +69,7 @@ export default function HomePage() {
                     content='자녀분이 선물을 받고 기뻐하시겠어요.'
                     image='/test.jpeg'
                     created_at='2025-06-04T12:30:00.000Z'
-                    actions={postActions}
+                    counts={{ comment: 3, like: 523 }}
                 />
             </PageLayout.Content>
         </PageLayout>

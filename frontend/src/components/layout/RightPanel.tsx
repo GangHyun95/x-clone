@@ -27,7 +27,7 @@ export default function RightPanel() {
                                 </li>
                             ))}
                         </ul>
-                        <button className='bn btn-ghost text-[15px] justify-start rounded-t-none border-0 p-4 text-left text-primary'>
+                        <button className='bn btn-ghost justify-start rounded-t-none border-0 p-4 text-left text-primary'>
                             Show more
                         </button>
                     </div>
