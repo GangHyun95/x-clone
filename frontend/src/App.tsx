@@ -1,36 +1,25 @@
-import { useEffect } from 'react';
 import { Toaster } from 'react-hot-toast';
 import { Route, Routes, useLocation } from 'react-router-dom';
 
 import { LoginModal, ResetPasswordModal, SignUpModal } from '@/components/modals/auth';
 import NewPostModal from '@/components/modals/NewPostModal';
 import { SpinnerSvg } from '@/components/svgs';
-import useCheckAuth from '@/hooks/auth/useAuth';
 import AppLayout from '@/layouts/AppLayout';
 import { AuthLandingPage, BookmarkPage, HomePage, NotificationsPage, ProfilePage, SettingsPage } from '@/pages';
-import { useAppDispatch, useAppSelector } from '@/store/hooks';
-import { setAccessToken } from '@/store/slices/authSlice';
+import { useCheckAuth, useMe } from '@/queries/auth';
+import { useEffect } from 'react';
 
 function App() {
     const location = useLocation();
     const state = location.state;
-    const dispatch = useAppDispatch();
-    const accessToken = useAppSelector((state) => state.auth.accessToken);
-    
-    const { checkAuth, isCheckingAuth } = useCheckAuth({
-        onSuccess: ({ accessToken }) => {
-            dispatch(setAccessToken({ accessToken }));
-        },
-        onError: () => {
-            dispatch(setAccessToken({ accessToken: null }));
-        },
+
+    const { data: accessToken, isLoading: isAuthLoading } = useCheckAuth();
+    const { data: user, isLoading: isMeLoading } = useMe({
+        enabled: !!accessToken && !isAuthLoading
     });
 
-    useEffect(() => {
-        checkAuth();
-    }, [checkAuth]);
-
-    if (isCheckingAuth && !accessToken)
+    console.log(user);
+    if (isAuthLoading && isMeLoading && !accessToken)
         return (
             <div className='flex items-center justify-center h-screen'>
                 <SpinnerSvg className='size-10 animate-spin text-primary'/>

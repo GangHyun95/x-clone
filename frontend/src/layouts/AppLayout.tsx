@@ -2,10 +2,10 @@ import { Outlet } from 'react-router-dom';
 
 import Sidebar from '@/components/layout/Sidebar';
 import MainLayout from '@/layouts/MainLayout';
-import { useAppSelector } from '@/store/hooks';
+import { getAccessToken } from '@/lib/authToken';
 
 export default function AppLayout() {
-    const accessToken = useAppSelector((state) => state.auth.accessToken);
+    const accessToken = getAccessToken();
 
     if (accessToken) {
         return (

@@ -7,9 +7,8 @@ import { PasswordInput, TextInput } from '@/components/auth/input';
 import Spinner from '@/components/auth/Spinner';
 import { AuthSubmitBtn } from '@/components/button';
 import { useSignup } from '@/hooks/auth/useAuth';
-import { useAppDispatch } from '@/store/hooks';
-import { setAccessToken } from '@/store/slices/authSlice';
 import type { SignupPayload } from '@/types/auth';
+import { setAccessToken } from '@/lib/authToken';
 
 type Props = {
     email: string;
@@ -27,12 +26,11 @@ export default function StepThree({ email, fullName }: Props) {
     });
     const { register, handleSubmit, setError, setFocus, formState: { errors, isValid } } = form;
 
-    const dispatch = useAppDispatch();
 
     const { signup, isSigningUp } = useSignup({
         onSuccess: (data) => {
+            setAccessToken(data.accessToken);
             toast.success('회원가입이 완료되었습니다.');
-            dispatch(setAccessToken({ accessToken: data.accessToken }));
             navigate(-1);
         },
         setError,

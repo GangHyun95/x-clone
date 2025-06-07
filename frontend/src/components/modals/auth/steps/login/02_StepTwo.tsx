@@ -6,8 +6,7 @@ import { PasswordInput } from '@/components/auth/input';
 import Spinner from '@/components/auth/Spinner';
 import { AuthSubmitBtn, ModalRouteBtn } from '@/components/button';
 import { useLogin } from '@/hooks/auth/useAuth';
-import { useAppDispatch } from '@/store/hooks';
-import { setAccessToken } from '@/store/slices/authSlice';
+import { setAccessToken } from '@/lib/authToken';
 
 export default function StepTwo({ email }: { email: string }) {
     const form = useForm<{ password: string }>({
@@ -17,13 +16,11 @@ export default function StepTwo({ email }: { email: string }) {
 
     const { register, handleSubmit, setError, setFocus, formState: { errors, isValid } } = form;
     const navigate = useNavigate();
-    const dispatch = useAppDispatch();
 
     const { login, isLoggingIn } = useLogin({
         onSuccess: (data) => {
+            setAccessToken(data.accessToken);
             navigate(-1);
-            console.log(data);
-            dispatch(setAccessToken({ accessToken: data.accessToken }));
         },
         setError,
     });

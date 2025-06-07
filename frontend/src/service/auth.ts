@@ -1,4 +1,6 @@
+import { getAccessToken } from '@/lib/authToken';
 import type { LoginPayload, ResendCodePayload, ResetCodePayload, ResetPasswordPayload, SendCodePayload, SignupPayload, VerifyCodePayload } from '@/types/auth';
+import type { User } from '@/types/user';
 
 type ApiResponse<T> = {
     success: boolean;
@@ -19,6 +21,21 @@ async function post<TPayload, TData>(
         ...options,
         body: JSON.stringify(payload),
     });
+    const data = await res.json();
+    if (!data.success) throw new Error(JSON.stringify(data));
+
+    return data;
+}
+
+async function get<TData>(
+    url: string,
+    options?: RequestInit
+): Promise<ApiResponse<TData>> {
+    const res = await fetch(url, {
+        method: 'GET',
+        ...options,
+    });
+
     const data = await res.json();
     if (!data.success) throw new Error(JSON.stringify(data));
 
@@ -64,6 +81,15 @@ export async function refreshAccessToken() {
     });
 }
 
+export async function getMe() {
+    const token = getAccessToken();
+    return get<{ user: User }>('/api/users/me', {
+        headers: {
+            Authorization: `Bearer ${token ?? ''}`,
+        },
+    });
+}
+
 export async function resetPassword(payload: ResetPasswordPayload) {
     return post<ResetPasswordPayload, void>(
         '/api/auth/password-reset',
@@ -73,18 +99,9 @@ export async function resetPassword(payload: ResetPasswordPayload) {
 
 export async function checkEmailExists(payload: { email: string }) {
     const { email } = payload;
-    const res = await fetch(
-        `/api/auth/email/check?email=${encodeURIComponent(email)}`,
-        {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-        }
+    const data = await get<{ exists: boolean }>(
+        `/api/auth/email/check?email=${encodeURIComponent(email)}`
     );
-
-    const data = await res.json();
-    if (!data.success) throw new Error(JSON.stringify(data));
 
     return { exists: data.data.exists, email };
 }

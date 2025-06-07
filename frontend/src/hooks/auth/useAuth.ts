@@ -181,20 +181,3 @@ export function useCheckEmail({ onSuccess, setError }: WithSetError<{ email: str
 
     return { checkEmail, isCheckingEmail };
 }
-
-export default function useCheckAuth({ onSuccess, onError }: { onSuccess: (data: { accessToken: string }) => void; onError: () => void }) {
-    const [isCheckingAuth, setIsCheckingAuth] = useState(true);
-
-    const checkAuth = async () => {
-        try {
-            const res = await refreshAccessToken();
-            onSuccess({ accessToken: res.data.accessToken });
-        } catch {
-            onError();
-        } finally {
-            setIsCheckingAuth(false);
-        }
-    };
-
-    return { checkAuth, isCheckingAuth };
-}
