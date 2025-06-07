@@ -5,8 +5,11 @@ export default function AuthModalLayout({ children, className = '' }: { children
     return (
         <RouteModal>
             <div
-                className={`modal-box flex flex-col w-full h-full max-w-none p-0 rounded-none 
-                        md:min-w-[600px] md:h-[650px] md:min-h-[400px] md:max-h-[90vh] md:rounded-2xl md:max-w-[600px] ${className}`}
+                className={`
+                    modal-box flex flex-col w-full h-full max-w-none p-0 rounded-none
+                    md:min-w-[600px] md:h-[650px] md:min-h-[400px] md:max-h-[90vh] md:rounded-2xl md:max-w-[600px]
+                    ${className}
+                `}
             >
                 <header className='flex h-14 justify-center px-4'>
                     <form method='dialog' className='flex flex-1 basis-1/2 items-center'>

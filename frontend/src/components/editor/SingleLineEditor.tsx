@@ -2,7 +2,12 @@
 import { Editor, EditorState } from 'draft-js';
 import { useState, useRef } from 'react';
 
-export default function SingleLineEditor({ onTextChange }: {onTextChange: (text: string) => void}) {
+type Props = {
+    onTextChange: (text: string) => void;
+    isModal?: boolean;
+};
+
+export default function SingleLineEditor({ onTextChange, isModal=false }: Props) {
     const [editorState, setEditorState] = useState(() =>
         EditorState.createEmpty()
     );
@@ -15,10 +20,7 @@ export default function SingleLineEditor({ onTextChange }: {onTextChange: (text:
     };
 
     return (
-        <div
-            className='py-3'
-            onClick={() => editorRef.current?.focus()}
-        >
+        <div className={`py-3 ${isModal ? 'min-h-24' : 'min-h-6'}`} onClick={() => editorRef.current?.focus()}>
             <Editor
                 ref={editorRef}
                 editorState={editorState}

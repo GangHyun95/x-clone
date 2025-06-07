@@ -3,6 +3,7 @@ import { Toaster } from 'react-hot-toast';
 import { Route, Routes, useLocation } from 'react-router-dom';
 
 import { LoginModal, ResetPasswordModal, SignUpModal } from '@/components/modals/auth';
+import NewPostModal from '@/components/modals/NewPostModal';
 import { SpinnerSvg } from '@/components/svgs';
 import useCheckAuth from '@/hooks/auth/useAuth';
 import AppLayout from '@/layouts/AppLayout';
@@ -57,6 +58,7 @@ function App() {
             {location.pathname === '/signup' && <SignUpModal />}
             {location.pathname === '/login' && <LoginModal />}
             {location.pathname === '/reset-password' && <ResetPasswordModal />}
+            {location.pathname === '/post/new' && <NewPostModal />}
             <Toaster />
         </>
     );

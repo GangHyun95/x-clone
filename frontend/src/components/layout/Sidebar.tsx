@@ -1,6 +1,7 @@
-import { Link, NavLink } from 'react-router-dom';
+import { Link, NavLink, useLocation } from 'react-router-dom';
 
 import Avatar from '@/components/Avatar';
+import { ModalRouteBtn } from '@/components/button';
 import { BellSvg, BookmarkSvg, HomeSvg, MoreSvg, PostSvg, SettingsSvg, UserSvg, XSvg } from '@/components/svgs';
 
 const navItems = [
@@ -12,11 +13,12 @@ const navItems = [
 ];
 
 export default function Sidebar() {
+    const location = useLocation();
     return (
         <header className='flex flex-col items-end grow'>
-            <div className='relative flex w-[88px] xl:w-[275px] xl:ml-[60px]'>
+            <div className='relative flex w-[68px] sm:w-[88px] xl:w-[275px] xl-plus:ml-[60px]'>
                 <div className='fixed top-0 flex h-full flex-col'>
-                    <div className='flex flex-col justify-between h-full w-[88px] px-2 overflow-y-auto xl:w-[275px]'>
+                    <div className='flex flex-col justify-between h-full w-[68px] px-1 overflow-y-auto xl:w-[275px] sm:w-[88px] sm:px-2'>
                         <section className='flex flex-col items-center w-full xl:items-start'>
                             <div className='py-0.5'>
                                 <Link to='/' className='btn btn-ghost btn-circle min-w-[52px] min-h-[52px]'>
@@ -53,10 +55,14 @@ export default function Sidebar() {
                                 ))}
                             </nav>
 
-                            <button className='btn btn-secondary btn-circle my-3 p-0 text-lg min-w-[52px] min-h-[52px] hover:bg-secondary/90 xl:w-[90%]'>
+                            <ModalRouteBtn
+                                to='/post/new'
+                                backgroundLocation={location.pathname}
+                                className='btn btn-secondary btn-circle my-3 p-0 text-lg min-w-[52px] min-h-[52px] hover:bg-secondary/90 xl:w-[90%]'
+                            >
                                 <span className='hidden font-bold xl:block'>Post</span>
                                 <PostSvg className='w-6 fill-white xl:hidden' />
-                            </button>
+                            </ModalRouteBtn>
                         </section>
 
                         <section className='flex flex-col items-stretch my-3 xl:items-start'>

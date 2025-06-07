@@ -55,6 +55,13 @@ body {
     z-index: 1;
 }
 
+.DraftEditor-editorContainer, .DraftEditor-root, .public-DraftEditor-content {
+    height: inherit;
+    max-height: inherit;
+    min-height: inherit;
+    text-align: initial;
+}
+
 .public-DraftEditorPlaceholder-root {
     padding-bottom: 2px;
     padding-top: 2px;

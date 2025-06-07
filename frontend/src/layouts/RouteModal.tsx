@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-export default function RouteModal({ children }: { children: React.ReactNode }) {
+export default function RouteModal({ children, position='center' }: { children: React.ReactNode, position?: 'start' | 'center'}) {
     const modalRef = useRef<HTMLDialogElement | null>(null);
     const navigate = useNavigate();
 
@@ -16,5 +16,5 @@ export default function RouteModal({ children }: { children: React.ReactNode }) 
         return () => modal.removeEventListener('close', handleClose);
     }, [navigate]);
 
-    return <dialog ref={modalRef} className='modal'>{children}</dialog>;
+    return <dialog ref={modalRef} className={`modal ${position === 'start' ? 'items-start' : ''}`}>{children}</dialog>;
 }
