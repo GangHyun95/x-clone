@@ -12,14 +12,16 @@ import {
 
 const router = express.Router();
 
-router.get('/:nickname', getUserProfile);
-router.get('/suggested', getSuggestedUsers);
-router.post('/:id/:follow', followUnfollowUser);
-
-router.get('/check-nickname', checkNickname);
-
 router.get('/me', getMe);
 router.patch('/me', updateUserProfile);
 router.delete('/me', deleteAccount);
+
+router.get('/check-nickname', checkNickname);
+router.get('/suggested', getSuggestedUsers);
+router.post('/:id/:follow', followUnfollowUser);
+
+router.get('/:nickname', getUserProfile);
+
+
 
 export default router;
