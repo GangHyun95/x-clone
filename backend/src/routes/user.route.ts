@@ -4,6 +4,7 @@ import {
     checkNickname,
     deleteAccount,
     followUnfollowUser,
+    getMe,
     getSuggestedUsers,
     getUserProfile,
     updateUserProfile,
@@ -17,6 +18,7 @@ router.post('/:id/:follow', followUnfollowUser);
 
 router.get('/check-nickname', checkNickname);
 
+router.get('/me', getMe);
 router.patch('/me', updateUserProfile);
 router.delete('/me', deleteAccount);
 

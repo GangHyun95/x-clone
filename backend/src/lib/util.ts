@@ -17,7 +17,7 @@ export const generateToken = (
         );
     }
 
-    const expiresIn = type === 'access' ? '1d' : '7d';
+    const expiresIn = type === 'access' ? '1h' : '7d';
 
     return jwt.sign({ id }, secret, {
         expiresIn,

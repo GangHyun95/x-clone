@@ -4,6 +4,26 @@ import type { Request, Response } from 'express';
 import { pool } from '../lib/db.ts';
 import { buildUserResponse, uploadAndReplaceImage } from '../lib/util.ts';
 
+export const getMe = async (req: Request, res:Response): Promise<void> => {
+    const user = req.user;
+    if (!user) {
+        res.status(401).json({ success: false, message: '사용자를 찾을 수 없습니다.'});
+        return;
+    }
+    try {
+        res.status(200).json({
+            success: true,
+            message: '유저 정보를 가져왔습니다.',
+            data: {
+                user: buildUserResponse(user),
+            },
+        });
+    } catch (error) {
+        console.error('Error in getMe:', error);
+        res.status(500).json({ success: false, message: '서버 오류가 발생했습니다.' });
+    }
+};
+
 export const getUserProfile = async (req: Request, res: Response): Promise<void> => {
     const { nickname } = req.params;
 

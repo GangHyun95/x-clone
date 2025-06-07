@@ -1,17 +1,8 @@
 import express from 'express';
 
-import {
-    checkEmailExists,
-    getGoogleClientId,
-    googleLogin,
-    login,
-    logout,
-    refreshAccessToken,
-    resetPassword,
-    sendEmailCode,
-    signup,
-    verifyEmailCode,
-} from '../controllers/auth.controller.ts';
+import { signup, login, logout, refreshAccessToken } from '../controllers/auth.controller.ts';
+import { checkEmailExists, resetPassword, sendEmailCode, verifyEmailCode } from '../controllers/email.controller.ts';
+import { getGoogleClientId, googleLogin } from '../controllers/social.controller.ts';
 
 const router = express.Router();
 
