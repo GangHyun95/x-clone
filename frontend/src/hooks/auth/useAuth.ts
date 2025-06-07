@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import type { FieldValues, UseFormSetError } from 'react-hook-form'
 
-import { login, logout, signup, sendEmailCode, verifyEmailCode, checkEmailExists, resetPassword, refreshAccessToken } from '@/service/auth';
+import { login, logout, signup, sendEmailCode, verifyEmailCode, checkEmailExists, resetPassword } from '@/service/auth';
 import type { LoginPayload, SignupPayload, SendCodePayload, VerifyCodePayload, ResetPasswordPayload } from '@/types/auth';
 import { handleFormErrors } from '@/utils/handleFormErrors';
 

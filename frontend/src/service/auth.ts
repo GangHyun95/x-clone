@@ -1,4 +1,4 @@
-import { getAccessToken } from '@/lib/authToken';
+import { getAccessToken } from '@/store/authStore';
 import type { LoginPayload, ResendCodePayload, ResetCodePayload, ResetPasswordPayload, SendCodePayload, SignupPayload, VerifyCodePayload } from '@/types/auth';
 import type { User } from '@/types/user';
 

@@ -27,15 +27,15 @@ export const generateToken = (
 export const buildUserResponse = (user: IUser): IUser => {
     return {
         id: user.id,
-        fullName: user.fullName,
+        full_name: user.full_name,
         nickname: user.nickname,
         email: user.email,
-        profileImg: user.profileImg,
-        coverImg: user.coverImg,
+        profile_img: user.profile_img,
+        cover_img: user.cover_img,
         bio: user.bio,
         link: user.link,
-        createdAt: user.createdAt,
-        updatedAt: user.updatedAt,
+        created_at: user.created_at,
+        updated_at: user.updated_at,
     };
 };
 

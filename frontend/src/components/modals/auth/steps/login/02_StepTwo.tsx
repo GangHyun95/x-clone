@@ -6,7 +6,7 @@ import { PasswordInput } from '@/components/auth/input';
 import Spinner from '@/components/auth/Spinner';
 import { AuthSubmitBtn, ModalRouteBtn } from '@/components/button';
 import { useLogin } from '@/hooks/auth/useAuth';
-import { setAccessToken } from '@/lib/authToken';
+import { setAccessToken } from '@/store/authStore';
 
 export default function StepTwo({ email }: { email: string }) {
     const form = useForm<{ password: string }>({

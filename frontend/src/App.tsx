@@ -7,7 +7,6 @@ import { SpinnerSvg } from '@/components/svgs';
 import AppLayout from '@/layouts/AppLayout';
 import { AuthLandingPage, BookmarkPage, HomePage, NotificationsPage, ProfilePage, SettingsPage } from '@/pages';
 import { useCheckAuth, useMe } from '@/queries/auth';
-import { useEffect } from 'react';
 
 function App() {
     const location = useLocation();
@@ -18,8 +17,7 @@ function App() {
         enabled: !!accessToken && !isAuthLoading
     });
 
-    console.log(user);
-    if (isAuthLoading && isMeLoading && !accessToken)
+    if ((isAuthLoading && !accessToken) || (isMeLoading && !user))
         return (
             <div className='flex items-center justify-center h-screen'>
                 <SpinnerSvg className='size-10 animate-spin text-primary'/>

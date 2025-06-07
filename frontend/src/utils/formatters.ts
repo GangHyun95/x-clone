@@ -1,3 +1,7 @@
+export function getEmailUsername(email: string): string {
+    return '@' + email.split('@')[0];
+}
+
 export function maskEmail(email: string) {
     const [local, domain] = email.split('@');
 

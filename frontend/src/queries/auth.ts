@@ -1,5 +1,6 @@
-import { getMe, refreshAccessToken } from '@/service/auth';
 import { useQuery } from '@tanstack/react-query';
+
+import { getMe, refreshAccessToken } from '@/service/auth';
 
 export function useCheckAuth() {
     return useQuery({

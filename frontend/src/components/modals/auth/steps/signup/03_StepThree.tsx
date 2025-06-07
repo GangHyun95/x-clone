@@ -7,8 +7,8 @@ import { PasswordInput, TextInput } from '@/components/auth/input';
 import Spinner from '@/components/auth/Spinner';
 import { AuthSubmitBtn } from '@/components/button';
 import { useSignup } from '@/hooks/auth/useAuth';
+import { setAccessToken } from '@/store/authStore';
 import type { SignupPayload } from '@/types/auth';
-import { setAccessToken } from '@/lib/authToken';
 
 type Props = {
     email: string;

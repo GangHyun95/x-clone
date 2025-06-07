@@ -6,7 +6,7 @@ type Props = {
 }
 export default function Avatar({ src, alt='avatar', className, overlay=true }: Props) {
     return (
-        <div className={`relative w-10 h-10 overflow-hidden rounded-full ${overlay && 'group'} ${className}`}>
+        <div className={`relative w-10 h-10 overflow-hidden rounded-full shrink-0 ${overlay && 'group'} ${className}`}>
             <div className='pb-[100%]' />
             <img
                 src={src}

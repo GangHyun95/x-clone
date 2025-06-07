@@ -1,8 +1,8 @@
 import { Link, NavLink, useLocation } from 'react-router-dom';
 
-import Avatar from '@/components/Avatar';
 import { ModalRouteBtn } from '@/components/button';
-import { BellSvg, BookmarkSvg, HomeSvg, MoreSvg, PostSvg, SettingsSvg, UserSvg, XSvg } from '@/components/svgs';
+import { BellSvg, BookmarkSvg, HomeSvg, PostSvg, SettingsSvg, UserSvg, XSvg } from '@/components/svgs';
+import UserMenuBtn from '@/components/button/UserMenuBtn';
 
 const navItems = [
     { name: 'home', label: 'Home', path: '/', icon: HomeSvg },
@@ -66,16 +66,7 @@ export default function Sidebar() {
                         </section>
 
                         <section className='flex flex-col items-stretch my-3 xl:items-start'>
-                            <button className='btn btn-ghost btn-circle w-max p-3 h-auto border-none xl:w-full'>
-                                <Avatar src='temp.png' overlay={false}/>
-                                <div className='mx-3 shrink-1 flex-col hidden xl:flex'>
-                                    <span className='text-start font-semibold shrink-1'>ㅇㅅㅇ</span>
-                                    <span className='text-gray-500 font-normal shrink-1'>@hgh6128</span>
-                                </div>
-                                <div className='grow flex-col hidden xl:flex'>
-                                    <MoreSvg className='w-5 h-5 self-end' />
-                                </div>
-                            </button>
+                            <UserMenuBtn />
                         </section>
                     </div>
                 </div>

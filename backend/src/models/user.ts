@@ -1,15 +1,15 @@
 export interface IUser {
     id: number;
     nickname: string;
-    fullName: string;
+    full_name: string;
     email: string;
     password?: string;
-    googleId?: string;
-    appleId?: string;
-    profileImg?: string;
-    coverImg?: string;
+    google_id?: string;
+    apple_id?: string;
+    profile_img?: string;
+    cover_img?: string;
     bio?: string;
     link?: string;
-    createdAt?: Date;
-    updatedAt?: Date;
+    created_at?: Date;
+    updated_at?: Date;
 }
