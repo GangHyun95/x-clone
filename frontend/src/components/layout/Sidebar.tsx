@@ -1,8 +1,8 @@
 import { Link, NavLink, useLocation } from 'react-router-dom';
 
 import { ModalRouteBtn } from '@/components/button';
-import { BellSvg, BookmarkSvg, HomeSvg, PostSvg, SettingsSvg, UserSvg, XSvg } from '@/components/svgs';
 import UserMenuBtn from '@/components/button/UserMenuBtn';
+import { BellSvg, BookmarkSvg, HomeSvg, PostSvg, SettingsSvg, UserSvg, XSvg } from '@/components/svgs';
 
 const navItems = [
     { name: 'home', label: 'Home', path: '/', icon: HomeSvg },
