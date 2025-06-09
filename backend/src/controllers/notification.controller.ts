@@ -16,7 +16,7 @@ export const getNotifications = async (req: Request, res: Response): Promise<voi
                     json_build_object(
                         'id', u.id,
                         'nickname', u.nickname,
-                        'profileImg', u.profile_img
+                        'profile_img', u.profile_img
                     ) as from_user
              FROM notifications n
              JOIN users u ON n.from_user_id = u.id

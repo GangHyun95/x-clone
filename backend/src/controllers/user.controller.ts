@@ -2,7 +2,7 @@ import bcrypt from 'bcryptjs';
 import type { Request, Response } from 'express';
 
 import { pool } from '../lib/db.ts';
-import { buildUserResponse, uploadAndReplaceImage } from '../lib/util.ts';
+import { buildUserDetail, buildUserSummary, uploadAndReplaceImage } from '../lib/util.ts';
 
 export const getMe = async (req: Request, res:Response): Promise<void> => {
     const user = req.user;
@@ -15,7 +15,7 @@ export const getMe = async (req: Request, res:Response): Promise<void> => {
             success: true,
             message: '유저 정보를 가져왔습니다.',
             data: {
-                user: buildUserResponse(user),
+                user: buildUserSummary(user),
             },
         });
     } catch (error) {
@@ -33,7 +33,7 @@ export const getUserProfile = async (req: Request, res: Response): Promise<void>
         res.status(200).json({
             success: true,
             data: {
-                user: buildUserResponse(user),
+                user: buildUserDetail(user),
             }
         });
     } catch (error) {
@@ -150,7 +150,7 @@ export const getSuggestedUsers = async (req: Request, res: Response): Promise<vo
         res.status(200).json({
             success: true,
             data: {
-                users: suggestedUsers.map(user => buildUserResponse(user)),
+                users: suggestedUsers.map(user => buildUserSummary(user)),
             },
         });
     } catch (err) {
@@ -204,13 +204,15 @@ export const updateUserProfile = async (req: Request, res: Response): Promise<vo
         nickname,
         currentPassword,
         newPassword,
-        profileImg,
-        coverImg,
         bio,
         link,
     } = req.body;
 
     const userId = req.user.id;
+    const files = req.files as {
+        profileImg?: Express.Multer.File[];
+        coverImg?: Express.Multer.File[];
+    };
 
     try {
         const userResult = await pool.query('SELECT * FROM users WHERE id = $1', [userId]);
@@ -260,12 +262,12 @@ export const updateUserProfile = async (req: Request, res: Response): Promise<vo
             }
         }
 
-        const newProfileImg = profileImg
-            ? await uploadAndReplaceImage(user.profile_img, profileImg)
+        const newProfileImg = files.profileImg
+            ? await uploadAndReplaceImage(user.profile_img, files.profileImg[0].path)
             : user.profile_img;
 
-        const newCoverImg = coverImg
-            ? await uploadAndReplaceImage(user.cover_img, coverImg)
+        const newCoverImg = files.coverImg
+            ? await uploadAndReplaceImage(user.cover_img, files.coverImg[0].path)
             : user.cover_img;
 
         const updatedUserResult = await pool.query(
@@ -300,7 +302,7 @@ export const updateUserProfile = async (req: Request, res: Response): Promise<vo
         res.status(200).json({
             success: true,
             message: '프로필이 업데이트 되었습니다.',
-            data: { user: buildUserResponse(updatedUser) }
+            data: { user: buildUserDetail(updatedUser) }
         });
     } catch (error) {
         console.error('Error in updateUserProfile:', error);

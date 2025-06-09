@@ -5,22 +5,23 @@ import { deleteImage, uploadAndReplaceImage } from '../lib/util.ts';
 
 export const createPost = async (req: Request, res: Response): Promise<void> => {
     const userId = req.user?.id;
-    const { text, img } = req.body;
+    const { text } = req.body;
+    const file = req.file;
 
     if (!userId) {
         res.status(401).json({ success: false, message: '사용자를 찾을 수 없습니다.' });
         return;
     }
 
-    if (!text && !img) {
+    if (!text && !file) {
         res.status(400).json({ success: false, message: '텍스트 또는 이미지를 입력해야 합니다.' });
         return;
     }
 
     try {
         let uploadImgUrl = null;
-        if (img) {
-            uploadImgUrl = await uploadAndReplaceImage(null, img);
+        if (file) {
+            uploadImgUrl = await uploadAndReplaceImage(null, file.path);
         }
 
         const result = await pool.query(
@@ -38,15 +39,16 @@ export const createPost = async (req: Request, res: Response): Promise<void> => 
 export const editPost = async (req: Request, res: Response): Promise<void> => {
     const userId = req.user?.id;
     const postId = req.params.id;
-    const { text, img } = req.body;
+    const { text, removeImage } = req.body;
+    const file = req.file
 
     if (!userId) {
         res.status(401).json({ success: false, message: '사용자를 찾을 수 없습니다.' });
         return;
     }
 
-    if (!text && !img) {
-        res.status(400).json({ success: false, message: '텍스트 또는 이미지를 입력해야 합니다.' });
+    if (!text && !file && removeImage !== 'true') {
+        res.status(400).json({ success: false, message: '수정할 내용이 없습니다.' });
         return;
     }
 
@@ -65,13 +67,16 @@ export const editPost = async (req: Request, res: Response): Promise<void> => {
         }
 
         let newImg = post.img;
-        if (img === null || img === '') {
+
+        if (removeImage === 'true') {
             if (post.img) {
                 await deleteImage(post.img);
                 newImg = null;
             }
-        } else if (img) {
-            newImg = await uploadAndReplaceImage(post.img ?? null, img);
+        }
+        
+        if (file) {
+            newImg = await uploadAndReplaceImage(post.img ?? null, file.path);
         }
 
         const updateResult = await pool.query(
@@ -192,7 +197,7 @@ export const likeUnlikePost = async (req: Request, res: Response): Promise<void>
 
             await pool.query(
                 `INSERT INTO notifications (from_user_id, to_user_id, type, created_at)
-                 VALUES ($1, $2, 'like', NOW())`,
+                VALUES ($1, $2, 'like', NOW())`,
                 [userId, post.user_id]
             );
 
@@ -220,9 +225,13 @@ export const getAllPosts = async (req: Request, res: Response): Promise<void> =>
                 json_build_object(
                     'id', users.id,
                     'nickname', users.nickname,
-                    'fullName', users.full_name,
-                    'profileImg', users.profile_img
-                ) as user
+                    'full_name', users.full_name,
+                    'profile_img', users.profile_img
+                ) as user,
+                json_build_object(
+                    'like', (SELECT COUNT(*) FROM post_likes WHERE post_id = posts.id),
+                    'comment', (SELECT COUNT(*) FROM comments WHERE post_id = posts.id)
+                ) AS counts
             FROM posts
             JOIN users ON users.id = posts.user_id
             ORDER BY posts.created_at DESC`
@@ -259,9 +268,9 @@ export const getUserPosts = async (req: Request, res: Response): Promise<void> =
                 posts.updated_at,
                 json_build_object(
                     'id', users.id,
-                    'nickname', users.nickname,
-                    'fullName', users.full_name,
-                    'profileImg', users.profile_img
+                    'nick_name', users.nickname,
+                    'full_name', users.full_name,
+                    'profile_img', users.profile_img
                 ) as user
             FROM posts
             JOIN users ON users.id = posts.user_id
@@ -306,9 +315,9 @@ export const getFollowingPosts = async (req: Request, res: Response): Promise<vo
                 posts.updated_at,
                 json_build_object(
                     'id', users.id,
-                    'nickname', users.nickname,
-                    'fullName', users.full_name,
-                    'profileImg', users.profile_img
+                    'nick_name', users.nickname,
+                    'full_name', users.full_name,
+                    'profile_img', users.profile_img
                 ) as user
             FROM posts
             JOIN users ON users.id = posts.user_id
@@ -347,9 +356,9 @@ export const getLikedPosts = async (req: Request, res: Response): Promise<void> 
                 posts.updated_at,
                 json_build_object(
                     'id', users.id,
-                    'nickname', users.nickname,
-                    'fullName', users.full_name,
-                    'profileImg', users.profile_img
+                    'nick_name', users.nickname,
+                    'full_name', users.full_name,
+                    'profile_img', users.profile_img
                 ) as user
             FROM post_likes
             JOIN posts ON post_likes.post_id = posts.id

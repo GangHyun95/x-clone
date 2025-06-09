@@ -1,7 +1,7 @@
 import jwt from 'jsonwebtoken';
 
 import cloudinary from './cloudinary.ts';
-import type { IUser } from '../models/user.ts';
+import type { UserDetail, UserSummary } from '../models/user.ts';
 
 export const generateToken = (
     id: string,
@@ -24,7 +24,15 @@ export const generateToken = (
     });
 };
 
-export const buildUserResponse = (user: IUser): IUser => {
+export const buildUserSummary = (user: UserDetail): UserSummary => ({
+    id: user.id,
+    nickname: user.nickname,
+    full_name: user.full_name,
+    email: user.email,
+    profile_img: user.profile_img,
+});
+
+export const buildUserDetail = (user: UserDetail): UserDetail => {
     return {
         id: user.id,
         full_name: user.full_name,
@@ -41,14 +49,14 @@ export const buildUserResponse = (user: IUser): IUser => {
 
 export const uploadAndReplaceImage = async (
     oldImageUrl: string | null,
-    newBase64: string
+    filePath: string
 ): Promise<string> => {
     if (oldImageUrl) {
         await deleteImage(oldImageUrl);
     }
 
     try {
-        const uploaded = await cloudinary.uploader.upload(newBase64);
+        const uploaded = await cloudinary.uploader.upload(filePath);
         return uploaded.secure_url;
     } catch (error) {
         console.error('Cloudinary 이미지 업로드 실패:', error);

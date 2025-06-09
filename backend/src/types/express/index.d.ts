@@ -1,9 +1,9 @@
-import type { IUser } from '../../models/user.ts';
+import type { UserDetail } from '../../models/user.ts';
 
 declare global {
     namespace Express {
         interface Request {
-            user?: IUser;
+            user?: UserDetail;
         }
     }
 }
