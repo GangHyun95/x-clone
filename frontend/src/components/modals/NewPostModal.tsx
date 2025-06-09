@@ -25,7 +25,7 @@ export default function NewPostModal() {
                     </div>
                     <div className='flex-1 basis-1/2 min-h-8' />
                 </header>
-                <PostEditorForm profileImg='/temp.png' variant='modal'/>
+                <PostEditorForm variant='modal'/>
 
             </div>
         </RouteModal>

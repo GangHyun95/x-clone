@@ -3,34 +3,33 @@ import PageLayout from '@/components/layout/PageLayout';
 import StickyHeader from '@/components/layout/StickyHeader';
 import Tabs from '@/components/layout/Tabs';
 import PostCard from '@/components/PostCard';
+import { usePosts } from '@/queries/post';
 
 export default function HomePage() {
-
+    const { data: posts } = usePosts();
     const tabs = [
         { label: 'For you', to: '/', active: true },
         { label: 'Following', to: '/', active: false },
     ];
-    
-    const user = {
-        profile_img: '/temp.png',
-        name: '테스트계정',
-        nickname: 'test',
-    };
 
     return (
         <PageLayout>
             <StickyHeader>
                 <Tabs tabs={tabs}/>
             </StickyHeader>
-            <PostEditorForm profileImg='/temp.png'/>
+            <PostEditorForm />
             <PageLayout.Content>
-                <PostCard 
-                    user={user}
-                    content='자녀분이 선물을 받고 기뻐하시겠어요.'
-                    image='/test.jpeg'
-                    created_at='2025-06-04T12:30:00.000Z'
-                    counts={{ comment: 3, like: 523 }}
-                />
+                {posts?.map((post) => (
+                    <PostCard 
+                        user={post.user}
+                        key={post.id}
+                        content={post.content}
+                        image={post.img}
+                        created_at={post.created_at}
+                        counts={post.counts}
+
+                    />
+                ))}
             </PageLayout.Content>
         </PageLayout>
     );

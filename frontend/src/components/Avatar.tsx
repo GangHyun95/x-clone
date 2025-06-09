@@ -1,5 +1,5 @@
 type Props = {
-    src: string;
+    src?: string;
     alt?: string;
     className?: string;
     overlay?: boolean;
@@ -9,7 +9,7 @@ export default function Avatar({ src, alt='avatar', className, overlay=true }: P
         <div className={`relative w-10 h-10 overflow-hidden rounded-full shrink-0 ${overlay && 'group'} ${className}`}>
             <div className='pb-[100%]' />
             <img
-                src={src}
+                src={src || '/avatar-placeholder.png'}
                 alt={alt}
                 className='absolute inset-0 object-cover'
             />

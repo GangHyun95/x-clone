@@ -15,7 +15,6 @@ export default function UserMenuBtn() {
     const calculatePosition = () => {
         if (!btnRef.current) return;
         const rect = btnRef.current.getBoundingClientRect();
-        console.log(rect);
         setPosition({
             bottom: window.innerHeight - rect.top,
             left: rect.left,
@@ -53,7 +52,7 @@ export default function UserMenuBtn() {
                 className='btn btn-ghost btn-circle gap-0 w-max p-3 h-auto border-none xl:w-full'
             >
                 <Avatar
-                    src={me.profile_img || '/avatar-placeholder.png'}
+                    src={me.profile_img}
                     overlay={false}
                 />
 

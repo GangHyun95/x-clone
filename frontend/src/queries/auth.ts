@@ -1,6 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 
-import { getMe, refreshAccessToken } from '@/service/auth';
+import { refreshAccessToken } from '@/service/auth';
+import { getMe } from '@/service/user';
 
 export function useCheckAuth() {
     return useQuery({
@@ -12,6 +13,7 @@ export function useCheckAuth() {
         staleTime: 1000 * 60 * 50,
         gcTime: 1000 * 60 * 60,
         retry: false,
+        refetchOnWindowFocus: false,
     });
 }
 
@@ -26,5 +28,6 @@ export function useMe(options?: { enabled?: boolean }) {
         gcTime: 1000 * 60 * 60,
         retry: false,
         enabled: options?.enabled ?? true,
+        refetchOnWindowFocus: false,
     });
 }

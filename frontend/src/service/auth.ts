@@ -1,46 +1,6 @@
-import { getAccessToken } from '@/store/authStore';
 import type { LoginPayload, ResendCodePayload, ResetCodePayload, ResetPasswordPayload, SendCodePayload, SignupPayload, VerifyCodePayload } from '@/types/auth';
-import type { User } from '@/types/user';
 
-type ApiResponse<T> = {
-    success: boolean;
-    message: string;
-    data: T;
-};
-
-async function post<TPayload, TData>(
-    url: string,
-    payload: TPayload,
-    options?: RequestInit
-): Promise<ApiResponse<TData>> {
-    const res = await fetch(url, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        ...options,
-        body: JSON.stringify(payload),
-    });
-    const data = await res.json();
-    if (!data.success) throw new Error(JSON.stringify(data));
-
-    return data;
-}
-
-async function get<TData>(
-    url: string,
-    options?: RequestInit
-): Promise<ApiResponse<TData>> {
-    const res = await fetch(url, {
-        method: 'GET',
-        ...options,
-    });
-
-    const data = await res.json();
-    if (!data.success) throw new Error(JSON.stringify(data));
-
-    return data;
-}
+import { post, get } from './api/client'
 
 export async function sendEmailCode(
     payload: SendCodePayload | ResendCodePayload | ResetCodePayload
@@ -78,15 +38,6 @@ export async function logout() {
 export async function refreshAccessToken() {
     return post<void, { accessToken: string }>('/api/auth/refresh', undefined, {
         credentials: 'include',
-    });
-}
-
-export async function getMe() {
-    const token = getAccessToken();
-    return get<{ user: User }>('/api/users/me', {
-        headers: {
-            Authorization: `Bearer ${token ?? ''}`,
-        },
     });
 }
 

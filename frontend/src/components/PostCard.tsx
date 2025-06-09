@@ -1,9 +1,12 @@
+import { useEffect, useState } from 'react';
+
 import Avatar from '@/components/Avatar';
 import { BookmarkSvg, CommentSvg, HeartSvg, ShareSvg } from '@/components/svgs';
+import type { UserPreview } from '@/types/user';
 import { formatTimeFromNow } from '@/utils/formatters';
 
 type Props = {
-    user: { profile_img: string; name: string; nickname: string; }
+    user: UserPreview;
     content: string;
     image?: string;
     created_at: string;
@@ -14,6 +17,18 @@ type Props = {
 };
 
 export default function PostCard({ user, content, image, created_at, counts }: Props) {
+    const [aspectRatio, setAspectRatio] = useState(100);
+
+    useEffect(() => {
+        if (!image) return;
+        const img = new Image();
+        img.src = image;
+        img.onload = () => {
+            const ratio = (img.height / img.width) * 100;
+            setAspectRatio(ratio);
+        }
+        console.log(aspectRatio);
+    }, [image])
     return (
         <article className='flex flex-col px-4 py-3 border-b border-base-300'>
             <div className='flex'>
@@ -23,7 +38,7 @@ export default function PostCard({ user, content, image, created_at, counts }: P
                 <div className='flex grow flex-col'>
                     <div>
                         <ul className='flex items-center'>
-                            <li><span className='font-extrabold'>{user.name}</span></li>
+                            <li><span className='font-extrabold'>{user.full_name}</span></li>
                             <li className='ml-1.5 text-gray-500'>
                                 <span>@{user.nickname}</span>
                                 <span className='px-1'>·</span>
@@ -36,8 +51,8 @@ export default function PostCard({ user, content, image, created_at, counts }: P
                     </div>
                     {image && (
                         <figure className='relative mt-3 cursor-pointer border border-base-300'>
-                            <div className='w-full pb-[100%]' />
-                            <img src={image} alt='post' className='absolute inset-0' />
+                            <div className='w-full' style={{ paddingBottom: `${aspectRatio}%` }} />
+                            <img src={image} alt='post' className='absolute inset-0 w-full h-full' />
                         </figure>
                     )}
                     <footer className='mt-3 flex justify-between gap-1'>

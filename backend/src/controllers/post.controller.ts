@@ -24,12 +24,37 @@ export const createPost = async (req: Request, res: Response): Promise<void> => 
             uploadImgUrl = await uploadAndReplaceImage(null, file.path);
         }
 
-        const result = await pool.query(
-            `INSERT INTO posts (user_id, content, img) VALUES ($1, $2, $3) RETURNING *`,
+        const insertResult = await pool.query(
+            `INSERT INTO posts (user_id, content, img) VALUES ($1, $2, $3) RETURNING id`,
             [userId, text || null, uploadImgUrl]
         );
 
-        res.status(201).json({ success: true, message: '게시물이 생성되었습니다.', data: { post: result.rows[0] } });
+        const postId = insertResult.rows[0].id;
+
+        const postResult = await pool.query(
+            `SELECT
+                posts.id,
+                posts.content,
+                posts.img,
+                posts.created_at,
+                posts.updated_at,
+                json_build_object(
+                    'id', users.id,
+                    'nickname', users.nickname,
+                    'full_name', users.full_name,
+                    'profile_img', users.profile_img
+                ) as user,
+                json_build_object(
+                    'like', (SELECT COUNT(*) FROM post_likes WHERE post_id = posts.id),
+                    'comment', (SELECT COUNT(*) FROM comments WHERE post_id = posts.id)
+                ) AS counts
+            FROM posts
+            JOIN users ON users.id = posts.user_id
+            WHERE posts.id = $1`,
+            [postId]
+        );
+
+        res.status(201).json({ success: true, message: '게시물이 생성되었습니다.', data: { post: postResult.rows[0] } });
     } catch (error) {
         console.error('Error in createPost:', error);
         res.status(500).json({ success: false, message: '서버 오류가 발생했습니다.' });

@@ -13,3 +13,5 @@ export interface User {
     created_at?: Date;
     updated_at?: Date;
 }
+
+export type UserPreview = Pick<User, 'id' | 'nickname' | 'full_name' | 'profile_img'>;
