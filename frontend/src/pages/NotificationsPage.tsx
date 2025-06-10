@@ -1,6 +1,6 @@
+import StickyHeader from '@/components/common/StickyHeader';
+import Tabs from '@/components/common/Tabs';
 import PageLayout from '@/components/layout/PageLayout';
-import StickyHeader from '@/components/layout/StickyHeader';
-import Tabs from '@/components/layout/Tabs';
 import NotificationCard from '@/components/NotificationCard';
 
 export default function NotificationsPage() {

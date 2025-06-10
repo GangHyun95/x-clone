@@ -1,8 +1,8 @@
 import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 
+import AuthSubmitBtn from '@/components/auth/AuthSubmitBtn';
 import { TextInput } from '@/components/auth/input';
-import { AuthSubmitBtn } from '@/components/button';
 import { useCheckEmail } from '@/hooks/auth/useAuth';
 
 type Props = {

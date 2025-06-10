@@ -1,44 +1,14 @@
 import { useEffect, useState } from 'react';
 
-import toast from 'react-hot-toast';
-
-import Avatar from '@/components/Avatar';
-import { BookmarkSvg, CommentSvg, HeartSvg, ShareSvg } from '@/components/svgs';
-import { queryClient } from '@/lib/queryClient';
-import { useLikeUnlikePost } from '@/queries/post';
+import Avatar from '@/components/common/Avatar';
+import { BookmarkSvg, CommentSvg, ShareSvg } from '@/components/svgs';
 import type { Post } from '@/types/post';
 import { formatTimeFromNow } from '@/utils/formatters';
 
+import LikeButton from './LikeButton';
+
 export default function PostCard({id, img, user, created_at, content, counts, is_liked}: Post) {
     const [aspectRatio, setAspectRatio] = useState(100);
-    const { mutate: likeUnlikePost } = useLikeUnlikePost();
-
-    const handleLikeUnlike = () => {
-        likeUnlikePost({ id }, {
-            onSuccess: (data) => {
-                toast.success(data.message)
-                queryClient.setQueryData<Post[]>(['posts'], (old) => {
-                    if (!old) return old;
-                    return old.map((post) => {
-                        if (post.id !== id) return post;
-                        const liked = !post.is_liked;
-                        const likeCount = liked ? post.counts.like + 1 : post.counts.like - 1;
-                        return {
-                            ...post,
-                            is_liked: liked,
-                            counts: {
-                                ...post.counts,
-                                like: likeCount,
-                            },
-                        };
-                    });
-                });
-            },
-            onError: (error) => {
-                console.error('Error liking/unliking post:', error);
-            },
-        });
-    };
 
     useEffect(() => {
         if (!img) return;
@@ -83,16 +53,7 @@ export default function PostCard({id, img, user, created_at, content, counts, is
                             </button>
                             <span className='text-sm px-1'>{counts.comment}</span>
                         </div>
-
-                        <div className='flex-1 flex items-center cursor-pointer group'>
-                            <button
-                                className='btn btn-sm btn-ghost btn-circle border-0 group-hover:bg-red-500/10'
-                                onClick={handleLikeUnlike}
-                            >
-                                <HeartSvg filled={is_liked} className={`h-5 group-hover:fill-red-500 ${is_liked ? 'fill-red-500' : 'fill-gray-500'}`} />
-                            </button>
-                            <span className={`text-sm px-1 ${is_liked ? 'text-red-500' : ''}`}>{counts.like}</span>
-                        </div>
+                        <LikeButton id={id} is_liked={is_liked} likeCount={counts.like} />
 
                         <div className='flex-1 flex items-center cursor-pointer group'>
                             <button className='btn btn-sm btn-ghost btn-circle border-0 group-hover:bg-primary/10'>

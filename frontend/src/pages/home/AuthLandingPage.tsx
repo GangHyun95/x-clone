@@ -1,4 +1,4 @@
-import { ModalRouteBtn } from '@/components/button';
+import ModalRouteBtn from '@/components/common/ModalRouteBtn';
 import { AppleSvg, GoogleSvg, XSvg } from '@/components/svgs';
 
 export default function AuthLandingPage() {

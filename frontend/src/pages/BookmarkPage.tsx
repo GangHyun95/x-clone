@@ -1,8 +1,8 @@
 import { useNavigate } from 'react-router-dom';
 
+import StickyHeader from '@/components/common/StickyHeader';
 import PageLayout from '@/components/layout/PageLayout';
-import StickyHeader from '@/components/layout/StickyHeader';
-import PostCard from '@/components/PostCard';
+import PostCard from '@/components/postcard';
 import { SearchSvg} from '@/components/svgs';
 
 export default function BookmarkPage() {

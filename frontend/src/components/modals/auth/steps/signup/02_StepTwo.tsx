@@ -2,9 +2,9 @@ import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import toast, { Toaster } from 'react-hot-toast';
 
+import AuthSubmitBtn from '@/components/auth/AuthSubmitBtn';
 import { TextInput } from '@/components/auth/input';
 import Spinner from '@/components/auth/Spinner';
-import { AuthSubmitBtn } from '@/components/button';
 import { useResendCode, useVerifyCode } from '@/hooks/auth/useAuth';
 import useCountdown from '@/hooks/useCountdown';
 import type { VerifyCodePayload } from '@/types/auth';

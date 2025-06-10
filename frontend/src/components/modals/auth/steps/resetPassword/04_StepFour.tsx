@@ -4,8 +4,8 @@ import { useForm } from 'react-hook-form';
 import toast from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
 
+import AuthSubmitBtn from '@/components/auth/AuthSubmitBtn';
 import { PasswordInput } from '@/components/auth/input';
-import { AuthSubmitBtn } from '@/components/button';
 import { useResetPassword } from '@/hooks/auth/useAuth';
 import type { ResetPasswordPayload } from '@/types/auth';
 

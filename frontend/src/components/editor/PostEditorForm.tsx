@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-import Avatar from '@/components/Avatar';
+import Avatar from '@/components/common/Avatar';
 import ImageUploadBtn from '@/components/editor/ImageUploadBtn';
 import SingleLineEditor from '@/components/editor/SingleLineEditor';
 import { EmojiSvg } from '@/components/svgs';

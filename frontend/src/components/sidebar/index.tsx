@@ -1,9 +1,11 @@
 import { Link, NavLink, useLocation } from 'react-router-dom';
 
-import { ModalRouteBtn } from '@/components/button';
-import UserMenuBtn from '@/components/button/UserMenuBtn';
+import ModalRouteBtn from '@/components/common/ModalRouteBtn';
 import { BellSvg, BookmarkSvg, HomeSvg, PostSvg, SettingsSvg, UserSvg, XSvg } from '@/components/svgs';
+
 import { getCurrentUser } from '@/store/authStore';
+
+import UserMenuBtn from './UserMenuBtn';
 
 const navItems = [
     { name: 'home', label: 'Home', path: '/', icon: HomeSvg },

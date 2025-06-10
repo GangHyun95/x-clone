@@ -1,4 +1,4 @@
-import Avatar from '@/components/Avatar'
+import Avatar from '@/components/common/Avatar';
 import { useSuggestedUsers } from '@/queries/user';
 
 export default function RightPanel() {

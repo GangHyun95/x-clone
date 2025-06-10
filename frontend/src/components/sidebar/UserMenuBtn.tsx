@@ -1,9 +1,10 @@
 import { useEffect, useRef, useState } from 'react';
 
-import Avatar from '@/components/Avatar';
+import Avatar from '@/components/common/Avatar';
 import { MoreSvg } from '@/components/svgs';
 import { getCurrentUser } from '@/store/authStore';
-import UserMenuDropdown from '@/UserMenuDropdown';
+
+import UserMenuDropdown from './UserMenuDropdown';
 
 export default function UserMenuBtn() {
     const me = getCurrentUser();

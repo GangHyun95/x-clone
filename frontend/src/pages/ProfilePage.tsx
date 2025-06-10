@@ -1,8 +1,8 @@
 import { useNavigate, useParams } from 'react-router-dom';
 
+import StickyHeader from '@/components/common/StickyHeader';
+import Tabs from '@/components/common/Tabs';
 import PageLayout from '@/components/layout/PageLayout';
-import StickyHeader from '@/components/layout/StickyHeader';
-import Tabs from '@/components/layout/Tabs';
 import PostCard from '@/components/PostCard';
 import { CalendarSvg } from '@/components/svgs';
 // import { useUserProfile } from '@/queries/user';

@@ -1,8 +1,8 @@
+import StickyHeader from '@/components/common/StickyHeader';
+import Tabs from '@/components/common/Tabs';
 import PostEditorForm from '@/components/editor/PostEditorForm';
 import PageLayout from '@/components/layout/PageLayout';
-import StickyHeader from '@/components/layout/StickyHeader';
-import Tabs from '@/components/layout/Tabs';
-import PostCard from '@/components/PostCard';
+import PostCard from '@/components/postcard';
 import { usePosts } from '@/queries/post';
 
 export default function HomePage() {

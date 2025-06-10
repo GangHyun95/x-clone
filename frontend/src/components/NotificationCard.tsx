@@ -1,4 +1,4 @@
-import Avatar from '@/components/Avatar';
+import Avatar from '@/components/common/Avatar';
 import { HeartSvg, UserSvg } from '@/components/svgs';
 
 type Props = {

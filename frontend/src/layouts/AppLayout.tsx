@@ -1,6 +1,6 @@
 import { Outlet } from 'react-router-dom';
 
-import Sidebar from '@/components/layout/Sidebar';
+import Sidebar from '@/components/sidebar';
 import MainLayout from '@/layouts/MainLayout';
 import { getAccessToken } from '@/store/authStore';
 

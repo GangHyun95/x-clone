@@ -1,7 +1,7 @@
 import toast, { Toaster } from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
 
-import { AuthSubmitBtn } from '@/components/button';
+import AuthSubmitBtn from '@/components/auth/AuthSubmitBtn';
 import { usePasswordResetCode } from '@/hooks/auth/useAuth';
 import { maskEmail } from '@/utils/formatters';
 
