@@ -1,13 +1,19 @@
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 
 import PageLayout from '@/components/layout/PageLayout';
 import StickyHeader from '@/components/layout/StickyHeader';
 import Tabs from '@/components/layout/Tabs';
 import PostCard from '@/components/PostCard';
 import { CalendarSvg } from '@/components/svgs';
+// import { useUserProfile } from '@/queries/user';
 
 export default function ProfilePage() {
+    const { nickname } = useParams<{ nickname: string }>();
+    console.log(nickname);
     const navigate = useNavigate();
+
+    // const { data, isLoading } = useUserProfile(nickname ?? '');
+    // console.log(data);
 
     const tabs = [
         { label: 'Posts', to: '/profile', active: true },
@@ -15,6 +21,8 @@ export default function ProfilePage() {
     ];
 
     const user = {
+        id: '1',
+        full_name: '테스트계정',
         profile_img: '/temp.png',
         name: '테스트계정',
         nickname: 'test',

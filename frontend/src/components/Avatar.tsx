@@ -1,19 +1,21 @@
+import { Link } from 'react-router-dom';
+
 type Props = {
-    src?: string;
+    src: string;
+    nickname?: string;
     alt?: string;
     className?: string;
-    overlay?: boolean;
 }
-export default function Avatar({ src, alt='avatar', className, overlay=true }: Props) {
+export default function Avatar({ src, alt='avatar', className, nickname }: Props) {
     return (
-        <div className={`relative w-10 h-10 overflow-hidden rounded-full shrink-0 ${overlay && 'group'} ${className}`}>
+        <div className={`relative w-10 h-10 overflow-hidden rounded-full shrink-0 ${nickname && 'group'} ${className}`}>
             <div className='pb-[100%]' />
             <img
                 src={src || '/avatar-placeholder.png'}
                 alt={alt}
                 className='absolute inset-0 object-cover'
             />
-            {overlay && <div className='absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 cursor-pointer' />}
+            {nickname && <Link to={`/profile/${nickname}`} className='absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 cursor-pointer' />}
         </div>
     );
 }

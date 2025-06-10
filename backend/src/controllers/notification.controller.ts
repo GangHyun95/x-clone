@@ -12,7 +12,7 @@ export const getNotifications = async (req: Request, res: Response): Promise<voi
 
     try {
         const notificationsResult = await pool.query(
-            `SELECT n.id, n.type, n.content, n.read, n.created_at,
+            `SELECT n.id, n.type, n.read, n.created_at,
                     json_build_object(
                         'id', u.id,
                         'nickname', u.nickname,

@@ -4,7 +4,6 @@ import Avatar from '@/components/Avatar';
 import { MoreSvg } from '@/components/svgs';
 import { getCurrentUser } from '@/store/authStore';
 import UserMenuDropdown from '@/UserMenuDropdown';
-import { getEmailUsername } from '@/utils/formatters';
 
 export default function UserMenuBtn() {
     const me = getCurrentUser();
@@ -53,15 +52,14 @@ export default function UserMenuBtn() {
             >
                 <Avatar
                     src={me.profile_img}
-                    overlay={false}
                 />
 
                 <div className='mx-3 hidden xl:flex flex-col flex-1 min-w-0 text-start'>
                     <span className='truncate whitespace-nowrap font-semibold'>
-                        {me.nickname}
+                        {me.full_name}
                     </span>
                     <span className='truncate whitespace-nowrap text-gray-500 font-normal'>
-                        {getEmailUsername(me.email)}
+                        @{me.nickname}
                     </span>
                 </div>
 
@@ -73,7 +71,7 @@ export default function UserMenuBtn() {
                 open={open}
                 position={position}
                 onClose={() => setOpen(false)}
-                email={me.email}
+                nickname={me.nickname}
             />
         </>
     );

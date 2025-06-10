@@ -59,7 +59,11 @@ export default function PostEditorForm({ variant = 'home' }: Props) {
         <form className={`flex flex-col px-4 ${!isModal && 'border-b border-base-300'}`} onSubmit={handleSubmit}>
             <div className={`flex px-4 ${isModal && 'border-b border-base-300'}`}>
                 <div className='mr-2 pt-3'>
-                    <Avatar src={me.profile_img} />
+                    {isModal ? (
+                        <Avatar src={me.profile_img} />
+                    ) : (
+                        <Avatar src={me.profile_img} nickname={me.nickname} />
+                    )}
                 </div>
                 <div className='flex grow flex-col pt-1'>
                     <SingleLineEditor isModal={isModal} onTextChange={setText} />

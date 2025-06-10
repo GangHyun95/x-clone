@@ -1,25 +1,26 @@
+import toast from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
 
 import { SpinnerSvg } from '@/components/svgs';
 import { useLogout } from '@/hooks/auth/useAuth';
 import { queryClient } from '@/lib/queryClient';
 import GlobalPortal from '@/portals/GlobalPortal';
-import { getEmailUsername } from '@/utils/formatters';
 
 type Props = {
     open: boolean;
     position: { bottom: number; left: number };
     onClose: () => void;
-    email: string;
+    nickname: string;
 };
 
-export default function UserMenuDropdown({ open, position, onClose, email }: Props) {
+export default function UserMenuDropdown({ open, position, onClose, nickname }: Props) {
     const navigate = useNavigate();
 
     const { logout, isLoggingOut} = useLogout({
         onSuccess: () => {
             queryClient.clear();
             navigate('/');
+            toast.success('로그아웃 되었습니다.');
             
         },
         onError({ message }) {
@@ -56,7 +57,7 @@ export default function UserMenuDropdown({ open, position, onClose, email }: Pro
                             className='px-4 py-3 hover:bg-base-300 cursor-pointer font-bold'
                             onClick={logout}
                         >
-                            Log out {getEmailUsername(email)}
+                            Log out @{nickname}
                         </div>
                     </div>
                 </div>

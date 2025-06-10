@@ -32,13 +32,13 @@ function App() {
                         element={accessToken ? <HomePage /> : <AuthLandingPage />}
                     />
                     <Route path='notifications' element={<NotificationsPage />} />
-                    <Route path='profile' element={<ProfilePage />} />
                     <Route path='bookmarks' element={<BookmarkPage />} />
                     <Route path='settings' element={<SettingsPage />} />
 
                     <Route path='signup' element={null} />
                     <Route path='login' element={null} />
                     <Route path='reset-password' element={null} />
+                    <Route path='profile/:nickname' element={<ProfilePage />} />
                 </Route>
             </Routes>
 

@@ -1,6 +1,6 @@
 import { useMutation, useQuery } from '@tanstack/react-query';
 
-import { createPost, getAllPosts } from '@/service/post';
+import { createPost, getAllPosts, likeUnlikePost } from '@/service/post';
 
 export function useCreatePost() {
     return useMutation({
@@ -18,3 +18,8 @@ export function usePosts() {
     });
 }
 
+export function useLikeUnlikePost() {
+    return useMutation({
+        mutationFn: likeUnlikePost,
+    });
+}

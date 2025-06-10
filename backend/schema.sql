@@ -48,7 +48,6 @@ CREATE TABLE notifications (
     from_user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
     to_user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
     type VARCHAR(10) NOT NULL CHECK (type IN ('follow', 'like')),
-    content TEXT NOT NULL,
     read BOOLEAN DEFAULT false,
     created_at TIMESTAMP DEFAULT NOW(),
     updated_at TIMESTAMP DEFAULT NOW()

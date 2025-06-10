@@ -1,39 +1,60 @@
 import { useEffect, useState } from 'react';
 
+import toast from 'react-hot-toast';
+
 import Avatar from '@/components/Avatar';
 import { BookmarkSvg, CommentSvg, HeartSvg, ShareSvg } from '@/components/svgs';
-import type { UserPreview } from '@/types/user';
+import { queryClient } from '@/lib/queryClient';
+import { useLikeUnlikePost } from '@/queries/post';
+import type { Post } from '@/types/post';
 import { formatTimeFromNow } from '@/utils/formatters';
 
-type Props = {
-    user: UserPreview;
-    content: string;
-    image?: string;
-    created_at: string;
-    counts: {
-        comment: number;
-        like: number;
-    }
-};
-
-export default function PostCard({ user, content, image, created_at, counts }: Props) {
+export default function PostCard({id, img, user, created_at, content, counts, is_liked}: Post) {
     const [aspectRatio, setAspectRatio] = useState(100);
+    const { mutate: likeUnlikePost } = useLikeUnlikePost();
+
+    const handleLikeUnlike = () => {
+        likeUnlikePost({ id }, {
+            onSuccess: (data) => {
+                toast.success(data.message)
+                queryClient.setQueryData<Post[]>(['posts'], (old) => {
+                    if (!old) return old;
+                    return old.map((post) => {
+                        if (post.id !== id) return post;
+                        const liked = !post.is_liked;
+                        const likeCount = liked ? post.counts.like + 1 : post.counts.like - 1;
+                        return {
+                            ...post,
+                            is_liked: liked,
+                            counts: {
+                                ...post.counts,
+                                like: likeCount,
+                            },
+                        };
+                    });
+                });
+            },
+            onError: (error) => {
+                console.error('Error liking/unliking post:', error);
+            },
+        });
+    };
 
     useEffect(() => {
-        if (!image) return;
-        const img = new Image();
-        img.src = image;
-        img.onload = () => {
-            const ratio = (img.height / img.width) * 100;
+        if (!img) return;
+        const image = new Image();
+        image.src = img;
+        image.onload = () => {
+            const ratio = (image.height / image.width) * 100;
             setAspectRatio(ratio);
         }
         console.log(aspectRatio);
-    }, [image])
+    }, [img])
     return (
         <article className='flex flex-col px-4 py-3 border-b border-base-300'>
             <div className='flex'>
                 <div className='mr-2'>
-                    <Avatar src={user.profile_img} />
+                    <Avatar nickname={user.nickname} src={user.profile_img} />
                 </div>
                 <div className='flex grow flex-col'>
                     <div>
@@ -49,10 +70,10 @@ export default function PostCard({ user, content, image, created_at, counts }: P
                     <div className='flex flex-col'>
                         <p>{content}</p>
                     </div>
-                    {image && (
-                        <figure className='relative mt-3 cursor-pointer border border-base-300'>
+                    {img && (
+                        <figure className='relative mt-3 cursor-pointer border border-base-300 rounded-2xl overflow-hidden'>
                             <div className='w-full' style={{ paddingBottom: `${aspectRatio}%` }} />
-                            <img src={image} alt='post' className='absolute inset-0 w-full h-full' />
+                            <img src={img} alt='post' className='absolute inset-0 w-full h-full' />
                         </figure>
                     )}
                     <footer className='mt-3 flex justify-between gap-1'>
@@ -64,10 +85,13 @@ export default function PostCard({ user, content, image, created_at, counts }: P
                         </div>
 
                         <div className='flex-1 flex items-center cursor-pointer group'>
-                            <button className='btn btn-sm btn-ghost btn-circle border-0 group-hover:bg-red-500/10'>
-                                <HeartSvg className='h-5 fill-gray-500 group-hover:fill-red-500' />
+                            <button
+                                className='btn btn-sm btn-ghost btn-circle border-0 group-hover:bg-red-500/10'
+                                onClick={handleLikeUnlike}
+                            >
+                                <HeartSvg filled={is_liked} className={`h-5 group-hover:fill-red-500 ${is_liked ? 'fill-red-500' : 'fill-gray-500'}`} />
                             </button>
-                            <span className='text-sm px-1'>{counts.like}</span>
+                            <span className={`text-sm px-1 ${is_liked ? 'text-red-500' : ''}`}>{counts.like}</span>
                         </div>
 
                         <div className='flex-1 flex items-center cursor-pointer group'>

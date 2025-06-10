@@ -1,14 +1,13 @@
 import { useQuery } from '@tanstack/react-query';
 
-import { refreshAccessToken } from '@/service/auth';
-import { getMe } from '@/service/user';
+import { getSuggestedUsers, getUserProfile } from '@/service/user';
 
-export function useCheckAuth() {
+export function useSuggestedUsers() {
     return useQuery({
-        queryKey: ['accessToken'],
+        queryKey: ['users', 'suggested'],
         queryFn: async () => {
-            const res = await refreshAccessToken();
-            return res.data.accessToken;
+            const res = await getSuggestedUsers();
+            return res.data.users;
         },
         staleTime: 1000 * 60 * 50,
         gcTime: 1000 * 60 * 60,
@@ -17,17 +16,17 @@ export function useCheckAuth() {
     });
 }
 
-export function useMe(options?: { enabled?: boolean }) {
+export function useUserProfile(nickname: string) {
     return useQuery({
-        queryKey: ['me'],
+        queryKey: ['user', nickname],
         queryFn: async () => {
-            const res = await getMe();
+            const res = await getUserProfile(nickname);
             return res.data.user;
         },
         staleTime: 1000 * 60 * 50,
         gcTime: 1000 * 60 * 60,
         retry: false,
-        enabled: options?.enabled ?? true,
         refetchOnWindowFocus: false,
+        enabled: !!nickname,
     });
 }

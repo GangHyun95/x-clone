@@ -11,4 +11,5 @@ export type Post = {
         like: number;
         comment: number;
     };
+    is_liked: boolean;
 };

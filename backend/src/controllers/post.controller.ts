@@ -256,10 +256,14 @@ export const getAllPosts = async (req: Request, res: Response): Promise<void> =>
                 json_build_object(
                     'like', (SELECT COUNT(*) FROM post_likes WHERE post_id = posts.id),
                     'comment', (SELECT COUNT(*) FROM comments WHERE post_id = posts.id)
-                ) AS counts
+                ) AS counts,
+                EXISTS (
+                    SELECT 1 FROM post_likes WHERE post_id = posts.id AND user_id = $1
+                ) AS is_liked
             FROM posts
             JOIN users ON users.id = posts.user_id
-            ORDER BY posts.created_at DESC`
+            ORDER BY posts.created_at DESC`,
+            [req.user?.id]
         );
 
         res.status(200).json({

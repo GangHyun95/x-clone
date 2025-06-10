@@ -23,7 +23,7 @@ export default function NotificationCard({ type, user, message, content, created
             <div className='flex'>
                 <div className='mr-2'>{iconMap[type]}</div>
                 <div className='flex flex-col grow pr-5'>
-                    <Avatar src={user.profile_img} className='mb-3' />
+                    <Avatar nickname='테스트' src={user.profile_img} className='mb-3' />
                     <p>{message}</p>
 
                     {type === 'likes' && content && (

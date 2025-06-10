@@ -20,15 +20,7 @@ export default function HomePage() {
             <PostEditorForm />
             <PageLayout.Content>
                 {posts?.map((post) => (
-                    <PostCard 
-                        user={post.user}
-                        key={post.id}
-                        content={post.content}
-                        image={post.img}
-                        created_at={post.created_at}
-                        counts={post.counts}
-
-                    />
+                    <PostCard key={post.id} {...post}/>
                 ))}
             </PageLayout.Content>
         </PageLayout>

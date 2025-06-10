@@ -2,16 +2,16 @@ import { getAccessToken } from '@/store/authStore';
 
 import type { Post } from '@/types/post';
 
-import { get, postFormData } from './api/client';
+import { get, post, postFormData } from './api/client';
 
 export async function getAllPosts() {
     const token = getAccessToken();
-    const res = await get<{ posts: Post[]}>('/api/posts/', {
+    const res = await get<{ posts: Post[] }>('/api/posts/', {
         headers: {
             Authorization: `Bearer ${token}`,
         },
     });
-    
+
     return res.data.posts;
 }
 
@@ -23,5 +23,14 @@ export async function createPost(formData: FormData) {
         },
     });
     return res.data.post;
+}
 
+export async function likeUnlikePost(payload: { id: number }) {
+    const token = getAccessToken();
+    const { id } = payload;
+    return post<{ id: number }, void>(`/api/posts/${id}/like`, payload, {
+        headers: {
+            Authorization: `Bearer ${token}`,
+        },
+    });
 }
