@@ -1,4 +1,3 @@
-// components/SingleLineEditor.tsx
 import { Editor, EditorState } from 'draft-js';
 import { useState, useRef } from 'react';
 

@@ -183,7 +183,7 @@ export const commentOnPost = async (req: Request, res: Response): Promise<void> 
     }
 };
 
-export const likeUnlikePost = async (req: Request, res: Response): Promise<void> => {
+export const likePost = async (req: Request, res: Response): Promise<void> => {
     const userId = req.user?.id;
     const postId = req.params.id;
 
@@ -211,7 +211,7 @@ export const likeUnlikePost = async (req: Request, res: Response): Promise<void>
 
             res.status(200).json({
                 success: true,
-                message: '게시물의 좋아요가 취소되었습니다.',
+                message: '좋아요가 취소되었습니다.',
                 data: {},
             });
         } else {
@@ -228,12 +228,59 @@ export const likeUnlikePost = async (req: Request, res: Response): Promise<void>
 
             res.status(200).json({
                 success: true,
-                message: '게시물에 좋아요가 추가되었습니다.',
+                message: '좋아요가 추가되었습니다.',
                 data: {},
             });
         }
     } catch (error) {
         console.error('Error in likeUnlikePost:', error);
+        res.status(500).json({ success: false, message: '서버 오류가 발생했습니다.' });
+    }
+};
+
+export const bookmarkPost = async (req: Request, res: Response): Promise<void> => {
+    const userId = req.user?.id;
+    const postId = req.params.id;
+
+    if (!userId) {
+        res.status(401).json({ success: false, message: '사용자를 찾을 수 없습니다.' });
+        return;
+    }
+
+    try {
+        const postCheck = await pool.query('SELECT 1 FROM posts WHERE id = $1', [postId]);
+        if (postCheck.rows.length === 0) {
+            res.status(404).json({ success: false, message: '게시물을 찾을 수 없습니다.' });
+            return;
+        }
+
+        const bookmarkCheck = await pool.query(
+            `SELECT 1 FROM post_bookmarks WHERE post_id = $1 AND user_id = $2`,
+            [postId, userId]
+        );
+
+        if (bookmarkCheck.rows.length > 0) {
+            await pool.query(`DELETE FROM post_bookmarks WHERE post_id = $1 AND user_id = $2`, [postId, userId]);
+
+            res.status(200).json({
+                success: true,
+                message: '북마크가 취소되었습니다.',
+                data: {},
+            });
+        } else {
+            await pool.query(
+                `INSERT INTO post_bookmarks (post_id, user_id, created_at) VALUES ($1, $2, NOW())`,
+                [postId, userId]
+            );
+
+            res.status(200).json({
+                success: true,
+                message: '북마크가 추가되었습니다.',
+                data: {},
+            });
+        }
+    } catch (error) {
+        console.error('Error in bookmarkPost:', error);
         res.status(500).json({ success: false, message: '서버 오류가 발생했습니다.' });
     }
 };
@@ -259,7 +306,10 @@ export const getAllPosts = async (req: Request, res: Response): Promise<void> =>
                 ) AS counts,
                 EXISTS (
                     SELECT 1 FROM post_likes WHERE post_id = posts.id AND user_id = $1
-                ) AS is_liked
+                ) AS is_liked,
+                EXISTS (
+                    SELECT 1 FROM post_bookmarks WHERE post_id = posts.id AND user_id = $1
+                ) AS is_bookmarked
             FROM posts
             JOIN users ON users.id = posts.user_id
             ORDER BY posts.created_at DESC`,

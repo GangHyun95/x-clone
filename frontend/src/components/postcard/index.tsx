@@ -1,13 +1,14 @@
 import { useEffect, useState } from 'react';
 
 import Avatar from '@/components/common/Avatar';
-import { BookmarkSvg, CommentSvg, ShareSvg } from '@/components/svgs';
+import { CommentSvg, ShareSvg } from '@/components/svgs';
 import type { Post } from '@/types/post';
 import { formatTimeFromNow } from '@/utils/formatters';
 
 import LikeButton from './LikeButton';
+import BookmarkButton from './BookmarkButton';
 
-export default function PostCard({id, img, user, created_at, content, counts, is_liked}: Post) {
+export default function PostCard({id, img, user, created_at, content, counts, is_liked, is_bookmarked}: Post) {
     const [aspectRatio, setAspectRatio] = useState(100);
 
     useEffect(() => {
@@ -54,13 +55,7 @@ export default function PostCard({id, img, user, created_at, content, counts, is
                             <span className='text-sm px-1'>{counts.comment}</span>
                         </div>
                         <LikeButton id={id} is_liked={is_liked} likeCount={counts.like} />
-
-                        <div className='flex-1 flex items-center cursor-pointer group'>
-                            <button className='btn btn-sm btn-ghost btn-circle border-0 group-hover:bg-primary/10'>
-                                <BookmarkSvg className='h-5 fill-gray-500 group-hover:fill-primary' />
-                            </button>
-                        </div>
-
+                        <BookmarkButton id={id} is_bookmarked={is_bookmarked} />
                         <div className='flex-1 flex items-center cursor-pointer group'>
                             <button className='btn btn-sm btn-ghost btn-circle border-0 group-hover:bg-primary/10'>
                                 <ShareSvg className='h-5 fill-gray-500 group-hover:fill-primary' />

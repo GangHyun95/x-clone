@@ -2,8 +2,8 @@ import toast from 'react-hot-toast';
 
 import { HeartSvg } from '@/components/svgs';
 import { queryClient } from '@/lib/queryClient';
-import { useLikeUnlikePost } from '@/queries/post';
 import type { Post } from '@/types/post';
+import { useLikePost } from '@/queries/post';
 
 type Props = {
     id: number;
@@ -11,9 +11,9 @@ type Props = {
     likeCount: number;
 }
 export default function LikeButton({ id, is_liked, likeCount }: Props) {
-    const { mutate: likeUnlikePost } = useLikeUnlikePost();
-    const handleLikeUnlike = () => {
-        likeUnlikePost({ id }, {
+    const { mutate: likePost } = useLikePost();
+    const handleToggleLike = () => {
+        likePost({ id }, {
             onSuccess: (data) => {
                 toast.success(data.message)
                 queryClient.setQueryData<Post[]>(['posts'], (old) => {
@@ -41,7 +41,7 @@ export default function LikeButton({ id, is_liked, likeCount }: Props) {
     return (
         <div 
             className='flex-1 flex items-center cursor-pointer group'
-            onClick={handleLikeUnlike}
+            onClick={handleToggleLike}
         >
             <button className='btn btn-sm btn-ghost btn-circle border-0 group-hover:bg-red-500/10'>
                 <HeartSvg filled={is_liked} className={`h-5 group-hover:fill-red-500 ${is_liked ? 'fill-red-500' : 'fill-gray-500'}`} />

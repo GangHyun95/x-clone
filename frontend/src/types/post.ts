@@ -12,4 +12,5 @@ export type Post = {
         comment: number;
     };
     is_liked: boolean;
+    is_bookmarked: boolean;
 };

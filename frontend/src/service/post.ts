@@ -25,10 +25,20 @@ export async function createPost(formData: FormData) {
     return res.data.post;
 }
 
-export async function likeUnlikePost(payload: { id: number }) {
+export async function likePost(payload: { id: number }) {
     const token = getAccessToken();
     const { id } = payload;
     return post<{ id: number }, void>(`/api/posts/${id}/like`, payload, {
+        headers: {
+            Authorization: `Bearer ${token}`,
+        },
+    });
+}
+
+export async function bookmarkPost(payload: { id: number }) {
+    const token = getAccessToken();
+    const { id } = payload;
+    return post<{ id: number }, void>(`/api/posts/${id}/bookmark`, payload, {
         headers: {
             Authorization: `Bearer ${token}`,
         },

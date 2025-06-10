@@ -1,6 +1,7 @@
 import express from 'express';
 
 import {
+    bookmarkPost,
     commentOnPost,
     createPost,
     deletePost,
@@ -9,7 +10,7 @@ import {
     getFollowingPosts,
     getLikedPosts,
     getUserPosts,
-    likeUnlikePost,
+    likePost,
 } from '../controllers/post.controller.ts';
 import { upload } from '../middleware/upload.middleware.ts';
 
@@ -23,6 +24,7 @@ router.post('/', upload.single('img'), createPost);
 router.patch('/:id', editPost);
 router.delete('/:id', deletePost);
 router.post('/:id/comment', commentOnPost);
-router.post('/:id/like', likeUnlikePost);
+router.post('/:id/like', likePost);
+router.post('/:id/bookmark', bookmarkPost);
 
 export default router;
