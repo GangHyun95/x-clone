@@ -1,4 +1,4 @@
-import RightPanel from '@/components/layout/RightPanel';
+import RightPanel from '@/components/rightpanel';
 
 export default function MainLayout({ children }: { children: React.ReactNode }) {
     return (

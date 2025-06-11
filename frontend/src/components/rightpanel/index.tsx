@@ -1,9 +1,13 @@
 import Avatar from '@/components/common/Avatar';
+
 import { useSuggestedUsers } from '@/queries/user';
+
+import FollowButton from './FollowButton';
 
 export default function RightPanel() {
     const { data: suggestedUsers, isLoading } = useSuggestedUsers();
 
+    console.log(suggestedUsers);
     if (!suggestedUsers || isLoading) {
         return (
             <div></div>
@@ -26,9 +30,7 @@ export default function RightPanel() {
                                                 <span className='text-gray-500'>@{user.nickname}</span>
                                             </div>
                                             <div className='ml-4'>
-                                                <button className='btn btn-sm text-sm px-4 text-white rounded-full btn-secondary'>
-                                                    <span>Follow</span>
-                                                </button>
+                                                <FollowButton id={user.id}/>
                                             </div>
                                         </div>
                                     </article>

@@ -20,7 +20,6 @@ export async function deletePost(payload: { postId: number }): Promise<ApiRespon
 
 export async function likePost(payload: { postId: number }) {
     const { postId } = payload;
-    console.log(postId);
     return post<{ id: number }, void>(`/api/posts/${postId}/like`, { id: postId }, { withAuth: true });
 }
 
