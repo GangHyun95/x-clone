@@ -1,6 +1,10 @@
-import { useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery } from '@tanstack/react-query';
 
-import { getSuggestedUsers, getUserProfile } from '@/service/user';
+import {
+    getSuggestedUsers,
+    getUserProfile,
+    toggleFollow,
+} from '@/service/user';
 
 export function useSuggestedUsers() {
     return useQuery({
@@ -28,5 +32,11 @@ export function useUserProfile(nickname: string) {
         retry: false,
         refetchOnWindowFocus: false,
         enabled: !!nickname,
+    });
+}
+
+export function useToggleFollow() {
+    return useMutation({
+        mutationFn: toggleFollow,
     });
 }

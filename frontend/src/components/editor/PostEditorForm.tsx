@@ -2,7 +2,7 @@ import { useState } from 'react';
 
 import Avatar from '@/components/common/Avatar';
 
-import { queryClient } from '@/lib/queryClient';
+import { prependPostToCache } from '@/lib/queryCacheHelpers';
 import { useCreatePost } from '@/queries/post';
 import { getCurrentUser } from '@/store/authStore';
 import type { Post } from '@/types/post';
@@ -44,14 +44,11 @@ export default function PostEditorForm({ variant = 'home' }: Props) {
                     setText('');
                     setSelectedImage(null);
                     setImagePreviewUrl(null);
-                    queryClient.setQueryData<Post[]>(['posts'], (old) => {
-                        if (!old) return [newPost];
-                            return [newPost, ...old];
-                        });
-                    },
-                    onError: (error) => {
-                        console.error(error);
-                    },
+                    prependPostToCache(newPost);
+                },
+                onError: (error) => {
+                    console.error(error);
+                },
             });
         } catch(error) {
             console.log(error);

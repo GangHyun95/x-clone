@@ -1,15 +1,24 @@
 import { useEffect, useState } from 'react';
 
 import Avatar from '@/components/common/Avatar';
+import PostMenuBtn from '@/components/postcard/button/PostMenuBtn';
 import { CommentSvg, ShareSvg } from '@/components/svgs';
 import type { Post } from '@/types/post';
 import { formatTimeFromNow } from '@/utils/formatters';
 
-import BookmarkButton from './BookmarkButton';
-import LikeButton from './LikeButton';
+import { BookmarkButton, LikeButton } from './button';
 
-export default function PostCard({id, img, user, created_at, content, counts, is_liked, is_bookmarked}: Post) {
+type Props = Post & {
+    openPostId: number | null;
+    setOpenPostId: (id: number | null) => void;
+}
+export default function PostCard({ openPostId, setOpenPostId, ...post }: Props) {
+    const {id, img, user, created_at, content, counts, is_liked, is_bookmarked} = post;
     const [aspectRatio, setAspectRatio] = useState(100);
+    const isOpen = openPostId === id;
+    const handleToggleMenu = () => {
+        setOpenPostId(isOpen ? null : id);
+    }
 
     useEffect(() => {
         if (!img) return;
@@ -19,7 +28,6 @@ export default function PostCard({id, img, user, created_at, content, counts, is
             const ratio = (image.height / image.width) * 100;
             setAspectRatio(ratio);
         }
-        console.log(aspectRatio);
     }, [img])
     return (
         <article className='flex flex-col px-4 py-3 border-b border-base-300'>
@@ -28,7 +36,7 @@ export default function PostCard({id, img, user, created_at, content, counts, is
                     <Avatar nickname={user.nickname} src={user.profile_img} />
                 </div>
                 <div className='flex grow flex-col'>
-                    <div>
+                    <div className='flex justify-between'>
                         <ul className='flex items-center'>
                             <li><span className='font-extrabold'>{user.full_name}</span></li>
                             <li className='ml-1.5 text-gray-500'>
@@ -37,6 +45,7 @@ export default function PostCard({id, img, user, created_at, content, counts, is
                                 <time dateTime={created_at}>{formatTimeFromNow(created_at)}</time>
                             </li>
                         </ul>
+                        <PostMenuBtn open={isOpen} onToggle={handleToggleMenu} user={post.user} postId={id} />
                     </div>
                     <div className='flex flex-col'>
                         <p>{content}</p>

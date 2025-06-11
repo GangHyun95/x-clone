@@ -1,48 +1,21 @@
-import { useEffect, useRef, useState } from 'react';
+import { useState } from 'react';
 
 import Avatar from '@/components/common/Avatar';
 import { MoreSvg } from '@/components/svgs';
+import useDropdownPosition from '@/hooks/useDropdownPosition';
 import { getCurrentUser } from '@/store/authStore';
 
 import UserMenuDropdown from './UserMenuDropdown';
 
 export default function UserMenuBtn() {
     const me = getCurrentUser();
-    const btnRef = useRef<HTMLButtonElement>(null);
     const [open, setOpen] = useState(false);
-    const [position, setPosition] = useState({ bottom: 0, left: 0 });
 
-    const calculatePosition = () => {
-        if (!btnRef.current) return;
-        const rect = btnRef.current.getBoundingClientRect();
-        setPosition({
-            bottom: window.innerHeight - rect.top,
-            left: rect.left,
-        });
-    };
+    const { btnRef, position } = useDropdownPosition({ open, anchor: 'top'});
 
     const toggleMenu = () => {
-        if (!open) calculatePosition();
-        setOpen(!open);
+        setOpen(prev => !prev);
     };
-
-    useEffect(() => {
-        if (!open) return;
-
-        let timeoutId: NodeJS.Timeout;
-        const handleResize = () => {
-            clearTimeout(timeoutId);
-            timeoutId = setTimeout(() => {
-                calculatePosition();
-            }, 150);
-        };
-
-        window.addEventListener('resize', handleResize);
-        return () => {
-            window.removeEventListener('resize', handleResize);
-            clearTimeout(timeoutId);
-        };
-    }, [open]);
 
     return (
         <>

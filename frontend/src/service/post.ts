@@ -2,7 +2,7 @@ import { getAccessToken } from '@/store/authStore';
 
 import type { Post } from '@/types/post';
 
-import { get, post, postFormData } from './api/client';
+import { get, post, postFormData, type ApiResponse } from './api/client';
 
 export async function getAllPosts() {
     const token = getAccessToken();
@@ -23,6 +23,25 @@ export async function createPost(formData: FormData) {
         },
     });
     return res.data.post;
+}
+
+export async function deletePost(payload: { id: number }): Promise<ApiResponse<void>> {
+    const token = getAccessToken();
+    const { id } = payload;
+
+    const res = await fetch(`/api/posts/${id}`, {
+        method: 'DELETE',
+        headers: {
+            Authorization: `Bearer ${token}`,
+        },
+    });
+
+    if (!res.ok) {
+        throw new Error('삭제 실패');
+    }
+
+    const data = await res.json();
+    return data;
 }
 
 export async function likePost(payload: { id: number }) {

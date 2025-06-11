@@ -1,6 +1,6 @@
 import { useMutation, useQuery } from '@tanstack/react-query';
 
-import { bookmarkPost, createPost, getAllPosts, likePost } from '@/service/post';
+import { bookmarkPost, createPost, deletePost, getAllPosts, likePost } from '@/service/post';
 
 export function useCreatePost() {
     return useMutation({
@@ -22,6 +22,12 @@ export function useLikePost() {
     return useMutation({
         mutationFn: likePost,
     });
+}
+
+export function useDeletePost() {
+    return useMutation({
+        mutationFn: deletePost,
+    })
 }
 
 export function useBookmarkPost() {

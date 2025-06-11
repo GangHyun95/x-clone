@@ -11,6 +11,7 @@ export interface User {
     link?: string;
     google_id?: string;
     apple_id?: string;
+    is_following: boolean;
 }
 
-export type UserPreview = Pick<User, 'id' | 'nickname' | 'full_name' | 'profile_img'>;
+export type UserPreview = Pick<User, 'id' | 'nickname' | 'full_name' | 'profile_img'| 'is_following'>;

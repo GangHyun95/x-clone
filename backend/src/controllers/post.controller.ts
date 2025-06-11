@@ -298,7 +298,10 @@ export const getAllPosts = async (req: Request, res: Response): Promise<void> =>
                     'id', users.id,
                     'nickname', users.nickname,
                     'full_name', users.full_name,
-                    'profile_img', users.profile_img
+                    'profile_img', users.profile_img,
+                    'is_following', EXISTS (
+                        SELECT 1 FROM user_follows WHERE from_user_id = $1 AND to_user_id = users.id
+                    )
                 ) as user,
                 json_build_object(
                     'like', (SELECT COUNT(*) FROM post_likes WHERE post_id = posts.id),

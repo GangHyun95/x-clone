@@ -1,9 +1,8 @@
 import toast from 'react-hot-toast';
 
 import { HeartSvg } from '@/components/svgs';
-import { queryClient } from '@/lib/queryClient';
+import { updatePostCacheById } from '@/lib/queryCacheHelpers';
 import { useLikePost } from '@/queries/post';
-import type { Post } from '@/types/post';
 
 type Props = {
     id: number;
@@ -16,21 +15,18 @@ export default function LikeButton({ id, is_liked, likeCount }: Props) {
         likePost({ id }, {
             onSuccess: (data) => {
                 toast.success(data.message)
-                queryClient.setQueryData<Post[]>(['posts'], (old) => {
-                    if (!old) return old;
-                    return old.map((post) => {
-                        if (post.id !== id) return post;
-                        const liked = !post.is_liked;
-                        const newLikeCount = liked ? likeCount + 1 : likeCount - 1;
-                        return {
-                            ...post,
-                            is_liked: liked,
-                            counts: {
-                                ...post.counts,
-                                like: newLikeCount,
-                            },
-                        };
-                    });
+                
+                updatePostCacheById(id, (post) => {
+                    const newLikeCount = post.is_liked ? post.counts.like - 1 : post.counts.like + 1;
+                    
+                    return {
+                        ...post,
+                        is_liked: !post.is_liked,
+                        counts: {
+                            ...post.counts,
+                            like: newLikeCount
+                        }
+                    }
                 });
             },
             onError: (error) => {

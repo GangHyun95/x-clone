@@ -8,7 +8,12 @@ import GlobalPortal from '@/portals/GlobalPortal';
 
 type Props = {
     open: boolean;
-    position: { bottom: number; left: number };
+    position: Partial<{
+        top: number;
+        bottom: number;
+        left: number;
+        right: number;
+    }>;
     onClose: () => void;
     nickname: string;
 };
@@ -42,15 +47,12 @@ export default function UserMenuDropdown({ open, position, onClose, nickname }: 
 
     return (
         <GlobalPortal>
-            <div className='absolute inset-0 z-10'>
+            <div className='absolute inset-0 z-10 test'>
                 <div className='fixed inset-0 z-0' onClick={onClose} />
 
                 <div
                     className='fixed border border-base-300 shadow-md rounded-2xl w-[300px] z-0 bg-white'
-                    style={{
-                        bottom: `${position.bottom}px`,
-                        left: `${position.left}px`,
-                    }}
+                    style={position}
                 >
                     <div className='flex flex-col py-3'>
                         <div

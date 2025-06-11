@@ -17,6 +17,13 @@ CREATE TABLE users (
     last_password_change TIMESTAMP DEFAULT NOW()
 );
 
+CREATE TABLE user_follows (
+    id SERIAL PRIMARY KEY,
+    from_user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    to_user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    UNIQUE (from_user_id, to_user_id)
+);
+
 CREATE TABLE posts (
     id SERIAL PRIMARY KEY,
     user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
@@ -59,11 +66,4 @@ CREATE TABLE notifications (
     read BOOLEAN DEFAULT false,
     created_at TIMESTAMP DEFAULT NOW(),
     updated_at TIMESTAMP DEFAULT NOW()
-);
-
-CREATE TABLE user_follows (
-    id SERIAL PRIMARY KEY,
-    follower_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-    following_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-    UNIQUE (follower_id, following_id)
 );

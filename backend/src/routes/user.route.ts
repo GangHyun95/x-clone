@@ -3,10 +3,10 @@ import express from 'express';
 import {
     checkNickname,
     deleteAccount,
-    followUnfollowUser,
     getMe,
     getSuggestedUsers,
     getUserProfile,
+    toggleFollow,
     updateUserProfile,
 } from '../controllers/user.controller.ts';
 
@@ -18,7 +18,7 @@ router.delete('/me', deleteAccount);
 
 router.get('/check-nickname', checkNickname);
 router.get('/suggested', getSuggestedUsers);
-router.post('/:id/:follow', followUnfollowUser);
+router.post('/:id/:follow', toggleFollow);
 
 router.get('/:nickname', getUserProfile);
 

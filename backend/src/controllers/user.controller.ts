@@ -45,7 +45,7 @@ export const getUserProfile = async (req: Request, res: Response): Promise<void>
     }
 };
 
-export const followUnfollowUser = async (req: Request, res: Response): Promise<void> => {
+export const toggleFollow = async (req: Request, res: Response): Promise<void> => {
     if (!req.user) {
         res.status(401).json({ success: false, message: '사용자를 찾을 수 없습니다.' });
         return;
@@ -63,7 +63,7 @@ export const followUnfollowUser = async (req: Request, res: Response): Promise<v
     }
 
     try {
-        const userCheck = await pool.query('SELECT id FROM users WHERE id = $1', [targetUserId]);
+        const userCheck = await pool.query('SELECT 1 FROM users WHERE id = $1', [targetUserId]);
         if (userCheck.rows.length === 0) {
             res.status(404).json({
                 success: false,
@@ -73,13 +73,13 @@ export const followUnfollowUser = async (req: Request, res: Response): Promise<v
         }
 
         const isFollowing = await pool.query(
-            'SELECT 1 FROM user_follows WHERE follower_id = $1 AND following_id = $2',
+            'SELECT 1 FROM user_follows WHERE from_user_id = $1 AND to_user_id = $2',
             [currentUserId, targetUserId]
         );
 
         if (isFollowing.rows.length > 0) {
             await pool.query(
-                'DELETE FROM user_follows WHERE follower_id = $1 AND following_id = $2',
+                'DELETE FROM user_follows WHERE from_user_id = $1 AND to_user_id = $2',
                 [currentUserId, targetUserId]
             );
 
@@ -90,14 +90,14 @@ export const followUnfollowUser = async (req: Request, res: Response): Promise<v
             });
         } else {
             await pool.query(
-                'INSERT INTO user_follows (follower_id, following_id) VALUES ($1, $2)',
+                'INSERT INTO user_follows (from_user_id, to_user_id) VALUES ($1, $2)',
                 [currentUserId, targetUserId]
             );
 
             await pool.query(
                 `
-                INSERT INTO notifications (from_user_id, to_user_id, type, content)
-                VALUES ($1, $2, 'follow', '팔로우 되었습니다.')
+                INSERT INTO notifications (from_user_id, to_user_id, type)
+                VALUES ($1, $2, 'follow')
                 `,
                 [currentUserId, targetUserId]
             );
@@ -127,10 +127,10 @@ export const getSuggestedUsers = async (req: Request, res: Response): Promise<vo
 
     try {
         const followingResult = await pool.query(
-            'SELECT following_id FROM user_follows WHERE follower_id = $1',
+            'SELECT to_user_id FROM user_follows WHERE from_user_id = $1',
             [userId]
         );
-        const followingIds = followingResult.rows.map(row => row.following_id);
+        const followingIds = followingResult.rows.map(row => row.to_user_id);
 
         const randomUserResult = await pool.query(
             `SELECT id, nickname, full_name, profile_img
