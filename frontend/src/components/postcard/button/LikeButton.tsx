@@ -9,14 +9,14 @@ type Props = {
     is_liked: boolean;
     likeCount: number;
 }
-export default function LikeButton({ id, is_liked, likeCount }: Props) {
+export default function LikeButton({ id: postId, is_liked, likeCount }: Props) {
     const { mutate: likePost } = useLikePost();
     const handleToggleLike = () => {
-        likePost({ id }, {
+        likePost({ postId }, {
             onSuccess: (data) => {
                 toast.success(data.message)
                 
-                updatePostCacheById(id, (post) => {
+                updatePostCacheById(postId, (post) => {
                     const newLikeCount = post.is_liked ? post.counts.like - 1 : post.counts.like + 1;
                     
                     return {

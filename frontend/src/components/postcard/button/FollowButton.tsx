@@ -15,7 +15,7 @@ export default function FollowButton({ postAuthorId, is_following, nickname, onC
     const { mutate: toggleFollow } = useToggleFollow();
 
     const handleFollowToggle = () => {
-        toggleFollow({ id: postAuthorId }, {
+        toggleFollow({ userId: postAuthorId }, {
             onSuccess: (data) => {
                 toast.success(data.message);
                 onClose();

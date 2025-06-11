@@ -14,7 +14,7 @@ export default function DeletePostButton({ postId, onClose }: Props) {
     const { mutate: deletePost } = useDeletePost();
     
     const handleDeletePost = () => {
-        deletePost({ id: postId }, {
+        deletePost({ postId }, {
             onSuccess: (data) => {
                 toast.success(data.message);
                 onClose();

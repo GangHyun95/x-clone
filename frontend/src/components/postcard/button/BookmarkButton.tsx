@@ -4,13 +4,13 @@ import { BookmarkSvg } from '@/components/svgs';
 import { updatePostCacheById } from '@/lib/queryCacheHelpers';
 import { useBookmarkPost } from '@/queries/post';
 
-export default function BookmarkButton({ id, is_bookmarked }: { id: number, is_bookmarked: boolean }) {
+export default function BookmarkButton({ id: postId, is_bookmarked }: { id: number, is_bookmarked: boolean }) {
     const { mutate: bookmarkPost } = useBookmarkPost();
     const handleToggleBookmark = () => {
-        bookmarkPost({ id }, {
+        bookmarkPost({ postId }, {
             onSuccess: (data) => {
                 toast.success(data.message);
-                updatePostCacheById(id, (post) => ({
+                updatePostCacheById(postId, (post) => ({
                     ...post,
                     is_bookmarked: !post.is_bookmarked,
                 }));

@@ -1,40 +1,19 @@
-import { getAccessToken } from '@/store/authStore';
 import type { UserPreview } from '@/types/user';
 
 import { get, post } from './api/client';
 
 export async function getMe() {
-    const token = getAccessToken();
-    return get<{ user: UserPreview }>('/api/users/me', {
-        headers: {
-            Authorization: `Bearer ${token ?? ''}`,
-        },
-    });
+    return get<{ user: UserPreview }>('/api/users/me', { withAuth: true });
 }
 export async function getSuggestedUsers() {
-    const token = getAccessToken();
-    return get<{ users: UserPreview[] }>('/api/users/suggested', {
-        headers: {
-            Authorization: `Bearer ${token ?? ''}`,
-        },
-    });
+    return get<{ users: UserPreview[] }>('/api/users/suggested', { withAuth: true });
 }
 
 export async function getUserProfile(nickname: string) {
-    const token = getAccessToken();
-    return get<{ user: UserPreview }>(`/api/users/${nickname}`, {
-        headers: {
-            Authorization: `Bearer ${token ?? ''}`,
-        },
-    });
+    return get<{ user: UserPreview }>(`/api/users/${nickname}`, { withAuth: true });
 }
 
-export async function toggleFollow(payload: { id: number }) {
-    const token = getAccessToken();
-    const { id } = payload;
-    return post<{ id: number }, void>(`/api/users/${id}/follow`, payload, {
-        headers: {
-            Authorization: `Bearer ${token}`,
-        },
-    });
+export async function toggleFollow(payload: { userId: number }) {
+    const { userId } = payload;
+    return post<{ id: number }, void>(`/api/users/${userId}/follow`, { id: userId }, { withAuth: true });
 }
