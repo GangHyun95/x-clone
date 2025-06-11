@@ -5,8 +5,8 @@ import { CommentSvg, ShareSvg } from '@/components/svgs';
 import type { Post } from '@/types/post';
 import { formatTimeFromNow } from '@/utils/formatters';
 
-import LikeButton from './LikeButton';
 import BookmarkButton from './BookmarkButton';
+import LikeButton from './LikeButton';
 
 export default function PostCard({id, img, user, created_at, content, counts, is_liked, is_bookmarked}: Post) {
     const [aspectRatio, setAspectRatio] = useState(100);

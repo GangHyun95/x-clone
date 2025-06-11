@@ -1,8 +1,9 @@
+import toast from 'react-hot-toast';
+
 import { BookmarkSvg } from '@/components/svgs';
 import { queryClient } from '@/lib/queryClient';
 import { useBookmarkPost } from '@/queries/post';
 import type { Post } from '@/types/post';
-import toast from 'react-hot-toast';
 
 export default function BookmarkButton({ id, is_bookmarked }: { id: number, is_bookmarked: boolean }) {
     const { mutate: bookmarkPost } = useBookmarkPost();

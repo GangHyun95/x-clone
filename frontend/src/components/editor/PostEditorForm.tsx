@@ -1,13 +1,15 @@
 import { useState } from 'react';
 
 import Avatar from '@/components/common/Avatar';
-import ImageUploadBtn from '@/components/editor/ImageUploadBtn';
-import SingleLineEditor from '@/components/editor/SingleLineEditor';
-import { EmojiSvg } from '@/components/svgs';
+
 import { queryClient } from '@/lib/queryClient';
 import { useCreatePost } from '@/queries/post';
 import { getCurrentUser } from '@/store/authStore';
 import type { Post } from '@/types/post';
+
+import EmojiInsertBtn from './EmojiInsertBtn';
+import ImageUploadBtn from './ImageUploadBtn';
+import SingleLineEditor from './SingleLineEditor';
 
 type Props = {
     variant?: 'home' | 'modal';
@@ -17,6 +19,7 @@ export default function PostEditorForm({ variant = 'home' }: Props) {
     const [text, setText] = useState('');
     const [selectedImage, setSelectedImage] = useState<File | null>(null);
     const [imagePreviewUrl, setImagePreviewUrl] = useState<string | null>(null);
+    const [insertEmoji, setInsertEmoji] = useState<(emoji: string) => void>(() => () => {});
 
     const isModal = variant === 'modal';
     const isDisabled = text.trim().length === 0 && !selectedImage;
@@ -66,7 +69,13 @@ export default function PostEditorForm({ variant = 'home' }: Props) {
                     )}
                 </div>
                 <div className='flex grow flex-col pt-1'>
-                    <SingleLineEditor isModal={isModal} onTextChange={setText} />
+                    <SingleLineEditor
+                        isModal={isModal}
+                        onTextChange={setText}
+                        bindInsertEmoji={(handler) =>
+                            setInsertEmoji(() => handler)
+                        }
+                    />
                 </div>
             </div>
 
@@ -95,13 +104,7 @@ export default function PostEditorForm({ variant = 'home' }: Props) {
                             setImagePreviewUrl(previewUrl);
                         }}
                     />
-                    <button
-                        type='button'
-                        className='btn btn-sm btn-ghost btn-circle hover:bg-primary/10 border-0'
-                        title='Add emoji'
-                    >
-                        <EmojiSvg className='w-5 fill-primary' />
-                    </button>
+                    <EmojiInsertBtn insertEmoji={insertEmoji} />
                 </div>
                 <div className='ml-4 mt-2'>
                     <button

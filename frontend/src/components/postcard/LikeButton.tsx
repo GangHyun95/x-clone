@@ -2,8 +2,8 @@ import toast from 'react-hot-toast';
 
 import { HeartSvg } from '@/components/svgs';
 import { queryClient } from '@/lib/queryClient';
-import type { Post } from '@/types/post';
 import { useLikePost } from '@/queries/post';
+import type { Post } from '@/types/post';
 
 type Props = {
     id: number;
