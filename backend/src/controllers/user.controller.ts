@@ -126,31 +126,22 @@ export const getSuggestedUsers = async (req: Request, res: Response): Promise<vo
     const userId = req.user.id;
 
     try {
-        const followingResult = await pool.query(
-            'SELECT to_user_id FROM user_follows WHERE from_user_id = $1',
-            [userId]
-        );
-        const followingIds = followingResult.rows.map(row => row.to_user_id);
-
         const randomUserResult = await pool.query(
             `SELECT id, nickname, full_name, profile_img
             FROM users
             WHERE id != $1
+            AND id NOT IN (
+                SELECT to_user_id FROM user_follows WHERE from_user_id = $1
+            )
             ORDER BY RANDOM()
-            LIMIT 10`,
+            LIMIT 4`,
             [userId]
         );
-
-        const filteredUsers = randomUserResult.rows.filter(
-            user => !followingIds.includes(user.id)
-        );
-
-        const suggestedUsers = filteredUsers.slice(0, 4);
 
         res.status(200).json({
             success: true,
             data: {
-                users: suggestedUsers.map(user => buildUserSummary(user)),
+                users: randomUserResult.rows.map(user => buildUserSummary(user)),
             },
         });
     } catch (err) {

@@ -304,7 +304,7 @@ export const getAllPosts = async (req: Request, res: Response): Promise<void> =>
                     )
                 ) as user,
                 json_build_object(
-                    'like', (SELECT COUNT(*) FROM post_likes WHERE post_id = posts.id),
+                    'like', (SELECT COUNT(*) FROM post_likes WHERE post_id = posts.id), 
                     'comment', (SELECT COUNT(*) FROM comments WHERE post_id = posts.id)
                 ) AS counts,
                 EXISTS (
@@ -380,8 +380,8 @@ export const getFollowingPosts = async (req: Request, res: Response): Promise<vo
     }
 
     try {
-        const followingResult = await pool.query('SELECT following_id FROM user_follows WHERE follower_id = $1', [userId]);
-        const followingIds = followingResult.rows.map(row => row.following_id);
+        const followingResult = await pool.query('SELECT to_user_id FROM user_follows WHERE from_user_id = $1', [userId]);
+        const followingIds = followingResult.rows.map(row => row.to_user_id);
 
         if (followingIds.length === 0) {
             res.status(200).json({ success: true, message: '팔로우한 사용자의 게시물이 없습니다.', data: { posts: [] } });
@@ -397,7 +397,7 @@ export const getFollowingPosts = async (req: Request, res: Response): Promise<vo
                 posts.updated_at,
                 json_build_object(
                     'id', users.id,
-                    'nick_name', users.nickname,
+                    'nickname', users.nickname,
                     'full_name', users.full_name,
                     'profile_img', users.profile_img
                 ) as user
