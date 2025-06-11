@@ -16,9 +16,15 @@ export function updatePostCacheByUserId(userId: number, updater: (post: Post) =>
 }
 
 export function prependPostToCache(newPost: Post) {
-    queryClient.setQueryData<Post[]>(['posts'], (old) => {
+    queryClient.setQueryData<Post[]>(['posts', 'all'], (old) => {
         if (!old) return [newPost];
         return [newPost, ...old];
     });
 }
 
+export function removePostFromCache(postId: number) {
+    queryClient.setQueryData<Post[]>(['posts', 'all'], (old) => {
+        if (!old) return old;
+        return old.filter((post) => post.id !== postId);
+    });
+}

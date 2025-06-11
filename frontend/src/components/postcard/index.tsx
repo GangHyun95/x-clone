@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 
 import Avatar from '@/components/common/Avatar';
 import PostMenuBtn from '@/components/postcard/button/PostMenuBtn';
@@ -8,17 +8,9 @@ import { formatTimeFromNow } from '@/utils/formatters';
 
 import { BookmarkButton, LikeButton } from './button';
 
-type Props = Post & {
-    openPostId: number | null;
-    setOpenPostId: (id: number | null) => void;
-}
-export default function PostCard({ openPostId, setOpenPostId, ...post }: Props) {
-    const {id, img, user, created_at, content, counts, is_liked, is_bookmarked} = post;
+export default function PostCard(post: Post) {
+    const { id, img, user, created_at, content, counts, is_liked, is_bookmarked } = post;
     const [aspectRatio, setAspectRatio] = useState(100);
-    const isOpen = openPostId === id;
-    const handleToggleMenu = () => {
-        setOpenPostId(isOpen ? null : id);
-    }
 
     useEffect(() => {
         if (!img) return;
@@ -27,8 +19,10 @@ export default function PostCard({ openPostId, setOpenPostId, ...post }: Props) 
         image.onload = () => {
             const ratio = (image.height / image.width) * 100;
             setAspectRatio(ratio);
-        }
-    }, [img])
+        };
+    }, [img]);
+
+    const formattedTime = useMemo(() => formatTimeFromNow(created_at), [created_at]);
     return (
         <article className='flex flex-col px-4 py-3 border-b border-base-300'>
             <div className='flex'>
@@ -42,10 +36,10 @@ export default function PostCard({ openPostId, setOpenPostId, ...post }: Props) 
                             <li className='ml-1.5 text-gray-500'>
                                 <span>@{user.nickname}</span>
                                 <span className='px-1'>·</span>
-                                <time dateTime={created_at}>{formatTimeFromNow(created_at)}</time>
+                                <time dateTime={created_at}>{formattedTime}</time>
                             </li>
                         </ul>
-                        <PostMenuBtn open={isOpen} onToggle={handleToggleMenu} user={post.user} postId={id} />
+                        <PostMenuBtn user={user} postId={id} />
                     </div>
                     <div className='flex flex-col'>
                         <p>{content}</p>
@@ -71,10 +65,8 @@ export default function PostCard({ openPostId, setOpenPostId, ...post }: Props) 
                             </button>
                         </div>
                     </footer>
-
                 </div>
             </div>
         </article>
     );
 }
-

@@ -7,7 +7,6 @@ import FollowButton from './FollowButton';
 export default function RightPanel() {
     const { data: suggestedUsers, isLoading } = useSuggestedUsers();
 
-    console.log(suggestedUsers);
     if (!suggestedUsers || isLoading) {
         return (
             <div></div>

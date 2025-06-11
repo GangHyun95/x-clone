@@ -1,6 +1,6 @@
 import { useMutation, useQuery } from '@tanstack/react-query';
 
-import { bookmarkPost, createPost, deletePost, getAllPosts, likePost } from '@/service/post';
+import { bookmarkPost, createPost, deletePost, getAllPosts, getFollowingPosts, likePost } from '@/service/post';
 
 export function useCreatePost() {
     return useMutation({
@@ -8,10 +8,11 @@ export function useCreatePost() {
     });
 }
 
-export function usePosts() {
+export function usePosts(tab: 'foryou' | 'following') {
+    const key = tab === 'foryou' ? 'all' : 'following';
     return useQuery({
-        queryKey: ['posts'],
-        queryFn: getAllPosts,
+        queryKey: ['posts', key],
+        queryFn: tab === 'following' ? getFollowingPosts : getAllPosts,
         staleTime: 1000 * 60 * 50,
         gcTime: 1000 * 60 * 60,
         retry: false,

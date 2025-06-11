@@ -1,34 +1,41 @@
-import PostMenuDropDown from '@/components/postcard/PostMenuDropDown';
+import { useState } from 'react';
+
 import { MoreSvg } from '@/components/svgs';
 import useDropdownPosition from '@/hooks/useDropdownPosition';
+import PostMenuDropDown from '@/components/postcard/PostMenuDropDown';
 import type { UserPreview } from '@/types/user';
 
-type Props = {
+export type PostMenuBtnProps = {
     user: UserPreview;
-    open: boolean;
-    onToggle: () => void;
     postId: number;
 };
 
-export default function PostMenuBtn({ user, open, onToggle, postId }: Props) {
+export default function PostMenuBtn({ user, postId }: PostMenuBtnProps) {
+    const [open, setOpen] = useState(false);
     const { btnRef, position } = useDropdownPosition({ open, alignment: 'right' });
+
+    const handleClick = () => {
+        setOpen(!open);
+    };
 
     return (
         <>
             <button
                 ref={btnRef}
-                onClick={onToggle}
+                onClick={handleClick}
                 className='btn btn-ghost btn-circle btn-sm hover:bg-primary/10 border-0 group'
             >
                 <MoreSvg className='size-5 fill-gray-500 group-hover:fill-primary' />
             </button>
-            <PostMenuDropDown
-                open={open}
-                position={position}
-                onClose={() => onToggle()}
-                user={user}
-                postId={postId}
-            />
+            {open &&
+                <PostMenuDropDown
+                    open={true}
+                    position={position}
+                    onClose={() => setOpen(false)}
+                    user={user}
+                    postId={postId}
+                />
+            }
         </>
     );
 }

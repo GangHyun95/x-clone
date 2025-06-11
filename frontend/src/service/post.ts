@@ -8,6 +8,12 @@ export async function getAllPosts() {
     return res.data.posts;
 }
 
+export async function getFollowingPosts() {
+    const res = await get<{ posts: Post[] }>('/api/posts/following', { withAuth: true });
+
+    return res.data.posts;
+}
+
 export async function createPost(formData: FormData) {
     const res = await postFormData<{ post: Post }>('/api/posts', formData, { withAuth: true });
     return res.data.post;

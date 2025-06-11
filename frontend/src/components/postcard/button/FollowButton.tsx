@@ -11,7 +11,6 @@ type Props = {
     onClose: () => void;
 }
 export default function FollowButton({ postAuthorId, is_following, nickname, onClose }: Props) {
-
     const { mutate: toggleFollow } = useToggleFollow();
 
     const handleFollowToggle = () => {
