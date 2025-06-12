@@ -193,7 +193,7 @@ export const likePost = async (req: Request, res: Response): Promise<void> => {
     }
 
     try {
-        const postResult = await pool.query('SELECT user_id FROM posts WHERE id = $1', [postId]);
+        const postResult = await pool.query('SELECT id, user_id, content, img FROM posts WHERE id = $1', [postId]);
         const post = postResult.rows[0];
 
         if (!post) {
@@ -221,9 +221,9 @@ export const likePost = async (req: Request, res: Response): Promise<void> => {
             );
 
             await pool.query(
-                `INSERT INTO notifications (from_user_id, to_user_id, type, created_at)
-                VALUES ($1, $2, 'like', NOW())`,
-                [userId, post.user_id]
+                `INSERT INTO notifications (from_user_id, to_user_id, type, post_id, created_at)
+                VALUES ($1, $2, 'like', $3, NOW())`,
+                [userId, post.user_id, post.id]
             );
 
             res.status(200).json({

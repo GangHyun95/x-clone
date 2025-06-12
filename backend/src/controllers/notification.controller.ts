@@ -9,21 +9,40 @@ export const getNotifications = async (req: Request, res: Response): Promise<voi
     }
 
     const userId = req.user.id;
+    const type = req.query.type;
 
     try {
         const notificationsResult = await pool.query(
-            `SELECT n.id, n.type, n.read, n.created_at,
-                    json_build_object(
-                        'id', u.id,
-                        'nickname', u.nickname,
-                        'profile_img', u.profile_img
-                    ) as from_user
-             FROM notifications n
-             JOIN users u ON n.from_user_id = u.id
-             WHERE n.to_user_id = $1
-             ORDER BY n.created_at DESC`,
-            [userId]
-        );
+            `SELECT
+                n.id,
+                n.type,
+                n.read,
+                n.created_at,
+                json_build_object(
+                    'id', u.id,
+                    'nickname', u.nickname,
+                    'profile_img', u.profile_img
+                ) AS user,
+                CASE
+                    WHEN n.post_id IS NOT NULL THEN (
+                        SELECT json_build_object(
+                            'id', posts.id,
+                            'content', posts.content,
+                            'img', posts.img
+                        )
+                        FROM posts
+                        WHERE posts.id = n.post_id
+                    )
+                    ELSE NULL
+                END AS post
+            FROM notifications n
+            JOIN users u ON u.id = n.from_user_id
+            WHERE n.to_user_id = $1
+            AND ($2::text IS NULL OR n.type = $2)
+            ORDER BY n.created_at DESC`,
+            [userId, type]
+            );
+
 
         await pool.query(
             `UPDATE notifications SET read = true WHERE to_user_id = $1`,

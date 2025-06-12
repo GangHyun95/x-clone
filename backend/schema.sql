@@ -63,7 +63,44 @@ CREATE TABLE notifications (
     from_user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
     to_user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
     type VARCHAR(10) NOT NULL CHECK (type IN ('follow', 'like')),
+    post_id INTEGER REFERENCES posts(id) ON DELETE CASCADE,
     read BOOLEAN DEFAULT false,
     created_at TIMESTAMP DEFAULT NOW(),
-    updated_at TIMESTAMP DEFAULT NOW()
+    updated_at TIMESTAMP DEFAULT NOW(),
+
+    CHECK (
+        (type = 'like' AND post_id IS NOT NULL)
+        OR
+        (type = 'follow' AND post_id IS NULL)
+    )
 );
+
+/*
+    참고용 - notifications 테이블 ALTER 쿼리 모음
+
+    1. post_id 컬럼 추가
+        ALTER TABLE notifications
+        ADD COLUMN post_id INTEGER REFERENCES posts(id) ON DELETE CASCADE;
+
+    2. 데이터 수정
+        UPDATE notifications
+        SET post_id = 1
+        WHERE type = 'like' AND post_id IS NULL;
+
+    3. 조건 제약 추가 (type에 따라 post_id 유효성 제한)
+        ALTER TABLE notifications
+        ADD CONSTRAINT check_post_id_condition
+        CHECK (
+            (type = 'like' AND post_id IS NOT NULL)
+            OR
+            (type = 'follow' AND post_id IS NULL)
+        );
+
+    4. post_id 컬럼 삭제
+        ALTER TABLE notifications
+        DROP COLUMN post_id;
+
+    5. 조건 제약 삭제
+        ALTER TABLE notifications
+        DROP CONSTRAINT check_post_id_condition;
+*/
