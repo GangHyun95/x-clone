@@ -1,8 +1,8 @@
 import { useState } from 'react';
 
+import PostMenuDropDown from '@/components/postcard/PostMenuDropDown';
 import { MoreSvg } from '@/components/svgs';
 import useDropdownPosition from '@/hooks/useDropdownPosition';
-import PostMenuDropDown from '@/components/postcard/PostMenuDropDown';
 import type { UserPreview } from '@/types/user';
 
 export type PostMenuBtnProps = {

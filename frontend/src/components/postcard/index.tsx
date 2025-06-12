@@ -29,7 +29,7 @@ export default function PostCard(post: Post) {
                 <div className='mr-2'>
                     <Avatar nickname={user.nickname} src={user.profile_img} />
                 </div>
-                <div className='flex grow flex-col'>
+                <div className='flex grow flex-col min-w-0'>
                     <div className='flex justify-between'>
                         <ul className='flex items-center'>
                             <li><span className='font-extrabold'>{user.full_name}</span></li>
@@ -42,10 +42,10 @@ export default function PostCard(post: Post) {
                         <PostMenuBtn user={user} postId={id} />
                     </div>
                     <div className='flex flex-col'>
-                        <p>{content}</p>
+                        <p className='whitespace-pre-wrap break-words'>{content}</p>
                     </div>
                     {img && (
-                        <figure className='relative mt-3 cursor-pointer border border-base-300 rounded-2xl overflow-hidden'>
+                        <figure className='relative mt-3 cursor-pointer border border-gray-300 rounded-2xl overflow-hidden'>
                             <div className='w-full' style={{ paddingBottom: `${aspectRatio}%` }} />
                             <img src={img} alt='post' className='absolute inset-0 w-full h-full' />
                         </figure>

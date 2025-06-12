@@ -9,7 +9,7 @@ export function useCreatePost() {
 }
 
 export function usePosts(tab: 'foryou' | 'following') {
-    const key = tab === 'foryou' ? 'all' : 'following';
+    const key = tab === 'following' ? 'following' : 'all';
     return useQuery({
         queryKey: ['posts', key],
         queryFn: tab === 'following' ? getFollowingPosts : getAllPosts,
