@@ -399,13 +399,26 @@ export const getFollowingPosts = async (req: Request, res: Response): Promise<vo
                     'id', users.id,
                     'nickname', users.nickname,
                     'full_name', users.full_name,
-                    'profile_img', users.profile_img
-                ) as user
+                    'profile_img', users.profile_img,
+                    'is_following', EXISTS (
+                        SELECT 1 FROM user_follows WHERE from_user_id = $2 AND to_user_id = users.id
+                    )
+                ) as user,
+                json_build_object(
+                    'like', (SELECT COUNT(*) FROM post_likes WHERE post_id = posts.id), 
+                    'comment', (SELECT COUNT(*) FROM comments WHERE post_id = posts.id)
+                ) AS counts,
+                EXISTS (
+                    SELECT 1 FROM post_likes WHERE post_id = posts.id AND user_id = $2
+                ) AS is_liked,
+                EXISTS (
+                    SELECT 1 FROM post_bookmarks WHERE post_id = posts.id AND user_id = $2
+                ) AS is_bookmarked
             FROM posts
             JOIN users ON users.id = posts.user_id
             WHERE posts.user_id = ANY($1)
             ORDER BY posts.created_at DESC`,
-            [followingIds]
+            [followingIds, userId]
         );
 
         res.status(200).json({
