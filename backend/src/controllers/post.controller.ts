@@ -183,7 +183,7 @@ export const commentOnPost = async (req: Request, res: Response): Promise<void> 
     }
 };
 
-export const likePost = async (req: Request, res: Response): Promise<void> => {
+export const toggleLike = async (req: Request, res: Response): Promise<void> => {
     const userId = req.user?.id;
     const postId = req.params.id;
 
@@ -233,12 +233,12 @@ export const likePost = async (req: Request, res: Response): Promise<void> => {
             });
         }
     } catch (error) {
-        console.error('Error in likeUnlikePost:', error);
+        console.error('Error in toggleLike:', error);
         res.status(500).json({ success: false, message: '서버 오류가 발생했습니다.' });
     }
 };
 
-export const bookmarkPost = async (req: Request, res: Response): Promise<void> => {
+export const toggleBookmark = async (req: Request, res: Response): Promise<void> => {
     const userId = req.user?.id;
     const postId = req.params.id;
 
@@ -280,7 +280,7 @@ export const bookmarkPost = async (req: Request, res: Response): Promise<void> =
             });
         }
     } catch (error) {
-        console.error('Error in bookmarkPost:', error);
+        console.error('Error in toggleBookmark:', error);
         res.status(500).json({ success: false, message: '서버 오류가 발생했습니다.' });
     }
 };
@@ -433,15 +433,13 @@ export const getFollowingPosts = async (req: Request, res: Response): Promise<vo
 };
 
 export const getLikedPosts = async (req: Request, res: Response): Promise<void> => {
-    const userId = parseInt(req.params.id);
+    const userId = req.user?.id;
+    if (!userId) {
+        res.status(401).json({ success: false, message: '사용자를 찾을 수 없습니다.' });
+        return;
+    }
 
     try {
-        const userResult = await pool.query('SELECT id FROM users WHERE id = $1', [userId]);
-        if (userResult.rows.length === 0) {
-            res.status(404).json({ success: false, message: '사용자를 찾을 수 없습니다.' });
-            return;
-        }
-
         const likedPostResult = await pool.query(
             `SELECT
                 posts.id,
@@ -451,10 +449,21 @@ export const getLikedPosts = async (req: Request, res: Response): Promise<void> 
                 posts.updated_at,
                 json_build_object(
                     'id', users.id,
-                    'nick_name', users.nickname,
+                    'nickname', users.nickname,
                     'full_name', users.full_name,
-                    'profile_img', users.profile_img
-                ) as user
+                    'profile_img', users.profile_img,
+                    'is_following', EXISTS (
+                        SELECT 1 FROM user_follows WHERE from_user_id = $1 AND to_user_id = users.id
+                    )
+                ) as user,
+                json_build_object(
+                    'like', (SELECT COUNT(*) FROM post_likes WHERE post_id = posts.id),
+                    'comment', (SELECT COUNT(*) FROM comments WHERE post_id = posts.id)
+                ) as counts,
+                TRUE AS is_liked,
+                EXISTS (
+                    SELECT 1 FROM post_bookmarks WHERE post_id = posts.id AND user_id = $1
+                ) AS is_bookmarked
             FROM post_likes
             JOIN posts ON post_likes.post_id = posts.id
             JOIN users ON users.id = posts.user_id
@@ -470,6 +479,74 @@ export const getLikedPosts = async (req: Request, res: Response): Promise<void> 
         });
     } catch (error) {
         console.error('Error in getLikedPosts:', error);
+        res.status(500).json({ success: false, message: '서버 오류가 발생했습니다.' });
+    }
+};
+
+export const getBookmarkedPosts = async (req: Request, res: Response): Promise<void> => {
+    const userId = req.user?.id;
+    const keyword = typeof req.query.q === 'string' ? req.query.q.trim() : '';
+
+    if (!userId) {
+        res.status(401).json({ success: false, message: '사용자를 찾을 수 없습니다.' });
+        return;
+    }
+
+    try {
+        const values: (number | string)[] = [userId];
+        let searchCondition = '';
+
+        if (keyword) {
+            values.push(keyword);
+            searchCondition = `
+                AND (
+                    to_tsvector('simple', posts.content) @@ plainto_tsquery('simple', $2)
+                    OR to_tsvector('simple', users.nickname) @@ plainto_tsquery('simple', $2)
+                    OR to_tsvector('simple', users.full_name) @@ plainto_tsquery('simple', $2)
+                )
+            `;
+        }
+
+        const bookmarkResult = await pool.query(
+            `SELECT
+                posts.id,
+                posts.content,
+                posts.img,
+                posts.created_at,
+                posts.updated_at,
+                json_build_object(
+                    'id', users.id,
+                    'nickname', users.nickname,
+                    'full_name', users.full_name,
+                    'profile_img', users.profile_img,
+                    'is_following', EXISTS (
+                        SELECT 1 FROM user_follows WHERE from_user_id = $1 AND to_user_id = users.id
+                    )
+                ) as user,
+                json_build_object(
+                    'like', (SELECT COUNT(*) FROM post_likes WHERE post_id = posts.id), 
+                    'comment', (SELECT COUNT(*) FROM comments WHERE post_id = posts.id)
+                ) AS counts,
+                EXISTS (
+                    SELECT 1 FROM post_likes WHERE post_id = posts.id AND user_id = $1
+                ) AS is_liked,
+                TRUE AS is_bookmarked
+            FROM post_bookmarks
+            JOIN posts ON posts.id = post_bookmarks.post_id
+            JOIN users ON users.id = posts.user_id
+            WHERE post_bookmarks.user_id = $1
+            ${searchCondition}
+            ORDER BY posts.created_at DESC`,
+            values
+        );
+
+        res.status(200).json({
+            success: true,
+            message: bookmarkResult.rows.length ? '북마크한 게시물을 가져왔습니다.' : '북마크한 게시물이 없습니다.',
+            data: { posts: bookmarkResult.rows },
+        });
+    } catch (error) {
+        console.error('Error in getBookmarkedPosts:', error);
         res.status(500).json({ success: false, message: '서버 오류가 발생했습니다.' });
     }
 };
