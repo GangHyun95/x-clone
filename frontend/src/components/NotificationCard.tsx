@@ -34,7 +34,7 @@ export default function NotificationCard(notification: Notification) {
             <div className='flex'>
                 <div className='mr-2'>{iconMap[type]}</div>
                 <div className='flex flex-col grow pr-5 min-w-0'>
-                    <Avatar nickname='테스트' src={user.profile_img} className='mb-3' />
+                    <Avatar nickname={user.nickname} src={user.profile_img} className='mb-3' />
                     {type === 'like' && (
                         <>
                             <p>{`${user.nickname} liked your post`}</p>

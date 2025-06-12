@@ -1,8 +1,8 @@
-import { useState } from 'react';
 import toast from 'react-hot-toast';
 
 import { HeartSvg } from '@/components/svgs';
 import { useLikePost } from '@/queries/post';
+import { updatePostCacheById } from '@/lib/queryCacheHelpers';
 
 type Props = {
     id: number;
@@ -10,28 +10,25 @@ type Props = {
     likeCount: number;
 }
 export default function LikeButton({ id: postId, is_liked, likeCount }: Props) {
-    const [liked, setLiked] = useState(is_liked);
-    const [count, setCount] = useState(likeCount);
-
     const { mutate: likePost } = useLikePost();
     const handleToggleLike = () => {
-        const prevLiked = liked;
-        const prevCount = count;
-
-        const nextLiked = !prevLiked;
-        const nextCount = nextLiked ? prevCount + 1 : prevCount - 1;
-
-        setLiked(nextLiked);
-        setCount(nextCount);
-
         likePost({ postId }, {
             onSuccess: (data) => {
                 toast.success(data.message);
+                updatePostCacheById(postId, (post) => {
+                    const liked = post.is_liked;
+                    return {
+                        ...post,
+                        is_liked: !liked,
+                        counts: {
+                            ...post.counts,
+                            like: liked ? post.counts.like - 1 : post.counts.like + 1,
+                        },
+                    };
+                });
             },
             onError: (error) => {
                 console.error('Error liking/unliking post:', error);
-                setLiked(prevLiked);
-                setCount(prevCount);
             },
         });
     };
@@ -42,9 +39,9 @@ export default function LikeButton({ id: postId, is_liked, likeCount }: Props) {
             onClick={handleToggleLike}
         >
             <button className='btn btn-sm btn-ghost btn-circle border-0 group-hover:bg-red-500/10'>
-                <HeartSvg filled={liked} className={`h-5 group-hover:fill-red-500 ${liked ? 'fill-red-500' : 'fill-gray-500'}`} />
+                <HeartSvg filled={is_liked} className={`h-5 group-hover:fill-red-500 ${is_liked ? 'fill-red-500' : 'fill-gray-500'}`} />
             </button>
-            <span className={`text-sm px-1 ${liked ? 'text-red-500' : ''}`}>{count}</span>
+            <span className={`text-sm px-1 ${is_liked ? 'text-red-500' : ''}`}>{likeCount}</span>
         </div>
     );
 }

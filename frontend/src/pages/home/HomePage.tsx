@@ -10,14 +10,12 @@ import { usePosts } from '@/queries/post';
 export default function HomePage() {
     const [searchParams, setSearchParams] = useSearchParams();
     const tab = searchParams.get('tab') === 'following' ? 'following' : 'foryou';
-    const { data: posts } = usePosts(tab);
+    const { data: posts = [], isLoading } = usePosts(tab);
 
     const tabs = [
         { label: 'For you', active: tab === 'foryou', onClick: () => setSearchParams({ tab: 'foryou' }) },
         { label: 'Following', active: tab === 'following', onClick: () => setSearchParams({ tab: 'following' }) },
     ];
-
-    if (!posts) return null;
 
     return (
         <PageLayout>
@@ -25,7 +23,7 @@ export default function HomePage() {
                 <Tabs tabs={tabs} />
             </StickyHeader>
             <PostEditorForm />
-            <PageLayout.Content>
+            <PageLayout.Content isLoading={isLoading}>
                 {posts.length === 0 && (
                     <section className='max-w-[400px] mx-auto my-8 px-8'>
                         <header className='flex flex-col'>

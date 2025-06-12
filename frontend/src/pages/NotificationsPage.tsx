@@ -10,15 +10,13 @@ export default function NotificationsPage() {
     const [searchParams, setSearchParams] = useSearchParams();
     const raw = searchParams.get('tab');
     const tab = raw === 'like' || raw === 'follow' ? raw : 'all';
-    const { data: notifications } = useNotifications(tab);
+    const { data: notifications = [], isLoading } = useNotifications(tab);
 
     const tabs = [
         { label: 'All', active: tab !== 'like' && tab !== 'follow', onClick: () => setSearchParams({ tab: 'all' }) },
         { label: 'Likes', active: tab === 'like', onClick: () => setSearchParams({ tab: 'like' }) },
         { label: 'Follows', active: tab === 'follow', onClick: () => setSearchParams({ tab: 'follow' }) },
     ];
-
-    if (!notifications) return null;
 
     return (
         <PageLayout>
@@ -27,7 +25,7 @@ export default function NotificationsPage() {
                 <Tabs tabs={tabs}/>
             </StickyHeader>
 
-            <PageLayout.Content>
+            <PageLayout.Content isLoading={isLoading}>
                 {notifications.length === 0 && (
                     <section className='max-w-[400px] mx-auto my-8 px-8'>
                         <header className='flex flex-col'>
@@ -35,7 +33,7 @@ export default function NotificationsPage() {
                                 Nothing to see here — yet
                             </h2>
                             <p className='text-gray-500 mb-7'>
-                                From likes to reposts and a whole lot more, this is where all the action happens.
+                                From likes to follows, this is where all your notifications happen.
                             </p>
                         </header>
                     </section>

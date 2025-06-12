@@ -15,7 +15,14 @@ export default function Avatar({ src, alt='avatar', className, nickname }: Props
                 alt={alt}
                 className='absolute inset-0 object-cover'
             />
-            {nickname && <Link to={`/profile/${nickname}`} className='absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 cursor-pointer' />}
+            
+            {nickname && (
+                <Link
+                    to={`/profile/${nickname}`}
+                    onClick={(e) => e.stopPropagation()}
+                    className='absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 cursor-pointer'
+                />
+            )}
         </div>
     );
 }

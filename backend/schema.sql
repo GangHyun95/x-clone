@@ -47,7 +47,7 @@ CREATE TABLE post_bookmarks (
     user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
     created_at TIMESTAMP DEFAULT NOW(),
     UNIQUE (post_id, user_id)
-)
+);
 
 CREATE TABLE comments (
     id SERIAL PRIMARY KEY,

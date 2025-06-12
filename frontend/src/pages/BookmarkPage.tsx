@@ -18,24 +18,23 @@ export default function BookmarkPage() {
             <StickyHeader>
                 <StickyHeader.Header onPrev={() => navigate(-1)}>Bookmarks</StickyHeader.Header>
             </StickyHeader>
-
-            <PageLayout.Content>
-                <section className='flex flex-col items-center my-2'>
-                    <div className='w-[95%] min-h-10'>
-                        <div className='border border-gray-300 rounded-full focus-within:border-primary'>
-                            <div className='flex items-center border border-transparent rounded-full focus-within:border-primary'>
-                                <div>
-                                    <SearchSvg className='size-4 pl-3 shrink-0 box-content z-10' />
-                                </div>
-                                <input
-                                    type='text'
-                                    className='text-sm min-h-10 grow outline-0 pl-1 pr-4 placeholder:text-gray-500 text-gray-500 peer'
-                                    placeholder='Search Bookmarks'
-                                />
+            <section className='flex flex-col items-center my-2'>
+                <div className='w-[95%] min-h-10'>
+                    <div className='border border-gray-300 rounded-full focus-within:border-primary'>
+                        <div className='flex items-center border border-transparent rounded-full focus-within:border-primary'>
+                            <div>
+                                <SearchSvg className='size-4 pl-3 shrink-0 box-content z-10' />
                             </div>
+                            <input
+                                type='text'
+                                className='text-sm min-h-10 grow outline-0 pl-1 pr-4 placeholder:text-gray-500 text-gray-500 peer'
+                                placeholder='Search Bookmarks'
+                            />
                         </div>
                     </div>
-                </section>
+                </div>
+            </section>
+            <PageLayout.Content>
 
                 {/*
                 <section className='max-w-[400px] mx-auto my-8 px-8'>
