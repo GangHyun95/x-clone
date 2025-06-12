@@ -1,5 +1,6 @@
 import { useSearchParams } from 'react-router-dom';
 
+import EmptyState from '@/components/common/EmptyState';
 import StickyHeader from '@/components/common/StickyHeader';
 import Tabs from '@/components/common/Tabs';
 import PageLayout from '@/components/layout/PageLayout';
@@ -27,16 +28,10 @@ export default function NotificationsPage() {
 
             <PageLayout.Content isLoading={isLoading}>
                 {notifications.length === 0 && (
-                    <section className='max-w-[400px] mx-auto my-8 px-8'>
-                        <header className='flex flex-col'>
-                            <h2 className='text-4xl font-extrabold mb-2'>
-                                Nothing to see here — yet
-                            </h2>
-                            <p className='text-gray-500 mb-7'>
-                                From likes to follows, this is where all your notifications happen.
-                            </p>
-                        </header>
-                    </section>
+                    <EmptyState
+                        title='Nothing to see here — yet'
+                        description='From likes to follows, this is where all your notifications happen.'
+                    />
                 )}
 
                 <section className='flex flex-col'>

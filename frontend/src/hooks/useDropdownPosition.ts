@@ -23,7 +23,7 @@ export default function useDropdownPosition({ open, anchor = 'bottom', alignment
 
         const vertical = anchor === 'bottom'
             ? { bottom: window.innerHeight - rect.bottom - (rect.height / 2) - window.scrollY }
-            : { bottom: window.innerHeight - rect.top - window.scrollY };
+            : { bottom: window.innerHeight - rect.top };
 
         const horizontal = alignment === 'left'
             ? { left: rect.left + window.scrollX }

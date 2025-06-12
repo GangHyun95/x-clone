@@ -1,13 +1,13 @@
 import toast from 'react-hot-toast';
 
 import { BookmarkSvg } from '@/components/svgs';
-import { useBookmarkPost } from '@/queries/post';
 import { updatePostCacheById } from '@/lib/queryCacheHelpers';
+import { useToggleBookmark } from '@/queries/post';
 
 export default function BookmarkButton({ id: postId, is_bookmarked }: { id: number, is_bookmarked: boolean }) {
-    const { mutate: bookmarkPost } = useBookmarkPost();
+    const { mutate: toggleBookmark } = useToggleBookmark();
     const handleToggleBookmark = () => {
-        bookmarkPost({ postId }, {
+        toggleBookmark({ postId }, {
             onSuccess: (data) => {
                 toast.success(data.message);
                 updatePostCacheById(postId, (post) => {

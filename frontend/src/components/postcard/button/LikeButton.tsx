@@ -1,8 +1,8 @@
 import toast from 'react-hot-toast';
 
 import { HeartSvg } from '@/components/svgs';
-import { useLikePost } from '@/queries/post';
 import { updatePostCacheById } from '@/lib/queryCacheHelpers';
+import { useToggleLike } from '@/queries/post';
 
 type Props = {
     id: number;
@@ -10,9 +10,9 @@ type Props = {
     likeCount: number;
 }
 export default function LikeButton({ id: postId, is_liked, likeCount }: Props) {
-    const { mutate: likePost } = useLikePost();
+    const { mutate: toggleLike } = useToggleLike();
     const handleToggleLike = () => {
-        likePost({ postId }, {
+        toggleLike({ postId }, {
             onSuccess: (data) => {
                 toast.success(data.message);
                 updatePostCacheById(postId, (post) => {

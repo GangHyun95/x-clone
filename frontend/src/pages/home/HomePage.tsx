@@ -1,5 +1,6 @@
 import { useSearchParams } from 'react-router-dom';
 
+import EmptyState from '@/components/common/EmptyState';
 import StickyHeader from '@/components/common/StickyHeader';
 import Tabs from '@/components/common/Tabs';
 import PostEditorForm from '@/components/editor/PostEditorForm';
@@ -25,16 +26,18 @@ export default function HomePage() {
             <PostEditorForm />
             <PageLayout.Content isLoading={isLoading}>
                 {posts.length === 0 && (
-                    <section className='max-w-[400px] mx-auto my-8 px-8'>
-                        <header className='flex flex-col'>
-                            <h2 className='text-4xl font-extrabold mb-2'>
-                                {tab === 'following' ? 'No posts from users you follow.' : 'No posts to show right now.'}
-                            </h2>
-                            <p className='text-gray-500 mb-7'>
-                                {tab === 'following' ? 'Follow some users to see their posts here.' : 'Check back later for new posts.'}
-                            </p>
-                        </header>
-                    </section>
+                    <EmptyState
+                        title={
+                            tab === 'following'
+                                ? 'No posts from users you follow.'
+                                : 'No posts to show right now.'
+                        }
+                        description={
+                            tab === 'following'
+                                ? 'Follow some users to see their posts here.'
+                                : 'Check back later for new posts.'
+                        }
+                    />
                 )}
 
                 {posts.map((post) => (

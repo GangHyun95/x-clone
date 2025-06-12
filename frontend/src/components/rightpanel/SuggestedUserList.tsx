@@ -1,7 +1,9 @@
 import Avatar from '@/components/common/Avatar';
-import FollowButton from './FollowButton';
-import { useSuggestedUsers } from '@/queries/user';
+
 import { SpinnerSvg } from '@/components/svgs';
+import { useSuggestedUsers } from '@/queries/user';
+
+import FollowButton from './FollowButton';
 
 export default function SuggestedUserList() {
     const { data: suggestedUsers = [], isLoading } = useSuggestedUsers();
