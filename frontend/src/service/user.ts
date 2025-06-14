@@ -1,5 +1,7 @@
 
+import type { Post } from '@/types/post';
 import type { User, UserSummary } from '@/types/user';
+
 import { get, post } from './api/client';
 
 export async function getMe() {
@@ -12,6 +14,10 @@ export async function getSuggestedUsers(nickname?: string) {
 
 export async function getUserProfile(nickname: string) {
     return get<{ user: User }>(`/api/users/profile/${nickname}`, { withAuth: true });
+}
+
+export async function getUserPosts(nickname: string) {
+    return get<{ posts: Post[] }>(`/api/users/${nickname}/posts`, { withAuth: true });
 }
 
 export async function toggleFollow(payload: { userId: number }) {

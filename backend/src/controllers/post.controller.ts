@@ -391,13 +391,25 @@ export const getFollowingPosts = async (req: Request, res: Response): Promise<vo
 };
 
 export const getLikedPosts = async (req: Request, res: Response): Promise<void> => {
-    const userId = req.user?.id;
-    if (!userId) {
+    const { nickname } = req.params;
+    const currentUserId = req.user?.id;
+    if (!currentUserId) {
         res.status(401).json({ success: false, message: '사용자를 찾을 수 없습니다.' });
         return;
     }
 
     try {
+        const userResult = await pool.query(
+            `SELECT id FROM users WHERE nickname = $1`,
+            [nickname]
+        );
+        const targetUser = userResult.rows[0];
+
+        if (!targetUser) {
+            res.status(404).json({ success: false, message: '사용자를 찾을 수 없습니다.' });
+            return;
+        }
+
         const likedPostResult = await pool.query(
             `SELECT
                 posts.id,
@@ -413,11 +425,11 @@ export const getLikedPosts = async (req: Request, res: Response): Promise<void> 
                     'is_following', EXISTS (
                         SELECT 1 FROM user_follows WHERE from_user_id = $1 AND to_user_id = users.id
                     )
-                ) as user,
+                ) AS user,
                 json_build_object(
                     'like', (SELECT COUNT(*) FROM post_likes WHERE post_id = posts.id),
                     'comment', (SELECT COUNT(*) FROM comments WHERE post_id = posts.id)
-                ) as counts,
+                ) AS counts,
                 TRUE AS is_liked,
                 EXISTS (
                     SELECT 1 FROM post_bookmarks WHERE post_id = posts.id AND user_id = $1
@@ -425,14 +437,16 @@ export const getLikedPosts = async (req: Request, res: Response): Promise<void> 
             FROM post_likes
             JOIN posts ON post_likes.post_id = posts.id
             JOIN users ON users.id = posts.user_id
-            WHERE post_likes.user_id = $1
+            WHERE post_likes.user_id = $2
             ORDER BY posts.created_at DESC`,
-            [userId]
+            [currentUserId, targetUser.id]
         );
 
         res.status(200).json({
             success: true,
-            message: likedPostResult.rows.length ? '좋아요한 게시물을 가져왔습니다.' : '좋아요한 게시물이 없습니다.',
+            message: likedPostResult.rows.length
+                ? '좋아요한 게시물을 가져왔습니다.'
+                : '좋아요한 게시물이 없습니다.',
             data: { posts: likedPostResult.rows },
         });
     } catch (error) {

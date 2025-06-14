@@ -31,8 +31,8 @@ export const getMe = async (req: Request, res:Response): Promise<void> => {
                     ...user,
                     post_count: post_count,
                     status: {
-                        following: following_count,
-                        follower: follower_count,
+                        following: Number(following_count),
+                        follower: Number(follower_count),
                     }
                 }),
             },
@@ -45,6 +45,7 @@ export const getMe = async (req: Request, res:Response): Promise<void> => {
 
 export const getUserPosts = async (req: Request, res: Response): Promise<void> => {
     const { nickname } = req.params;
+
     try {
         const userResult = await pool.query('SELECT id FROM users WHERE nickname = $1', [nickname]);
         const user = userResult.rows[0];
@@ -65,13 +66,26 @@ export const getUserPosts = async (req: Request, res: Response): Promise<void> =
                     'id', users.id,
                     'nickname', users.nickname,
                     'full_name', users.full_name,
-                    'profile_img', users.profile_img
-                ) as user
+                    'profile_img', users.profile_img,
+                    'is_following', EXISTS (
+                        SELECT 1 FROM user_follows WHERE from_user_id = $1 AND to_user_id = users.id
+                    )
+                ) AS user,
+                json_build_object(
+                    'like', (SELECT COUNT(*) FROM post_likes WHERE post_id = posts.id),
+                    'comment', (SELECT COUNT(*) FROM comments WHERE post_id = posts.id)
+                ) AS counts,
+                EXISTS (
+                    SELECT 1 FROM post_likes WHERE post_id = posts.id AND user_id = $1
+                ) AS is_liked,
+                EXISTS (
+                    SELECT 1 FROM post_bookmarks WHERE post_id = posts.id AND user_id = $1
+                ) AS is_bookmarked
             FROM posts
             JOIN users ON users.id = posts.user_id
-            WHERE posts.user_id = $1
+            WHERE posts.user_id = $2
             ORDER BY posts.created_at DESC`,
-            [user.id]
+            [req.user?.id, user.id]
         );
 
         res.status(200).json({
@@ -84,6 +98,7 @@ export const getUserPosts = async (req: Request, res: Response): Promise<void> =
         res.status(500).json({ success: false, message: '서버 오류가 발생했습니다.' });
     }
 };
+
 
 export const getUserProfile = async (req: Request, res: Response): Promise<void> => {
     const { nickname } = req.params;
@@ -292,111 +307,79 @@ export const updateUserProfile = async (req: Request, res: Response): Promise<vo
         return;
     }
 
-    const {
-        fullName,
-        nickname,
-        currentPassword,
-        newPassword,
-        bio,
-        link,
-    } = req.body;
-
+    const { fullName, bio, link } = req.body;
     const userId = req.user.id;
+
     const files = req.files as {
-        profileImg?: Express.Multer.File[];
-        coverImg?: Express.Multer.File[];
+        profileImg: Express.Multer.File[];
+        coverImg: Express.Multer.File[];
     };
 
     try {
-        const userResult = await pool.query('SELECT * FROM users WHERE id = $1', [userId]);
-        const user = userResult.rows[0];
-
-        if (!user) {
-            res.status(404).json({ success: false, message: '사용자를 찾을 수 없습니다.' });
-            return;
-        }
-
-        if ((currentPassword && !newPassword) || (!currentPassword && newPassword)) {
-            res.status(400).json({ success: false, message: '비밀번호를 모두 입력해 주세요.' });
-            return;
-        }
-
-        let hashedPassword = user.password;
-
-        if (currentPassword && newPassword) {
-            if (!user.password) {
-                res.status(400).json({ success: false, message: '비밀번호가 설정되어 있지 않은 계정입니다.' });
-                return;
-            }
-
-            const isMatch = await bcrypt.compare(currentPassword, user.password);
-            if (!isMatch) {
-                res.status(401).json({ success: false, message: '현재 비밀번호가 일치하지 않습니다.' });
-                return;
-            }
-
-            if (newPassword.length < 6) {
-                res.status(400).json({ success: false, message: '비밀번호는 최소 6자 이상이어야 합니다.' });
-                return;
-            }
-
-            const salt = await bcrypt.genSalt(10);
-            hashedPassword = await bcrypt.hash(newPassword, salt);
-        }
-
-        if (nickname && nickname !== user.nickname) {
-            const nicknameCheckResult = await pool.query(
-                'SELECT 1 FROM users WHERE nickname = $1 AND id != $2 LIMIT 1',
-                [nickname, userId]
-            );
-            if (nicknameCheckResult.rows.length > 0) {
-                res.status(400).json({ success: false, message: '이미 사용중인 닉네임입니다.' });
-                return;
-            }
-        }
-
-        const newProfileImg = files.profileImg
-            ? await uploadAndReplaceImage(user.profile_img, files.profileImg[0].path)
-            : user.profile_img;
-
-        const newCoverImg = files.coverImg
-            ? await uploadAndReplaceImage(user.cover_img, files.coverImg[0].path)
-            : user.cover_img;
-
-        const updatedUserResult = await pool.query(
-            `
-            UPDATE users
-            SET
-                full_name = COALESCE($1, full_name),
-                nickname = COALESCE($2, nickname),
-                password = $3,
-                profile_img = $4,
-                cover_img = $5,
-                bio = COALESCE($6, bio),
-                link = COALESCE($7, link),
-                updated_at = NOW()
-            WHERE id = $8
-            RETURNING *
-            `,
-            [
-                fullName,
-                nickname || user.nickname,
-                hashedPassword,
-                newProfileImg,
-                newCoverImg,
-                bio,
-                link,
-                userId
-            ]
+        const { rows } = await pool.query(
+            `SELECT id, full_name, profile_img, cover_img, bio, link FROM users WHERE id = $1`,
+            [userId]
         );
+        const user = rows[0];
 
-        const updatedUser = updatedUserResult.rows[0];
+        let sql = `UPDATE users SET `;
+        const values: (string | number | null)[] = [];
+        let idx = 1;
+
+        if (fullName && fullName !== user.full_name) {
+            sql += `full_name = $${idx++}, `;
+            values.push(fullName);
+        }
+
+        if (bio && bio !== user.bio) {
+            sql += `bio = $${idx++}, `;
+            values.push(bio);
+        }
+
+        if (typeof link === 'string') {
+            const trimmed = link.trim();
+            const cleanLink = trimmed === '' ? null : trimmed;
+            if (cleanLink !== user.link) {
+                sql += `link = $${idx++}, `;
+                values.push(cleanLink);
+            }
+        }
+
+        if (files.profileImg?.[0]) {
+            const newProfileImg = await uploadAndReplaceImage(user.profile_img, files.profileImg[0].path);
+            sql += `profile_img = $${idx++}, `;
+            values.push(newProfileImg);
+        }
+
+        if (files.coverImg?.[0]) {
+            const newCoverImg = await uploadAndReplaceImage(user.cover_img, files.coverImg[0].path);
+            sql += `cover_img = $${idx++}, `;
+            values.push(newCoverImg);
+        }
+
+        if (values.length === 0) {
+            res.status(200).json({
+                success: true,
+                message: '변경 사항 없음',
+                data: { user: buildUserDetail(user) }
+            });
+            return;
+        }
+
+        sql = sql.slice(0, -2);
+        sql += `, updated_at = NOW() `;
+        sql += `WHERE id = $${idx} RETURNING *`;
+        values.push(userId);
+
+        const { rows: updatedRows } = await pool.query(sql, values);
+        const updatedUser = updatedRows[0];
 
         res.status(200).json({
             success: true,
             message: '프로필이 업데이트 되었습니다.',
             data: { user: buildUserDetail(updatedUser) }
         });
+
     } catch (error) {
         console.error('Error in updateUserProfile:', error);
         res.status(500).json({ success: false, message: '서버 오류가 발생했습니다.' });

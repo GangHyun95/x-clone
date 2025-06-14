@@ -19,7 +19,7 @@ const router = express.Router();
 router.get('/', getAllPosts);
 router.get('/following', getFollowingPosts);
 
-router.get('/:id/likes', getLikedPosts);
+router.get('/likes/:nickname', getLikedPosts);
 router.get('/bookmarks', getBookmarkedPosts);
 
 router.post('/', upload.single('img'), createPost);

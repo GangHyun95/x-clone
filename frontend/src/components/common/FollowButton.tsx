@@ -1,9 +1,11 @@
 import toast from 'react-hot-toast';
 
-import { useToggleFollow } from '@/queries/user';
-import { queryClient } from '@/lib/queryClient';
-import type { User, UserSummary } from '@/types/user';
 import { useParams } from 'react-router-dom';
+
+import { queryClient } from '@/lib/queryClient';
+import { useToggleFollow } from '@/queries/user';
+import type { User, UserSummary } from '@/types/user';
+
 
 type Props = {
     id: number;

@@ -1,9 +1,10 @@
+import { useParams } from 'react-router-dom';
+
 import Avatar from '@/components/common/Avatar';
 import FollowButton from '@/components/common/FollowButton';
 
 import { SpinnerSvg } from '@/components/svgs';
 import { useSuggestedUsers } from '@/queries/user';
-import { useParams } from 'react-router-dom';
 
 
 export default function SuggestedUserList() {

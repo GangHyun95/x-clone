@@ -20,6 +20,10 @@ export async function getBookmarkedPosts(q?: string) {
     return res.data.posts;
 }
 
+export async function getLikedPosts(nickname: string) {
+    return get<{ posts: Post[] }>(`/api/posts/likes/${encodeURIComponent(nickname)}`, { withAuth: true });
+}
+
 export async function createPost(formData: FormData) {
     const res = await postFormData<{ post: Post }>('/api/posts', formData, { withAuth: true });
     return res.data.post;
