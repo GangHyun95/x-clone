@@ -2,7 +2,7 @@ import { FollowButton } from '@/components/postcard/button';
 import DeletePostButton from '@/components/postcard/button/DeletePostButton';
 import GlobalPortal from '@/portals/GlobalPortal';
 import { getCurrentUser } from '@/store/authStore';
-import type { UserPreview } from '@/types/user';
+import type { UserSummary } from '@/types/user';
 
 type Props = {
     open: boolean;
@@ -13,7 +13,7 @@ type Props = {
         right: number;
     }>;
     onClose: () => void;
-    user: UserPreview;
+    user: UserSummary;
     postId: number;
 };
 

@@ -1,15 +1,14 @@
-import type { UserPreview } from '@/types/user';
+import type { UserSummary } from '@/types/user';
 
 export type Notification = {
     id: number;
     type: 'like' | 'follow';
     read: boolean;
     created_at: string;
-    updated_at: string;
-    user: UserPreview;
-    post: {
+    user: UserSummary;
+    post?: {
         id: number;
         content: string;
-        img: string;
-    }
+        img: string | null;
+    };
 };

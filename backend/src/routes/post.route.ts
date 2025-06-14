@@ -9,7 +9,6 @@ import {
     getBookmarkedPosts,
     getFollowingPosts,
     getLikedPosts,
-    getUserPosts,
     toggleBookmark,
     toggleLike,
 } from '../controllers/post.controller.ts';
@@ -22,7 +21,6 @@ router.get('/following', getFollowingPosts);
 
 router.get('/:id/likes', getLikedPosts);
 router.get('/bookmarks', getBookmarkedPosts);
-router.get('/:nickname', getUserPosts);
 
 router.post('/', upload.single('img'), createPost);
 router.patch('/:id', editPost);

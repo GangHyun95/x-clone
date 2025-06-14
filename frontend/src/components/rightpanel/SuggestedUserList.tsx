@@ -1,17 +1,20 @@
 import Avatar from '@/components/common/Avatar';
+import FollowButton from '@/components/common/FollowButton';
 
 import { SpinnerSvg } from '@/components/svgs';
 import { useSuggestedUsers } from '@/queries/user';
+import { useParams } from 'react-router-dom';
 
-import FollowButton from './FollowButton';
 
 export default function SuggestedUserList() {
-    const { data: suggestedUsers = [], isLoading } = useSuggestedUsers();
+    const { nickname } = useParams();
+    const { data: suggestedUsers = [], isLoading } = useSuggestedUsers(nickname);
     if (isLoading) return (
         <div className='w-full flex grow items-center justify-center min-h-[300px]'>
             <SpinnerSvg className='size-10 md:size-8 text-primary animate-spin' />
         </div>
     )
+
     return (
         <>
             <ul className='flex flex-col'>
@@ -25,7 +28,7 @@ export default function SuggestedUserList() {
                                     <span className='text-gray-500'>@{user.nickname}</span>
                                 </div>
                                 <div className='ml-4'>
-                                    <FollowButton id={user.id}/>
+                                    <FollowButton id={user.id} nickname={user.nickname} is_following={user.is_following}/>
                                 </div>
                             </div>
                         </article>

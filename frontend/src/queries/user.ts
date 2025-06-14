@@ -6,11 +6,12 @@ import {
     toggleFollow,
 } from '@/service/user';
 
-export function useSuggestedUsers() {
+export function useSuggestedUsers(nickname?: string) {
+    const excluded = nickname ?? 'default'
     return useQuery({
-        queryKey: ['users', 'suggested'],
+        queryKey: ['users', 'suggested', excluded],
         queryFn: async () => {
-            const res = await getSuggestedUsers();
+            const res = await getSuggestedUsers(excluded);
             return res.data.users;
         },
         staleTime: 1000 * 60 * 50,

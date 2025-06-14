@@ -39,10 +39,10 @@ export default function NotificationCard(notification: Notification) {
                         <>
                             <p>{`${user.nickname} liked your post`}</p>
                             <div>
-                                {post.content && (
+                                {post?.content && (
                                     <span className='mt-3 text-gray-500 whitespace-pre-wrap break-words'>{post.content}</span>
                                 )}
-                                {post.img && (
+                                {post?.img && (
                                     <figure className='relative mt-3 border border-gray-300 rounded-2xl overflow-hidden'>
                                         <div className='w-full' style={{ paddingBottom: `${aspectRatio}%` }} />
                                         <img

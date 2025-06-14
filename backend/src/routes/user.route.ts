@@ -5,6 +5,7 @@ import {
     deleteAccount,
     getMe,
     getSuggestedUsers,
+    getUserPosts,
     getUserProfile,
     toggleFollow,
     updateUserProfile,
@@ -19,8 +20,9 @@ router.delete('/me', deleteAccount);
 router.get('/check-nickname', checkNickname);
 router.get('/suggested', getSuggestedUsers);
 router.post('/:id/:follow', toggleFollow);
+router.get('/:nickname/posts', getUserPosts);
 
-router.get('/:nickname', getUserProfile);
+router.get('/profile/:nickname', getUserProfile);
 
 
 

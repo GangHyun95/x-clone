@@ -1,7 +1,7 @@
 import jwt from 'jsonwebtoken';
 
 import cloudinary from './cloudinary.ts';
-import type { UserDetail, UserSummary } from '../models/user.ts';
+import type { User, UserSummary } from '../types/user.ts';
 
 export const generateToken = (
     id: string,
@@ -24,28 +24,30 @@ export const generateToken = (
     });
 };
 
-export const buildUserSummary = (user: UserDetail): UserSummary => ({
+export const buildUserSummary = (user: User): UserSummary => {
+    return {
+        id: user.id,
+        nickname: user.nickname,
+        full_name: user.full_name,
+        email: user.email,
+        profile_img: user.profile_img,
+    }
+};
+
+export const buildUserDetail = (user: User): User => ({
     id: user.id,
     nickname: user.nickname,
     full_name: user.full_name,
     email: user.email,
     profile_img: user.profile_img,
+    cover_img: user.cover_img,
+    bio: user.bio,
+    link: user.link,
+    created_at: user.created_at,
+    status: user.status,
+    post_count: user.post_count,
+    is_following: user.is_following,
 });
-
-export const buildUserDetail = (user: UserDetail): UserDetail => {
-    return {
-        id: user.id,
-        full_name: user.full_name,
-        nickname: user.nickname,
-        email: user.email,
-        profile_img: user.profile_img,
-        cover_img: user.cover_img,
-        bio: user.bio,
-        link: user.link,
-        created_at: user.created_at,
-        updated_at: user.updated_at,
-    };
-};
 
 export const uploadAndReplaceImage = async (
     oldImageUrl: string | null,

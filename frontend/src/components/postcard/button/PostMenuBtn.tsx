@@ -3,10 +3,10 @@ import { useState } from 'react';
 import PostMenuDropDown from '@/components/postcard/PostMenuDropDown';
 import { MoreSvg } from '@/components/svgs';
 import useDropdownPosition from '@/hooks/useDropdownPosition';
-import type { UserPreview } from '@/types/user';
+import type { UserSummary } from '@/types/user';
 
 export type PostMenuBtnProps = {
-    user: UserPreview;
+    user: UserSummary;
     postId: number;
 };
 

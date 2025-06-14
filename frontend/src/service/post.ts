@@ -17,10 +17,8 @@ export async function getFollowingPosts() {
 export async function getBookmarkedPosts(q?: string) {
     const query = q?.trim() ? `?q=${encodeURIComponent(q)}` : '';
     const res = await get<{ posts: Post[] }>(`/api/posts/bookmarks${query}`, { withAuth: true });
-    console.log(res.data);
     return res.data.posts;
 }
-
 
 export async function createPost(formData: FormData) {
     const res = await postFormData<{ post: Post }>('/api/posts', formData, { withAuth: true });

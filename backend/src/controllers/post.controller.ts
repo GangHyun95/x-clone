@@ -330,48 +330,6 @@ export const getAllPosts = async (req: Request, res: Response): Promise<void> =>
     }
 };
 
-export const getUserPosts = async (req: Request, res: Response): Promise<void> => {
-    const { nickname } = req.params;
-    try {
-        const userResult = await pool.query('SELECT id FROM users WHERE nickname = $1', [nickname]);
-        const user = userResult.rows[0];
-
-        if (!user) {
-            res.status(404).json({ success: false, message: '사용자를 찾을 수 없습니다.' });
-            return;
-        }
-
-        const postResult = await pool.query(
-            `SELECT
-                posts.id,
-                posts.content,
-                posts.img,
-                posts.created_at,
-                posts.updated_at,
-                json_build_object(
-                    'id', users.id,
-                    'nick_name', users.nickname,
-                    'full_name', users.full_name,
-                    'profile_img', users.profile_img
-                ) as user
-            FROM posts
-            JOIN users ON users.id = posts.user_id
-            WHERE posts.user_id = $1
-            ORDER BY posts.created_at DESC`,
-            [user.id]
-        );
-
-        res.status(200).json({
-            success: true,
-            message: postResult.rows.length ? '게시물 목록을 가져왔습니다.' : '게시물이 없습니다.',
-            data: { posts: postResult.rows },
-        });
-    } catch (error) {
-        console.error('Error in getUserPosts:', error);
-        res.status(500).json({ success: false, message: '서버 오류가 발생했습니다.' });
-    }
-};
-
 export const getFollowingPosts = async (req: Request, res: Response): Promise<void> => {
     const userId = req.user?.id;
     if (!userId) {
@@ -494,59 +452,59 @@ export const getBookmarkedPosts = async (req: Request, res: Response): Promise<v
 
     try {
         const values: (number | string)[] = [userId];
-        let searchCondition = '';
-
-        if (keyword) {
-            values.push(keyword);
-            searchCondition = `
-                AND (
-                    to_tsvector('simple', posts.content) @@ plainto_tsquery('simple', $2)
-                    OR to_tsvector('simple', users.nickname) @@ plainto_tsquery('simple', $2)
-                    OR to_tsvector('simple', users.full_name) @@ plainto_tsquery('simple', $2)
-                )
-            `;
-        }
-
-        const bookmarkResult = await pool.query(
-            `SELECT
+        let sql = `
+            SELECT
                 posts.id,
                 posts.content,
                 posts.img,
                 posts.created_at,
                 posts.updated_at,
                 json_build_object(
-                    'id', users.id,
-                    'nickname', users.nickname,
-                    'full_name', users.full_name,
-                    'profile_img', users.profile_img,
-                    'is_following', EXISTS (
-                        SELECT 1 FROM user_follows WHERE from_user_id = $1 AND to_user_id = users.id
-                    )
-                ) as user,
+                'id', users.id,
+                'nickname', users.nickname,
+                'full_name', users.full_name,
+                'profile_img', users.profile_img,
+                'is_following', EXISTS (
+                    SELECT 1 FROM user_follows WHERE from_user_id = $1 AND to_user_id = users.id
+                )
+                ) AS user,
                 json_build_object(
-                    'like', (SELECT COUNT(*) FROM post_likes WHERE post_id = posts.id), 
-                    'comment', (SELECT COUNT(*) FROM comments WHERE post_id = posts.id)
+                'like', (SELECT COUNT(*) FROM post_likes WHERE post_id = posts.id),
+                'comment', (SELECT COUNT(*) FROM comments WHERE post_id = posts.id)
                 ) AS counts,
                 EXISTS (
-                    SELECT 1 FROM post_likes WHERE post_id = posts.id AND user_id = $1
+                SELECT 1 FROM post_likes WHERE post_id = posts.id AND user_id = $1
                 ) AS is_liked,
                 TRUE AS is_bookmarked
             FROM post_bookmarks
             JOIN posts ON posts.id = post_bookmarks.post_id
             JOIN users ON users.id = posts.user_id
             WHERE post_bookmarks.user_id = $1
-            ${searchCondition}
-            ORDER BY posts.created_at DESC`,
-            values
-        );
+        `;
+
+        if (keyword) {
+            sql += `
+                AND (
+                to_tsvector('simple', posts.content) @@ plainto_tsquery('simple', $2)
+                OR to_tsvector('simple', users.nickname) @@ plainto_tsquery('simple', $2)
+                OR to_tsvector('simple', users.full_name) @@ plainto_tsquery('simple', $2)
+                )
+            `;
+            values.push(keyword);
+        }
+
+        sql += ` ORDER BY posts.created_at DESC`;
+
+        const result = await pool.query(sql, values);
 
         res.status(200).json({
             success: true,
-            message: bookmarkResult.rows.length ? '북마크한 게시물을 가져왔습니다.' : '북마크한 게시물이 없습니다.',
-            data: { posts: bookmarkResult.rows },
+            message: result.rows.length ? '북마크한 게시물을 가져왔습니다.' : '북마크한 게시물이 없습니다.',
+            data: { posts: result.rows },
         });
     } catch (error) {
         console.error('Error in getBookmarkedPosts:', error);
         res.status(500).json({ success: false, message: '서버 오류가 발생했습니다.' });
     }
 };
+

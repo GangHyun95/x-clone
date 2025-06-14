@@ -1,4 +1,3 @@
-
 export type User = {
     id: number;
     nickname: string;
@@ -23,5 +22,4 @@ export type UserSummary = {
     full_name: string;
     email: string;
     profile_img: string;
-    is_following: boolean;
 };

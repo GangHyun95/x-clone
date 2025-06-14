@@ -1,7 +1,3 @@
-export function getEmailUsername(email: string): string {
-    return '@' + email.split('@')[0];
-}
-
 export function maskEmail(email: string) {
     const [local, domain] = email.split('@');
 
@@ -32,4 +28,15 @@ export function formatTimeFromNow(isoString: string): string {
     if (hours < 24) return `${hours}h`;
     const days = Math.floor(hours / 24);
     return `${days}d`;
+}
+
+export function formatJoinDate(isoString: string): string {
+    const date = new Date(isoString);
+    const months = [
+        'January', 'February', 'March', 'April', 'May', 'June',
+        'July', 'August', 'September', 'October', 'November', 'December',
+    ];
+    const monthName = months[date.getMonth()];
+    const year = date.getFullYear();
+    return `Joined ${monthName} ${year}`;
 }

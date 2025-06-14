@@ -10,12 +10,31 @@ export const getMe = async (req: Request, res:Response): Promise<void> => {
         res.status(401).json({ success: false, message: '사용자를 찾을 수 없습니다.'});
         return;
     }
+
     try {
+        const result = await pool.query(
+            `
+            SELECT
+                (SELECT COUNT(*) FROM posts WHERE user_id = $1) AS post_count,
+                (SELECT COUNT(*) FROM user_follows WHERE from_user_id = $1) AS following_count,
+                (SELECT COUNT(*) FROM user_follows WHERE to_user_id = $1) AS follower_count
+            `,
+            [user.id]
+        );
+
+        const { post_count, following_count, follower_count } = result.rows[0];
         res.status(200).json({
             success: true,
             message: '유저 정보를 가져왔습니다.',
             data: {
-                user: buildUserSummary(user),
+                user: buildUserDetail({
+                    ...user,
+                    post_count: post_count,
+                    status: {
+                        following: following_count,
+                        follower: follower_count,
+                    }
+                }),
             },
         });
     } catch (error) {
@@ -24,12 +43,83 @@ export const getMe = async (req: Request, res:Response): Promise<void> => {
     }
 };
 
+export const getUserPosts = async (req: Request, res: Response): Promise<void> => {
+    const { nickname } = req.params;
+    try {
+        const userResult = await pool.query('SELECT id FROM users WHERE nickname = $1', [nickname]);
+        const user = userResult.rows[0];
+
+        if (!user) {
+            res.status(404).json({ success: false, message: '사용자를 찾을 수 없습니다.' });
+            return;
+        }
+
+        const postResult = await pool.query(
+            `SELECT
+                posts.id,
+                posts.content,
+                posts.img,
+                posts.created_at,
+                posts.updated_at,
+                json_build_object(
+                    'id', users.id,
+                    'nickname', users.nickname,
+                    'full_name', users.full_name,
+                    'profile_img', users.profile_img
+                ) as user
+            FROM posts
+            JOIN users ON users.id = posts.user_id
+            WHERE posts.user_id = $1
+            ORDER BY posts.created_at DESC`,
+            [user.id]
+        );
+
+        res.status(200).json({
+            success: true,
+            message: postResult.rows.length ? '게시물 목록을 가져왔습니다.' : '게시물이 없습니다.',
+            data: { posts: postResult.rows },
+        });
+    } catch (error) {
+        console.error('Error in getUserPosts:', error);
+        res.status(500).json({ success: false, message: '서버 오류가 발생했습니다.' });
+    }
+};
+
 export const getUserProfile = async (req: Request, res: Response): Promise<void> => {
     const { nickname } = req.params;
 
     try {
-        const { rows } = await pool.query('SELECT * FROM users WHERE nickname = $1', [nickname]);
-        const user = rows[0];
+        const userResult = await pool.query(
+            `SELECT
+                users.id,
+                users.nickname,
+                users.full_name,
+                users.email,
+                users.profile_img,
+                users.cover_img,
+                users.bio,
+                users.link,
+                users.created_at,
+                users.updated_at,
+                CASE
+                    WHEN users.id != $1 THEN (
+                        SELECT EXISTS (
+                            SELECT 1 FROM user_follows WHERE from_user_id = $1 AND to_user_id = users.id
+                        )
+                    )
+                    ELSE NULL
+                END AS is_following,
+                (SELECT COUNT(*) FROM posts WHERE posts.user_id = users.id) AS post_count,
+                json_build_object(
+                    'following', (SELECT COUNT(*) FROM user_follows WHERE users.id = from_user_id),
+                    'follower',  (SELECT COUNT(*) FROM user_follows WHERE users.id = to_user_id)
+                ) AS status
+            FROM users
+            WHERE nickname = $2`,
+            [req.user?.id, nickname]
+        );
+
+        const user = userResult.rows[0];
         res.status(200).json({
             success: true,
             data: {
@@ -86,7 +176,9 @@ export const toggleFollow = async (req: Request, res: Response): Promise<void> =
             res.status(200).json({
                 success: true,
                 message: '언팔로우 되었습니다.',
-                data: {},
+                data: {
+                    is_following: false,
+                },
             });
         } else {
             await pool.query(
@@ -105,7 +197,9 @@ export const toggleFollow = async (req: Request, res: Response): Promise<void> =
             res.status(200).json({
                 success: true,
                 message: '팔로우 되었습니다.',
-                data: {},
+                data: {
+                    is_following: true,
+                },
             });
         }
     } catch (error) {
@@ -124,19 +218,27 @@ export const getSuggestedUsers = async (req: Request, res: Response): Promise<vo
     }
 
     const userId = req.user.id;
+    const excludedNickname = req.query.exclude as string | undefined;
 
     try {
-        const randomUserResult = await pool.query(
-            `SELECT id, nickname, full_name, profile_img
+        const values: (number|string)[] = [userId];
+        let sql = `
+            SELECT id, nickname, full_name, profile_img
             FROM users
             WHERE id != $1
-            AND id NOT IN (
-                SELECT to_user_id FROM user_follows WHERE from_user_id = $1
-            )
-            ORDER BY RANDOM()
-            LIMIT 4`,
-            [userId]
-        );
+                AND id NOT IN (
+                    SELECT to_user_id FROM user_follows WHERE from_user_id = $1
+                )
+        `;
+
+        if (excludedNickname) {
+            sql += ` AND nickname != $2`;
+            values.push(excludedNickname);
+        }
+
+        sql += ` ORDER BY RANDOM() LIMIT 4`;
+
+        const randomUserResult = await pool.query(sql, values);
 
         res.status(200).json({
             success: true,

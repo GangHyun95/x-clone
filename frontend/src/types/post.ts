@@ -1,12 +1,11 @@
-import type { UserPreview } from '@/types/user';
+import type { UserSummary } from '@/types/user';
 
 export type Post = {
     id: number;
     content: string;
-    img: string | undefined;
+    img: string | null;
     created_at: string;
-    updated_at: string;
-    user: UserPreview;
+    user: UserSummary;
     counts: {
         like: number;
         comment: number;
