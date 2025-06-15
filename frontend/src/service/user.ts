@@ -2,7 +2,7 @@
 import type { Post } from '@/types/post';
 import type { User, UserSummary } from '@/types/user';
 
-import { get, post } from './api/client';
+import { get, patchFormData, post } from './api/client';
 
 export async function getMe() {
     return get<{ user: User }>('/api/users/me', { withAuth: true });
@@ -24,3 +24,8 @@ export async function toggleFollow(payload: { userId: number }) {
     const { userId } = payload;
     return post<{ id: number }, { is_following: boolean }>(`/api/users/${userId}/follow`, { id: userId }, { withAuth: true });
 }
+
+export async function updateUserProfile(formData: FormData) {
+    return patchFormData<{ user: User}>('/api/users/me', formData, { withAuth: true });
+}
+

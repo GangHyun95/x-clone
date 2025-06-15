@@ -1,4 +1,3 @@
-import bcrypt from 'bcryptjs';
 import type { Request, Response } from 'express';
 
 import { pool } from '../lib/db.ts';

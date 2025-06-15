@@ -6,6 +6,7 @@ import {
     getUserPosts,
     getUserProfile,
     toggleFollow,
+    updateUserProfile,
 } from '@/service/user';
 
 export function useSuggestedUsers(nickname?: string) {
@@ -58,4 +59,10 @@ export function useToggleFollow() {
     return useMutation({
         mutationFn: toggleFollow,
     });
+}
+
+export function useUpdateProfile() {
+    return useMutation({
+        mutationFn: updateUserProfile,
+    })
 }

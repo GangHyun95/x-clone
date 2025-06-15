@@ -85,3 +85,20 @@ export async function del<TData>(
         options?.withAuth
     );
 }
+
+export async function patchFormData<TData>(
+    url: string,
+    formData: FormData,
+    options?: RequestOptions
+): Promise<ApiResponse<TData>> {
+    return request<TData>(
+        url,
+        {
+            method: 'PATCH',
+            body: formData,
+            ...options,
+        },
+        options?.withAuth
+    );
+}
+

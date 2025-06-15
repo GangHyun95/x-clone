@@ -38,21 +38,18 @@ export default function PostEditorForm({ variant = 'home' }: Props) {
             formData.append('img', selectedImage);
         }
 
-        try {
-            createPost(formData, {
-                onSuccess: (newPost: Post) => {
-                    setText('');
-                    setSelectedImage(null);
-                    setImagePreviewUrl(null);
-                    prependPostToCache(newPost);
-                },
-                onError: (error) => {
-                    console.error(error);
-                },
-            });
-        } catch(error) {
-            console.log(error);
-        }
+        createPost(formData, {
+            onSuccess: (newPost: Post) => {
+                setText('');
+                setSelectedImage(null);
+                setImagePreviewUrl(null);
+                prependPostToCache(newPost);
+            },
+            onError: (error) => {
+                console.error(error);
+            },
+        });
+        
     };
 
     return (
