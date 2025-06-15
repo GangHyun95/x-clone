@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 
 import AuthSubmitBtn from '@/components/auth/AuthSubmitBtn';
-import { TextInput } from '@/components/auth/input';
+import { TextInput } from '@/components/common/input';
 import { useVerifyCode } from '@/hooks/auth/useAuth';
 import useCountdown from '@/hooks/useCountdown';
 import type { VerifyCodePayload } from '@/types/auth';

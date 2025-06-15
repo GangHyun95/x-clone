@@ -5,7 +5,7 @@ import toast from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
 
 import AuthSubmitBtn from '@/components/auth/AuthSubmitBtn';
-import { PasswordInput } from '@/components/auth/input';
+import { PasswordInput } from '@/components/common/input';
 import { useResetPassword } from '@/hooks/auth/useAuth';
 import type { ResetPasswordPayload } from '@/types/auth';
 

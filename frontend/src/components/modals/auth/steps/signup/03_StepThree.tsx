@@ -4,8 +4,8 @@ import toast from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
 
 import AuthSubmitBtn from '@/components/auth/AuthSubmitBtn';
-import { PasswordInput, TextInput } from '@/components/auth/input';
 import Spinner from '@/components/auth/Spinner';
+import { PasswordInput, TextInput } from '@/components/common/input';
 import { useSignup } from '@/hooks/auth/useAuth';
 import { setAccessToken } from '@/store/authStore';
 import type { SignupPayload } from '@/types/auth';

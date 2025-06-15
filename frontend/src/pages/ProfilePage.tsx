@@ -5,7 +5,7 @@ import StickyHeader from '@/components/common/StickyHeader';
 import Tabs from '@/components/common/Tabs';
 import PageLayout from '@/components/layout/PageLayout';
 import PostCard from '@/components/postcard';
-import ProfileHeader from '@/components/ProfileHeader';
+import ProfileHeader from '@/components/profile/ProfileHeader';
 import { useUserPosts, useUserProfile } from '@/queries/user';
 import { getCurrentUser } from '@/store/authStore';
 

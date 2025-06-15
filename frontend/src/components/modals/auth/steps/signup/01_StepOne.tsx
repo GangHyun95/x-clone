@@ -2,8 +2,8 @@ import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 
 import AuthSubmitBtn from '@/components/auth/AuthSubmitBtn';
-import { TextInput } from '@/components/auth/input';
 import Spinner from '@/components/auth/Spinner';
+import { TextInput } from '@/components/common/input';
 import ModalRouteBtn from '@/components/common/ModalRouteBtn';
 import { useSendCode } from '@/hooks/auth/useAuth';
 import type { SendCodePayload } from '@/types/auth';

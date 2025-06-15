@@ -22,4 +22,5 @@ export { default as BackArrowSvg } from './BackArrow';
 export { default as SearchSvg } from './SearchIcon';
 export { default as CalendarSvg } from './Calendar';
 export { default as TrashSvg } from './Trash';
-export { default as LinkSvg} from './LinkIcon';
+export { default as LinkSvg } from './LinkIcon';
+export { default as CarmeraSvg } from './Camera';

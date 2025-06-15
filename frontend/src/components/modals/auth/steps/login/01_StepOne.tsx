@@ -1,7 +1,7 @@
 import { useForm } from 'react-hook-form';
 
 import AuthSubmitBtn from '@/components/auth/AuthSubmitBtn';
-import { TextInput } from '@/components/auth/input';
+import { TextInput } from '@/components/common/input';
 import ModalRouteBtn from '@/components/common/ModalRouteBtn';
 import { AppleSvg, GoogleSvg } from '@/components/svgs';
 import { useCheckEmail } from '@/hooks/auth/useAuth';

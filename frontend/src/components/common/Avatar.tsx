@@ -8,7 +8,7 @@ type Props = {
 }
 export default function Avatar({ src, alt='avatar', className, nickname }: Props) {
     return (
-        <div className={`relative w-10 h-10 overflow-hidden rounded-full shrink-0 ${nickname && 'group'} ${className}`}>
+        <div className={`relative bg-slate-300 w-10 h-10 overflow-hidden rounded-full shrink-0 ${nickname && 'group'} ${className}`}>
             <div className='pb-[100%]' />
             <img
                 src={src || '/avatar-placeholder.png'}

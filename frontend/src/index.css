@@ -6,6 +6,7 @@
     default: true;
     --color-primary: rgb(29, 155, 240);
     --color-secondary: rgb(24, 24, 24);
+    --color-secondary-content: white;
 }
 
 @import './styles/fonts.css';
