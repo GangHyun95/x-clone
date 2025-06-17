@@ -24,3 +24,6 @@ export { default as CalendarSvg } from './Calendar';
 export { default as TrashSvg } from './Trash';
 export { default as LinkSvg } from './LinkIcon';
 export { default as CarmeraSvg } from './Camera';
+export { default as KeySvg } from './Key';
+export { default as AlertSvg } from './Alert';
+export { default as RightArrowSvg } from './RightArrow';

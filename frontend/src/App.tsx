@@ -34,8 +34,7 @@ function App() {
                     />
                     <Route path='notifications' element={<NotificationsPage />} />
                     <Route path='bookmarks' element={<BookmarkPage />} />
-                    <Route path='settings' element={<SettingsPage />} />
-
+                    <Route path='settings/*' element={<SettingsPage />} />
                     <Route path='signup' element={null} />
                     <Route path='login' element={null} />
                     <Route path='reset-password' element={null} />
