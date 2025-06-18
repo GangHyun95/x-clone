@@ -8,6 +8,7 @@ import { SpinnerSvg } from '@/components/svgs';
 import AppLayout from '@/layouts/AppLayout';
 import { AuthLandingPage, BookmarkPage, HomePage, NotificationsPage, ProfilePage, SettingsPage } from '@/pages';
 import { useCheckAuth, useMe } from '@/queries/auth';
+import ProtectedRoute from '@/routes/ProtectedRoute';
 
 function App() {
     const location = useLocation();
@@ -32,21 +33,30 @@ function App() {
                         index
                         element={accessToken ? <HomePage /> : <AuthLandingPage />}
                     />
-                    <Route path='notifications' element={<NotificationsPage />} />
-                    <Route path='bookmarks' element={<BookmarkPage />} />
-                    <Route path='settings/*' element={<SettingsPage />} />
-                    <Route path='signup' element={null} />
-                    <Route path='login' element={null} />
-                    <Route path='reset-password' element={null} />
-                    <Route path='profile/:nickname' element={<ProfilePage />} />
+                    <Route element={<ProtectedRoute isAllowed={!!accessToken} />}>
+                        <Route path='notifications' element={<NotificationsPage />} />
+                        <Route path='bookmarks' element={<BookmarkPage />} />
+                        <Route path='settings/*' element={<SettingsPage />} />
+                        <Route path='profile/:nickname' element={<ProfilePage />} />
+                    </Route>
                 </Route>
             </Routes>
 
-            {location.pathname === '/signup' && <SignUpModal />}
-            {location.pathname === '/login' && <LoginModal />}
-            {location.pathname === '/reset-password' && <ResetPasswordModal />}
-            {location.pathname === '/post/new' && <NewPostModal />}
-            {location.pathname === '/settings/profile' && <EditProfileModal /> }
+            <Routes>
+                {!accessToken && (
+                    <>
+                        <Route path='/signup' element={<SignUpModal />} />
+                        <Route path='/login' element={<LoginModal />} />
+                        <Route path='/reset-password' element={<ResetPasswordModal />} />
+                    </>
+                )}
+                {accessToken && (
+                    <>
+                        <Route path='/post/new' element={<NewPostModal />} />
+                        <Route path='/settings/profile' element={<EditProfileModal />} />
+                    </>
+                )}
+            </Routes>
             <Toaster />
         </>
     );
