@@ -1,8 +1,10 @@
+import { useState } from 'react';
+
+import type { FieldValues, UseFormSetError } from 'react-hook-form';
+
 import { deleteAccount, updatePassword } from '@/service/user';
 import type { UpdatePasswordPayload } from '@/types/user';
 import { handleFormErrors } from '@/utils/handleFormErrors';
-import { useState } from 'react';
-import type { FieldValues, UseFormSetError } from 'react-hook-form';
 
 async function handleApiAction<T, TFieldValues extends FieldValues>(
     fn: () => Promise<T>,
@@ -39,19 +41,16 @@ export function useUpdatePassword({ setError, onSuccess }: WithSetError<UpdatePa
     return { update, updating };
 }
 
-export function useDeleteAccount({ onSuccess, onError }: { onSuccess: () => void; onError: () => void }) {
+export function useDeleteAccount({ setError, onSuccess }: WithSetError<{ password: string }, void>) {
     const [deleting, setDeleting] = useState(false);
 
-    const remove = async () => {
+    const remove = async (payload: { password: string }) => {
         setDeleting(true);
-        try {
-            await deleteAccount();
-            onSuccess();
-        } catch {
-            onError();
-        } finally {
-            setDeleting(false);
-        }
+        await handleApiAction(() => deleteAccount(payload), {
+            setError,
+            onSuccess: () => onSuccess(),
+        });
+        setDeleting(false);
     };
 
     return { remove, deleting };

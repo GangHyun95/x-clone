@@ -2,7 +2,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 
 import StickyHeader from '@/components/common/StickyHeader';
 import PageLayout from '@/components/layout/PageLayout';
-import { AccountPanel, DeletePanel, EditUsernamePanel, PasswordPanel } from '@/components/rightpanel/panels';
+import { AccountPanel, ConfirmDeletePanel, DeletePanel, EditUsernamePanel, PasswordPanel } from '@/components/rightpanel/panels';
 import { AlertSvg, KeySvg, RightArrowSvg, UserSvg } from '@/components/svgs';
 
 function isDesktop() {
@@ -17,9 +17,10 @@ export default function SettingsPage() {
 
     const panelMap: Record<string, React.ReactNode> = {
         'account': <AccountPanel />,
+        'account/username': <EditUsernamePanel />,
         'password': <PasswordPanel />,
         'delete': <DeletePanel />,
-        'account/username': <EditUsernamePanel />,
+        'delete/confirm': <ConfirmDeletePanel />,
     };
 
     const content = panelMap[key];

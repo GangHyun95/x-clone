@@ -5,6 +5,7 @@ import { SpinnerSvg } from '@/components/svgs';
 import { useLogout } from '@/hooks/auth/useAuth';
 import { queryClient } from '@/lib/queryClient';
 import GlobalPortal from '@/portals/GlobalPortal';
+import { setAccessToken } from '@/store/authStore';
 
 type Props = {
     open: boolean;
@@ -25,6 +26,7 @@ export default function UserMenuDropdown({ open, position, onClose, nickname }: 
         onSuccess: () => {
             queryClient.clear();
             navigate('/');
+            setAccessToken('');
             toast.success('로그아웃 되었습니다.');
             
         },

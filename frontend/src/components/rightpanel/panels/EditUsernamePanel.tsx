@@ -3,11 +3,11 @@ import { useNavigate } from 'react-router-dom';
 
 import { TextInput } from '@/components/common/input';
 import StickyHeader from '@/components/common/StickyHeader';
-import { getCurrentUser } from '@/store/authStore';
-import { useUpdateNickname } from '@/queries/user';
-import { queryClient } from '@/lib/queryClient';
-import type { User } from '@/types/user';
 import { SpinnerSvg } from '@/components/svgs';
+import { queryClient } from '@/lib/queryClient';
+import { useUpdateNickname } from '@/queries/user';
+import { getCurrentUser } from '@/store/authStore';
+import type { User } from '@/types/user';
 
 export default function EditUsernamePanel() {
     const me = getCurrentUser();

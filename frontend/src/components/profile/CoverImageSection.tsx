@@ -17,11 +17,13 @@ export default function CoverImageSection({ src, editable = false, onChange }: P
             <div className='relative bg-slate-300 z-0'>
                 <div className='pb-[calc(100%/3)]' />
                 <div className='absolute inset-0 overflow-hidden'>
-                    <img
-                        src={src}
-                        alt='cover'
-                        className='absolute w-full h-full object-cover'
-                    />
+                    {src && (
+                        <img
+                            src={src}
+                            alt='cover'
+                            className='absolute w-full h-full object-cover'
+                        />
+                    )}
                 </div>
             </div>
         );
@@ -39,11 +41,13 @@ export default function CoverImageSection({ src, editable = false, onChange }: P
         <div className='relative bg-slate-300 z-0'>
             <div className='pb-[calc(100%/3)]' />
             <div className='absolute inset-0 overflow-hidden'>
-                <img
-                    src={previewUrl ?? src}
-                    alt='cover'
-                    className='absolute w-full h-full object-cover'
-                />
+                {src && (
+                    <img
+                        src={previewUrl ?? src}
+                        alt='cover'
+                        className='absolute w-full h-full object-cover'
+                    />
+                )}
                 <div className='absolute w-full h-full flex justify-center items-center'>
                     <label
                         htmlFor={inputId}

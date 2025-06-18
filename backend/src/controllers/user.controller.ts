@@ -1,8 +1,8 @@
+import bcrypt from 'bcryptjs';
 import type { Request, Response } from 'express';
 
 import { pool } from '../lib/db.ts';
 import { buildUserDetail, buildUserSummary, uploadAndReplaceImage } from '../lib/util.ts';
-import bcrypt from 'bcryptjs';
 
 export const getMe = async (req: Request, res:Response): Promise<void> => {
     const user = req.user;
@@ -458,8 +458,21 @@ export const deleteAccount = async (req: Request, res: Response): Promise<void> 
     }
 
     const userId = req.user.id;
+    const { password: currentPassword } = req.body;
 
     try {
+        const { rows } = await pool.query('SELECT password from users WHERE id = $1', [userId])
+        const { password } = rows[0];
+
+        const isMatch = await bcrypt.compare(currentPassword, password);
+        if (!isMatch) {
+            res.status(403).json({
+                success: false,
+                message: '현재 비밀번호가 올바르지 않습니다.',
+                errors: [{ field: 'password', message: '현재 비밀번호가 올바르지 않습니다.'}],
+            });
+            return;
+        }
         await pool.query(
             'DELETE FROM user_follows WHERE from_user_id = $1 OR to_user_id = $1',
             [userId]

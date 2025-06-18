@@ -13,7 +13,7 @@ StickyHeader.Header = function Header({ children, onPrev }: { children: React.Re
         <div className='flex items-center px-4 h-[53px]'>
             {onPrev && (
                 <div className='min-w-[53px]'>
-                    <button onClick={onPrev} className='btn btn-ghost btn-circle min-w-6 min-h-6 -m-2'>
+                    <button type='button' onClick={onPrev} className='btn btn-ghost btn-circle min-w-6 min-h-6 -m-2'>
                         <BackArrowSvg className='size-5' />
                     </button>
                 </div>

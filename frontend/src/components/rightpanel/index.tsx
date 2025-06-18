@@ -2,7 +2,7 @@ import { useLocation } from 'react-router-dom';
 
 import SuggestedUserList from '@/components/rightpanel/SuggestedUserList';
 
-import { AccountPanel, DeletePanel, EditUsernamePanel, PasswordPanel } from './panels';
+import { AccountPanel, ConfirmDeletePanel, DeletePanel, EditUsernamePanel, PasswordPanel } from './panels';
 
 export default function RightPanel() {
     const { pathname } = useLocation();
@@ -25,9 +25,10 @@ export default function RightPanel() {
 
     const panelMap: Record<string, React.ReactNode> = {
         'account': <AccountPanel />,
+        'account/username': <EditUsernamePanel />,
         'password': <PasswordPanel />,
         'delete': <DeletePanel />,
-        'account/username': <EditUsernamePanel />,
+        'delete/confirm': <ConfirmDeletePanel />
     };
 
     const key = pathname.replace('/settings/', '');

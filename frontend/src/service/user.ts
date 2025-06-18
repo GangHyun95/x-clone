@@ -2,7 +2,7 @@
 import type { Post } from '@/types/post';
 import type { UpdatePasswordPayload, User, UserSummary } from '@/types/user';
 
-import { del, get, patch, patchFormData, post } from './api/client';
+import { get, patch, patchFormData, post } from './api/client';
 
 export async function getMe() {
     return get<{ user: User }>('/api/users/me', { withAuth: true });
@@ -16,8 +16,8 @@ export async function updatePassword(payload: UpdatePasswordPayload) {
     return patch<UpdatePasswordPayload, void>('/api/users/me/password', payload, { withAuth: true })
 };
 
-export async function deleteAccount() {
-    return del<void>('/api/users/me', { withAuth: true })
+export async function deleteAccount(payload: { password: string }) {
+    return post<{ password: string }, void>('/api/users/me/delete', payload, { withAuth: true })
 };
 
 export async function getSuggestedUsers(nickname?: string) {

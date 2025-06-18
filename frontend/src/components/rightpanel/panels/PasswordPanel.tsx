@@ -1,13 +1,13 @@
 import { useForm } from 'react-hook-form';
 
+import toast from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
 
 import { PasswordInput } from '@/components/common/input';
 import StickyHeader from '@/components/common/StickyHeader';
-import { useUpdatePassword } from '@/hooks/user/useUser';
-import toast from 'react-hot-toast';
-import type { UpdatePasswordPayload } from '@/types/user';
 import { SpinnerSvg } from '@/components/svgs';
+import { useUpdatePassword } from '@/hooks/user/useUser';
+import type { UpdatePasswordPayload } from '@/types/user';
 
 export default function PasswordPanel() {
     const navigate = useNavigate();
@@ -20,9 +20,10 @@ export default function PasswordPanel() {
         },
     });
 
-    const { register, handleSubmit, watch, setError, formState: { errors, isValid } } = form;
+    const { register, handleSubmit, watch, setError, reset, formState: { errors, isValid } } = form;
     const { update, updating } = useUpdatePassword({
         onSuccess: () => {
+            reset({ currentPassword: '', newPassword: '', confirmPassword: '' });
             toast.success('비밀번호가 변경되었습니다.');
         },
         setError,

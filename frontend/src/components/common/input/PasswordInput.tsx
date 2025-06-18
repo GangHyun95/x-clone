@@ -22,6 +22,7 @@ export default function PasswordInput({ id, label, register, error }: Props) {
                     className={`input input-xl w-full text-base peer placeholder:text-base focus:outline-0 focus:border-primary focus:ring-primary pr-10 ${
                         error ? 'border-red-500' : ''
                     }`}
+                    autoComplete='off'
                 />
                 <span className='floating-label label-text peer-focus:text-primary peer-focus:text-sm'>
                     {label}
