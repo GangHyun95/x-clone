@@ -62,11 +62,11 @@ export const googleLogin = async (req: Request, res: Response): Promise<void> =>
                 return;
             }
 
-            const nickname = email.split('@')[0];
+            const username = email.split('@')[0];
             const insertResult = await pool.query(
-                `INSERT INTO users (email, full_name, nickname, google_id, profile_img)
+                `INSERT INTO users (email, full_name, username, google_id, profile_img)
                 VALUES ($1, $2, $3, $4, $5) RETURNING *`,
-                [email, name, nickname, googleId, picture]
+                [email, name, username, googleId, picture]
             );
             user = insertResult.rows[0];
         }

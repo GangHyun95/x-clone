@@ -25,7 +25,7 @@ export type ResetPasswordPayload = EmailPayload & {
 
 export type SignupPayload = EmailPayload & {
     fullName: string;
-    nickname: string;
+    username: string;
     password: string;
 };
 

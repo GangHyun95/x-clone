@@ -44,10 +44,10 @@ export const getMe = async (req: Request, res:Response): Promise<void> => {
 };
 
 export const getPosts = async (req: Request, res: Response): Promise<void> => {
-    const { nickname } = req.params;
+    const { username } = req.params;
 
     try {
-        const userResult = await pool.query('SELECT id FROM users WHERE nickname = $1', [nickname]);
+        const userResult = await pool.query('SELECT id FROM users WHERE username = $1', [username]);
         const user = userResult.rows[0];
 
         if (!user) {
@@ -64,7 +64,7 @@ export const getPosts = async (req: Request, res: Response): Promise<void> => {
                 posts.updated_at,
                 json_build_object(
                     'id', users.id,
-                    'nickname', users.nickname,
+                    'username', users.username,
                     'full_name', users.full_name,
                     'profile_img', users.profile_img,
                     'is_following', EXISTS (
@@ -100,13 +100,13 @@ export const getPosts = async (req: Request, res: Response): Promise<void> => {
 };
 
 export const getProfile = async (req: Request, res: Response): Promise<void> => {
-    const { nickname } = req.params;
+    const { username } = req.params;
 
     try {
         const userResult = await pool.query(
             `SELECT
                 users.id,
-                users.nickname,
+                users.username,
                 users.full_name,
                 users.email,
                 users.profile_img,
@@ -129,8 +129,8 @@ export const getProfile = async (req: Request, res: Response): Promise<void> => 
                     'follower',  (SELECT COUNT(*) FROM user_follows WHERE users.id = to_user_id)
                 ) AS status
             FROM users
-            WHERE nickname = $2`,
-            [req.user?.id, nickname]
+            WHERE username = $2`,
+            [req.user?.id, username]
         );
 
         const user = userResult.rows[0];
@@ -156,12 +156,12 @@ export const getSuggested = async (req: Request, res: Response): Promise<void> =
     }
 
     const userId = req.user.id;
-    const excludedNickname = req.query.exclude as string | undefined;
+    const excludedUsername = req.query.exclude as string | undefined;
 
     try {
         const values: (number|string)[] = [userId];
         let sql = `
-            SELECT id, nickname, full_name, profile_img
+            SELECT id, username, full_name, profile_img
             FROM users
             WHERE id != $1
                 AND id NOT IN (
@@ -169,9 +169,9 @@ export const getSuggested = async (req: Request, res: Response): Promise<void> =
                 )
         `;
 
-        if (excludedNickname) {
-            sql += ` AND nickname != $2`;
-            values.push(excludedNickname);
+        if (excludedUsername) {
+            sql += ` AND username != $2`;
+            values.push(excludedUsername);
         }
 
         sql += ` ORDER BY RANDOM() LIMIT 4`;
@@ -296,7 +296,7 @@ export const updateProfile = async (req: Request, res: Response): Promise<void> 
             values.push(fullName);
         }
 
-        if (bio && bio !== user.bio) {
+        if (bio !== user.bio) {
             sql += `bio = $${idx++}, `;
             values.push(bio);
         }
@@ -351,50 +351,50 @@ export const updateProfile = async (req: Request, res: Response): Promise<void> 
     }
 };
 
-export const updateNickname = async (req: Request, res: Response): Promise<void> => {
+export const updateUsername = async (req: Request, res: Response): Promise<void> => {
     if (!req.user) {
         res.status(401).json({ success: false, message: '사용자를 찾을 수 없습니다.' });
         return;
     }
 
     const userId = req.user.id;
-    const { nickname } = req.body;
+    const { username } = req.body;
 
-    if (!nickname) {
+    if (!username) {
         res.status(400).json({
             success: false,
-            message: '닉네임을 입력해 주세요.',
-            errors: [{ field: 'nickname', message: '닉네임을 입력해 주세요.'}]
+            message: '사용자 이름을 입력해 주세요.',
+            errors: [{ field: 'username', message: '사용자 이름을 입력해 주세요.'}]
         })
     }
 
     try {
         const { rows } = await pool.query(
-            'SELECT 1 FROM users WHERE nickname = $1 AND id != $2',
-            [nickname, userId]
+            'SELECT 1 FROM users WHERE username = $1 AND id != $2',
+            [username, userId]
         );
 
         if (rows.length > 0) {
             res.status(400).json({
                 success: false,
-                message: '이미 사용 중인 닉네임입니다.',
-                errors: [{ field: 'nickname', message: '이미 사용 중인 닉네임입니다.'}],
+                message: '이미 사용 중인 사용자 이름입니다.',
+                errors: [{ field: 'username', message: '이미 사용 중인 사용자 이름입니다.'}],
             });
             return;
         }
 
         await pool.query(
-            'UPDATE users SET nickname = $1 WHERE id = $2',
-            [nickname, userId]
+            'UPDATE users SET username = $1 WHERE id = $2',
+            [username, userId]
         );
 
         res.status(200).json({
             success: true,
-            message: '닉네임이 성공적으로 변경되었습니다.',
-            data: { nickname: nickname },
+            message: '사용자 이름이 성공적으로 변경되었습니다.',
+            data: { username: username },
         });
     } catch (error) {
-        console.error('Error updating nickname:', error);
+        console.error('Error updating username:', error);
         res.status(500).json({
             success: false,
             message: '서버 오류가 발생했습니다.',

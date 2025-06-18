@@ -27,14 +27,14 @@ export default function PostCard(post: Post) {
         <article className='flex flex-col px-4 py-3 border-b border-base-300'>
             <div className='flex'>
                 <div className='mr-2'>
-                    <Avatar nickname={user.nickname} src={user.profile_img} />
+                    <Avatar username={user.username} src={user.profile_img} />
                 </div>
                 <div className='flex grow flex-col min-w-0'>
                     <div className='flex justify-between'>
                         <ul className='flex items-center'>
                             <li><span className='font-extrabold'>{user.full_name}</span></li>
                             <li className='ml-1.5 text-gray-500'>
-                                <span>@{user.nickname}</span>
+                                <span>@{user.username}</span>
                                 <span className='px-1'>·</span>
                                 <time dateTime={created_at}>{formattedTime}</time>
                             </li>

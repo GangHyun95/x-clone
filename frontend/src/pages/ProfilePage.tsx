@@ -10,21 +10,21 @@ import { usePosts, useProfile } from '@/queries/user';
 import { getCurrentUser } from '@/store/authStore';
 
 export default function ProfilePage() {
-    const { nickname = '' } = useParams();
+    const { username = '' } = useParams();
     const navigate = useNavigate();
     const [searchParams, setSearchParams] = useSearchParams();
 
     const tab = searchParams.get('tab') === 'like' ? 'like' : 'post';
 
     const me = getCurrentUser();
-    const isMe = me?.nickname === nickname;
+    const isMe = me?.username === username;
 
-    const { data: user, isLoading: isUserLoading } = useProfile(nickname, {
+    const { data: user, isLoading: isUserLoading } = useProfile(username, {
         enabled: !isMe,
     });
     const current = isMe ? me : user;
 
-    const { data: posts = [], isLoading: isPostLoading } = usePosts(nickname, tab);
+    const { data: posts = [], isLoading: isPostLoading } = usePosts(username, tab);
 
     if (!current) {
         return (
@@ -52,8 +52,7 @@ export default function ProfilePage() {
                     )}
                 </StickyHeader.Header>
             </StickyHeader>
-
-            <PageLayout.Content isLoading={isUserLoading}>
+            <PageLayout.Content isLoading={isUserLoading} className='grow-0'>
                 <ProfileHeader user={current} isMe={isMe}/>
             </PageLayout.Content>
             <PageLayout.Content isLoading={isPostLoading}>

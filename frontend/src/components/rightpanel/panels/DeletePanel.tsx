@@ -18,7 +18,7 @@ export default function DeletePanel() {
                     <Avatar src={me.profile_img} className='mr-2' />
                     <div className='flex flex-col'>
                         <span className='font-bold'>{me.full_name}</span>
-                        <span>@{me.nickname}</span>
+                        <span>@{me.username}</span>
                     </div>
                 </div>
                 <p className='px-4 py-3 text-xl font-bold'>

@@ -8,12 +8,12 @@ import { generateToken } from '../lib/util.ts';
 
 // signup, login, logout
 export const signup = async (req: Request, res: Response): Promise<void> => {
-    const { email, fullName, nickname, password } = req.body;
+    const { email, fullName, username, password } = req.body;
 
     const errors: { field: string; message: string }[] = [];
     if (!email) errors.push({ field: 'root', message: '이메일이 확인되지 않았습니다. 처음부터 다시 시도해 주세요.' });
     if (!fullName) errors.push({ field: 'root', message: '이름이 확인되지 않았습니다. 처음부터 다시 시도해 주세요.' });
-    if (!nickname) errors.push({ field: 'nickname', message: '닉네임을 입력해 주세요.' });
+    if (!username) errors.push({ field: 'username', message: '사용자 이름을 입력해 주세요.' });
     if (!password) errors.push({ field: 'password', message: '비밀번호를 입력해 주세요.' });
     if (password && password.length < 6) errors.push({ field: 'password', message: '비밀번호는 최소 6자 이상이어야 합니다.' });
 
@@ -33,12 +33,13 @@ export const signup = async (req: Request, res: Response): Promise<void> => {
             return;
         }
 
-        const nicknameCheck = await pool.query('SELECT 1 FROM users WHERE nickname = $1', [nickname]);
-        if (nicknameCheck.rows.length > 0) {
+        console.log(req.body);
+        const usernameCheck = await pool.query('SELECT 1 FROM users WHERE username = $1', [username]);
+        if (usernameCheck.rows.length > 0) {
             res.status(400).json({
                 success: false,
-                message: '이미 사용 중인 닉네임입니다.',
-                errors: [{ field: 'nickname', message: '이미 사용 중인 닉네임입니다.' }],
+                message: '이미 사용 중인 사용자 이름입니다.',
+                errors: [{ field: 'username', message: '이미 사용 중인 사용자 이름입니다.' }],
             });
             return;
         }
@@ -47,10 +48,10 @@ export const signup = async (req: Request, res: Response): Promise<void> => {
         const hashedPassword = await bcrypt.hash(password, salt);
 
         const insertResult = await pool.query(
-            `INSERT INTO users (email, full_name, nickname, password) 
+            `INSERT INTO users (email, full_name, username, password) 
             VALUES ($1, $2, $3, $4) 
             RETURNING *`,
-            [email, fullName, nickname, hashedPassword]
+            [email, fullName, username, hashedPassword]
         );
 
         const newUser = insertResult.rows[0];
@@ -183,7 +184,7 @@ export const refreshAccessToken = async (req: Request, res: Response): Promise<v
         }
 
         const userResult = await pool.query(
-            'SELECT id, email, full_name, nickname, profile_img, last_password_change FROM users WHERE id = $1',
+            'SELECT id, email, full_name, username, profile_img, last_password_change FROM users WHERE id = $1',
             [decoded.id]
         );
         const user = userResult.rows[0];

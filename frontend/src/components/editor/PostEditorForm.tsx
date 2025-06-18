@@ -59,7 +59,7 @@ export default function PostEditorForm({ variant = 'home' }: Props) {
                     {isModal ? (
                         <Avatar src={me.profile_img} />
                     ) : (
-                        <Avatar src={me.profile_img} nickname={me.nickname} />
+                        <Avatar src={me.profile_img} username={me.username} />
                     )}
                 </div>
                 <div className='flex grow flex-col pt-1'>

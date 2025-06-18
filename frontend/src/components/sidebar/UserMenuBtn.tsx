@@ -33,7 +33,7 @@ export default function UserMenuBtn() {
                         {me.full_name}
                     </span>
                     <span className='truncate whitespace-nowrap text-gray-500 font-normal'>
-                        @{me.nickname}
+                        @{me.username}
                     </span>
                 </div>
 
@@ -45,7 +45,7 @@ export default function UserMenuBtn() {
                 open={open}
                 position={position}
                 onClose={() => setOpen(false)}
-                nickname={me.nickname}
+                username={me.username}
             />
         </>
     );

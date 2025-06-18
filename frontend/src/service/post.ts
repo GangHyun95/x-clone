@@ -20,8 +20,8 @@ export async function getPostsBookmarked(q?: string) {
     return res.data.posts;
 }
 
-export async function getPostsLikedByNickname(nickname: string) {
-    return get<{ posts: Post[] }>(`/api/posts/likes/${encodeURIComponent(nickname)}`, { withAuth: true });
+export async function getPostsLikedByUsername(username: string) {
+    return get<{ posts: Post[] }>(`/api/posts/likes/${encodeURIComponent(username)}`, { withAuth: true });
 }
 
 export async function createPost(formData: FormData) {

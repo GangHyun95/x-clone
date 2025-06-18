@@ -5,32 +5,33 @@ import { TextInput } from '@/components/common/input';
 import StickyHeader from '@/components/common/StickyHeader';
 import { SpinnerSvg } from '@/components/svgs';
 import { queryClient } from '@/lib/queryClient';
-import { useUpdateNickname } from '@/queries/user';
+import { useUpdateUsername } from '@/queries/user';
 import { getCurrentUser } from '@/store/authStore';
 import type { User } from '@/types/user';
+import toast from 'react-hot-toast';
 
 export default function EditUsernamePanel() {
     const me = getCurrentUser();
 	const navigate = useNavigate();
-    const form = useForm<{ nickname: string }>({
+    const form = useForm<{ username: string }>({
         defaultValues: {
-			nickname: me.nickname,
+			username: me.username,
 		},
     })
 
     const { register, handleSubmit, formState: { errors, isValid } } = form;
-	const { mutate: updateNickname, isPending } = useUpdateNickname();
+	const { mutate: updateUsername, isPending } = useUpdateUsername();
 
-	const onSubmit = (data: { nickname: string}) => {
+	const onSubmit = (data: { username: string}) => {
 		console.log(data);
-		updateNickname(data.nickname, {
+		updateUsername(data.username, {
 			onSuccess: (data) => {
-				console.log(data);
+				toast.success(data.message);
 				queryClient.setQueryData(['me'], (old: User | undefined) => {
 					if (!old) return old;
 					return {
 						...old,
-						nickname: data.data.nickname,
+						username: data.data.username,
 					}
 				});
 			}
@@ -44,12 +45,12 @@ export default function EditUsernamePanel() {
 			</StickyHeader.Header>
 			<div className='px-4 py-3 border-b border-base-300'>
 				<TextInput
-					id='nickname'
+					id='username'
 					label='Username'
-					register={register('nickname', {
+					register={register('username', {
 						required: '이름을 입력해 주세요.',
 					})}
-					error={errors.nickname}
+					error={errors.username}
 				/>
 			</div>
 			<div className='flex justify-end py-3'>

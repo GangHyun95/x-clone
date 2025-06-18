@@ -9,13 +9,13 @@ import type { User, UserSummary } from '@/types/user';
 
 type Props = {
     id: number;
-    nickname: string;
+    username: string;
     is_following: boolean;
 }
 
-export default function FollowButton({ id: userId, nickname, is_following }: Props) {
+export default function FollowButton({ id: userId, username, is_following }: Props) {
     const { mutate: toggleFollow } = useToggleFollow();
-    const { nickname: excluded = 'default' } = useParams();
+    const { username: excluded = 'default' } = useParams();
     const handleFollowToggle = () => {
         toggleFollow({ userId }, {
             onSuccess: (data) => {
@@ -31,7 +31,7 @@ export default function FollowButton({ id: userId, nickname, is_following }: Pro
                     );
                 });
 
-                queryClient.setQueryData(['user', nickname], (old: User) => {
+                queryClient.setQueryData(['user', username], (old: User) => {
                     if (!old || old.id !== userId) return old;
 
                     return {

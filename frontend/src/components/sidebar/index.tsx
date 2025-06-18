@@ -33,7 +33,7 @@ export default function Sidebar() {
                             <nav className='flex flex-col items-center mt-0.5 mb-1 xl:items-start'>
                                 {navItems.map(({ name, label, icon: Icon, path }) => {
                                     const finalPath = name === 'profile'
-                                        ? `/profile/${me.nickname}`
+                                        ? `/profile/${me.username}`
                                         : path;
 
                                     return (

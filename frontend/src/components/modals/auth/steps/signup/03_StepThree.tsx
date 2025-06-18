@@ -20,7 +20,7 @@ export default function StepThree({ email, fullName }: Props) {
     const form = useForm<SignupPayload>({
         mode: 'onChange',
         defaultValues: {
-            nickname: '',
+            username: '',
             password: '',
         },
     });
@@ -42,7 +42,7 @@ export default function StepThree({ email, fullName }: Props) {
 
     useEffect(() => {
         const timer = setTimeout(() => {
-            setFocus('nickname');
+            setFocus('username');
         }, 100);
         return () => clearTimeout(timer);
     }, [setFocus]);
@@ -62,16 +62,16 @@ export default function StepThree({ email, fullName }: Props) {
                 </div>
 
                 <TextInput
-                    id='nickname'
-                    label='Nickname'
-                    register={register('nickname', {
-                        required: '닉네임을 입력해 주세요.',
+                    id='username'
+                    label='Username'
+                    register={register('username', {
+                        required: '사용자 이름을 입력해 주세요.',
                         minLength: {
                             value: 2,
-                            message: '닉네임은 최소 2자 이상이어야 합니다.',
+                            message: '사용자 이름은 최소 2자 이상이어야 합니다.',
                         },
                     })}
-                    error={errors.nickname}
+                    error={errors.username}
                 />
                 <PasswordInput
                     id='password'

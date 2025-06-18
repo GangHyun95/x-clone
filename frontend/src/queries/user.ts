@@ -1,17 +1,17 @@
 import { useMutation, useQuery } from '@tanstack/react-query';
 
-import { getPostsLikedByNickname } from '@/service/post';
+import { getPostsLikedByUsername } from '@/service/post';
 import {
     getPosts,
     getProfile,
     getSuggestedUsers,
     toggleFollow,
-    updateNickname,
+    updateUsername,
     updateProfile,
 } from '@/service/user';
 
-export function useSuggested(nickname?: string) {
-    const excluded = nickname ?? 'default'
+export function useSuggested(username?: string) {
+    const excluded = username ?? 'default'
     return useQuery({
         queryKey: ['users', 'suggested', excluded],
         queryFn: async () => {
@@ -25,30 +25,30 @@ export function useSuggested(nickname?: string) {
     });
 }
 
-export function useProfile(nickname: string, options?: { enabled?: boolean }) {
+export function useProfile(username: string, options?: { enabled?: boolean }) {
     return useQuery({
-        queryKey: ['user', nickname],
+        queryKey: ['user', username],
         queryFn: async () => {
-            const res = await getProfile(nickname);
+            const res = await getProfile(username);
             return res.data.user;
         },
         staleTime: 1000 * 60 * 50,
         gcTime: 1000 * 60 * 60,
         retry: false,
         refetchOnWindowFocus: false,
-        enabled: !!nickname && (options?.enabled ?? true),
+        enabled: !!username && (options?.enabled ?? true),
     });
 }
 
-export function usePosts(nickname: string, tab: 'post' | 'like') {
+export function usePosts(username: string, tab: 'post' | 'like') {
     const key = tab === 'like' ? 'like' : 'post';
     return useQuery({
-        queryKey: ['posts', nickname, key],
+        queryKey: ['posts', username, key],
         queryFn: async () => {
-            const res = tab === 'like' ? await getPostsLikedByNickname(nickname) : await getPosts(nickname);
+            const res = tab === 'like' ? await getPostsLikedByUsername(username) : await getPosts(username);
             return res.data.posts;
         },
-        enabled: !!nickname,
+        enabled: !!username,
         staleTime: 1000 * 60 * 50,
         gcTime: 1000 * 60 * 60,
         retry: false,
@@ -68,8 +68,8 @@ export function useUpdateProfile() {
     })
 }
 
-export function useUpdateNickname() {
+export function useUpdateUsername() {
     return useMutation({
-        mutationFn: updateNickname,
+        mutationFn: updateUsername,
     })
 }

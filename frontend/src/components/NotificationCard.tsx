@@ -27,17 +27,17 @@ export default function NotificationCard(notification: Notification) {
         follow: <UserSvg filled className='size-8 fill-primary' />,
     };
 
-    const href = type === 'follow' ? `/profile/${user.nickname}` : '#';
+    const href = type === 'follow' ? `/profile/${user.username}` : '#';
 
     return (
         <article className='border-b border-base-300 px-4 py-3 hover:bg-base-300 cursor-pointer' onClick={() => navigate(href)}>
             <div className='flex'>
                 <div className='mr-2'>{iconMap[type]}</div>
                 <div className='flex flex-col grow pr-5 min-w-0'>
-                    <Avatar nickname={user.nickname} src={user.profile_img} className='mb-3' />
+                    <Avatar username={user.username} src={user.profile_img} className='mb-3' />
                     {type === 'like' && (
                         <>
-                            <p>{`${user.nickname} liked your post`}</p>
+                            <p>{`${user.username} liked your post`}</p>
                             <div>
                                 {post?.content && (
                                     <span className='mt-3 text-gray-500 whitespace-pre-wrap break-words'>{post.content}</span>
@@ -58,7 +58,7 @@ export default function NotificationCard(notification: Notification) {
 
                     {type === 'follow' && (
                         <>
-                            <p>{`${user.nickname} started following you.`}</p>
+                            <p>{`${user.username} started following you.`}</p>
                             <span className='mt-3 text-gray-500'>{formatTimeFromNow(created_at)}</span>
                         </>
                     )}

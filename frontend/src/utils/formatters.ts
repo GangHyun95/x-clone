@@ -40,3 +40,26 @@ export function formatJoinDate(isoString: string): string {
     const year = date.getFullYear();
     return `Joined ${monthName} ${year}`;
 }
+
+export function formatFullDateKST(isoString: string): string {
+    const date = new Date(isoString);
+
+    const year = date.getFullYear();
+    const month = date.getMonth();
+    const day = date.getDate();
+    const hour = date.getHours();
+    const minute = date.getMinutes();
+    const second = date.getSeconds();
+
+    const months = [
+        'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+        'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
+    ];
+
+    const ampmHour = hour % 12 || 12;
+    const ampm = hour >= 12 ? 'PM' : 'AM';
+
+    const pad = (n: number) => n.toString().padStart(2, '0');
+
+    return `${months[month]} ${day}, ${year}, ${ampmHour}:${pad(minute)}:${pad(second)} ${ampm}`;
+}

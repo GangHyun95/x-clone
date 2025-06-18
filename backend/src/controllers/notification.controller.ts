@@ -20,7 +20,7 @@ export const getNotifications = async (req: Request, res: Response): Promise<voi
                 n.created_at,
                 json_build_object(
                     'id', u.id,
-                    'nickname', u.nickname,
+                    'username', u.username,
                     'profile_img', u.profile_img
                 ) AS user,
                 CASE

@@ -40,7 +40,7 @@ export const create = async (req: Request, res: Response): Promise<void> => {
                 posts.updated_at,
                 json_build_object(
                     'id', users.id,
-                    'nickname', users.nickname,
+                    'username', users.username,
                     'full_name', users.full_name,
                     'profile_img', users.profile_img
                 ) as user,
@@ -296,7 +296,7 @@ export const getAll = async (req: Request, res: Response): Promise<void> => {
                 posts.updated_at,
                 json_build_object(
                     'id', users.id,
-                    'nickname', users.nickname,
+                    'username', users.username,
                     'full_name', users.full_name,
                     'profile_img', users.profile_img,
                     'is_following', EXISTS (
@@ -355,7 +355,7 @@ export const getFromFollowing = async (req: Request, res: Response): Promise<voi
                 posts.updated_at,
                 json_build_object(
                     'id', users.id,
-                    'nickname', users.nickname,
+                    'username', users.username,
                     'full_name', users.full_name,
                     'profile_img', users.profile_img,
                     'is_following', EXISTS (
@@ -391,7 +391,7 @@ export const getFromFollowing = async (req: Request, res: Response): Promise<voi
 };
 
 export const getLiked = async (req: Request, res: Response): Promise<void> => {
-    const { nickname } = req.params;
+    const { username } = req.params;
     const currentUserId = req.user?.id;
     if (!currentUserId) {
         res.status(401).json({ success: false, message: '사용자를 찾을 수 없습니다.' });
@@ -400,8 +400,8 @@ export const getLiked = async (req: Request, res: Response): Promise<void> => {
 
     try {
         const userResult = await pool.query(
-            `SELECT id FROM users WHERE nickname = $1`,
-            [nickname]
+            `SELECT id FROM users WHERE username = $1`,
+            [username]
         );
         const targetUser = userResult.rows[0];
 
@@ -419,7 +419,7 @@ export const getLiked = async (req: Request, res: Response): Promise<void> => {
                 posts.updated_at,
                 json_build_object(
                     'id', users.id,
-                    'nickname', users.nickname,
+                    'username', users.username,
                     'full_name', users.full_name,
                     'profile_img', users.profile_img,
                     'is_following', EXISTS (
@@ -475,7 +475,7 @@ export const getBookmarked = async (req: Request, res: Response): Promise<void> 
                 posts.updated_at,
                 json_build_object(
                 'id', users.id,
-                'nickname', users.nickname,
+                'username', users.username,
                 'full_name', users.full_name,
                 'profile_img', users.profile_img,
                 'is_following', EXISTS (
@@ -500,7 +500,7 @@ export const getBookmarked = async (req: Request, res: Response): Promise<void> 
             sql += `
                 AND (
                 to_tsvector('simple', posts.content) @@ plainto_tsquery('simple', $2)
-                OR to_tsvector('simple', users.nickname) @@ plainto_tsquery('simple', $2)
+                OR to_tsvector('simple', users.username) @@ plainto_tsquery('simple', $2)
                 OR to_tsvector('simple', users.full_name) @@ plainto_tsquery('simple', $2)
                 )
             `;

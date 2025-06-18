@@ -7,10 +7,10 @@ import { useToggleFollow } from '@/queries/user';
 type Props = {
     postAuthorId: number;
     is_following: boolean;
-    nickname: string;
+    username: string;
     onClose: () => void;
 }
-export default function FollowButton({ postAuthorId, is_following, nickname, onClose }: Props) {
+export default function FollowButton({ postAuthorId, is_following, username, onClose }: Props) {
     const { mutate: toggleFollow } = useToggleFollow();
 
     const handleFollowToggle = () => {
@@ -42,7 +42,7 @@ export default function FollowButton({ postAuthorId, is_following, nickname, onC
                 )}
             </div>
             <span>
-                {is_following ? 'Unfollow' : 'Follow'} @{nickname}
+                {is_following ? 'Unfollow' : 'Follow'} @{username}
             </span>
         </button>
     );

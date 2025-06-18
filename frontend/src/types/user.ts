@@ -1,7 +1,7 @@
 
 export type User = {
     id: number;
-    nickname: string;
+    username: string;
     full_name: string;
     email: string;
     profile_img: string;
@@ -19,7 +19,7 @@ export type User = {
 
 export type UserSummary = {
     id: number;
-    nickname: string;
+    username: string;
     full_name: string;
     email: string;
     profile_img: string;

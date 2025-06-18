@@ -18,7 +18,7 @@ type Props = {
 };
 
 export default function PostMenuDropDown({ open, position, onClose, user, postId }: Props) {
-    const { id: postAuthorId, is_following, nickname } = user;
+    const { id: postAuthorId, is_following, username } = user;
 
     const { id: currentUserId } = getCurrentUser();
     const isOwner = currentUserId === postAuthorId;
@@ -44,7 +44,7 @@ export default function PostMenuDropDown({ open, position, onClose, user, postId
                                 <FollowButton
                                     postAuthorId={postAuthorId}
                                     is_following={is_following}
-                                    nickname={nickname}
+                                    username={username}
                                     onClose={onClose}
                                 />
                             )}

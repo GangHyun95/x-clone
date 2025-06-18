@@ -27,7 +27,7 @@ export const generateToken = (
 export const buildUserSummary = (user: User): UserSummary => {
     return {
         id: user.id,
-        nickname: user.nickname,
+        username: user.username,
         full_name: user.full_name,
         email: user.email,
         profile_img: user.profile_img,
@@ -36,7 +36,7 @@ export const buildUserSummary = (user: User): UserSummary => {
 
 export const buildUserDetail = (user: User): User => ({
     id: user.id,
-    nickname: user.nickname,
+    username: user.username,
     full_name: user.full_name,
     email: user.email,
     profile_img: user.profile_img,

@@ -37,7 +37,7 @@ function App() {
                         <Route path='notifications' element={<NotificationsPage />} />
                         <Route path='bookmarks' element={<BookmarkPage />} />
                         <Route path='settings/*' element={<SettingsPage />} />
-                        <Route path='profile/:nickname' element={<ProfilePage />} />
+                        <Route path='profile/:username' element={<ProfilePage />} />
                     </Route>
                 </Route>
             </Routes>

@@ -16,10 +16,10 @@ type Props = {
         right: number;
     }>;
     onClose: () => void;
-    nickname: string;
+    username: string;
 };
 
-export default function UserMenuDropdown({ open, position, onClose, nickname }: Props) {
+export default function UserMenuDropdown({ open, position, onClose, username }: Props) {
     const navigate = useNavigate();
 
     const { logout, isLoggingOut} = useLogout({
@@ -61,7 +61,7 @@ export default function UserMenuDropdown({ open, position, onClose, nickname }: 
                             className='px-4 py-3 hover:bg-base-300 cursor-pointer font-bold'
                             onClick={logout}
                         >
-                            Log out @{nickname}
+                            Log out @{username}
                         </div>
                     </div>
                 </div>

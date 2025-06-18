@@ -23,13 +23,13 @@ export default function ProfileHeader({ user, isMe }: { user: User; isMe: boolea
                                 <span>Edit Profile</span>
                             </ModalRouteBtn>
                         ) : (
-                            <FollowButton id={user.id} nickname={user.nickname} is_following={user.is_following} />
+                            <FollowButton id={user.id} username={user.username} is_following={user.is_following} />
                         )}
                     </div>
                 </div>
                 <div className='flex flex-col mt-1 mb-3'>
                     <span className='text-xl font-bold'>{user.full_name}</span>
-                    <span className='text-gray-500'>@{user.nickname}</span>
+                    <span className='text-gray-500'>@{user.username}</span>
                 </div>
                 {user.bio && <div className='mb-3'><span>{user.bio}</span></div>}
                 <div className='flex items-center mb-3'>
