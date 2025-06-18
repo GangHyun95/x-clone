@@ -2,25 +2,25 @@ import type { Post } from '@/types/post';
 
 import { del, get, post, postFormData, type ApiResponse } from './api/client';
 
-export async function getAllPosts() {
+export async function getPostsAll() {
     const res = await get<{ posts: Post[] }>('/api/posts/', { withAuth: true });
 
     return res.data.posts;
 }
 
-export async function getFollowingPosts() {
+export async function getPostsFromFollowing() {
     const res = await get<{ posts: Post[] }>('/api/posts/following', { withAuth: true });
 
     return res.data.posts;
 }
 
-export async function getBookmarkedPosts(q?: string) {
+export async function getPostsBookmarked(q?: string) {
     const query = q?.trim() ? `?q=${encodeURIComponent(q)}` : '';
     const res = await get<{ posts: Post[] }>(`/api/posts/bookmarks${query}`, { withAuth: true });
     return res.data.posts;
 }
 
-export async function getLikedPosts(nickname: string) {
+export async function getPostsLikedByNickname(nickname: string) {
     return get<{ posts: Post[] }>(`/api/posts/likes/${encodeURIComponent(nickname)}`, { withAuth: true });
 }
 
@@ -34,12 +34,12 @@ export async function deletePost(payload: { postId: number }): Promise<ApiRespon
     return del<void>(`/api/posts/${postId}`, { withAuth: true });
 }
 
-export async function toggleLike(payload: { postId: number }) {
+export async function togglePostLike(payload: { postId: number }) {
     const { postId } = payload;
     return post<{ id: number }, void>(`/api/posts/${postId}/like`, { id: postId }, { withAuth: true });
 }
 
-export async function toggleBookmark(payload: { postId: number }) {
+export async function togglePostBookmark(payload: { postId: number }) {
     const { postId } = payload;
     return post<{ id: number }, void>(`/api/posts/${postId}/bookmark`, { id: postId }, { withAuth: true });
 }

@@ -6,7 +6,7 @@ import Tabs from '@/components/common/Tabs';
 import PageLayout from '@/components/layout/PageLayout';
 import PostCard from '@/components/postcard';
 import ProfileHeader from '@/components/profile/ProfileHeader';
-import { useUserPosts, useUserProfile } from '@/queries/user';
+import { usePosts, useProfile } from '@/queries/user';
 import { getCurrentUser } from '@/store/authStore';
 
 export default function ProfilePage() {
@@ -19,12 +19,12 @@ export default function ProfilePage() {
     const me = getCurrentUser();
     const isMe = me?.nickname === nickname;
 
-    const { data: user, isLoading: isUserLoading } = useUserProfile(nickname, {
+    const { data: user, isLoading: isUserLoading } = useProfile(nickname, {
         enabled: !isMe,
     });
     const current = isMe ? me : user;
 
-    const { data: posts = [], isLoading: isPostLoading } = useUserPosts(nickname, tab);
+    const { data: posts = [], isLoading: isPostLoading } = usePosts(nickname, tab);
 
     if (!current) {
         return (

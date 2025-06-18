@@ -4,12 +4,12 @@ import Avatar from '@/components/common/Avatar';
 import FollowButton from '@/components/common/FollowButton';
 
 import { SpinnerSvg } from '@/components/svgs';
-import { useSuggestedUsers } from '@/queries/user';
+import { useSuggested } from '@/queries/user';
 
 
 export default function SuggestedUserList() {
     const { nickname } = useParams();
-    const { data: suggestedUsers = [], isLoading } = useSuggestedUsers(nickname);
+    const { data: suggestedUsers = [], isLoading } = useSuggested(nickname);
     if (isLoading) return (
         <div className='w-full flex grow items-center justify-center min-h-[300px]'>
             <SpinnerSvg className='size-10 md:size-8 text-primary animate-spin' />

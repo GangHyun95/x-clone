@@ -3,7 +3,7 @@ import type { Request, Response } from 'express';
 import { pool } from '../lib/db.ts';
 import { deleteImage, uploadAndReplaceImage } from '../lib/util.ts';
 
-export const createPost = async (req: Request, res: Response): Promise<void> => {
+export const create = async (req: Request, res: Response): Promise<void> => {
     const userId = req.user?.id;
     const { text } = req.body;
     const file = req.file;
@@ -61,7 +61,7 @@ export const createPost = async (req: Request, res: Response): Promise<void> => 
     }
 };
 
-export const editPost = async (req: Request, res: Response): Promise<void> => {
+export const update = async (req: Request, res: Response): Promise<void> => {
     const userId = req.user?.id;
     const postId = req.params.id;
     const { text, removeImage } = req.body;
@@ -116,7 +116,7 @@ export const editPost = async (req: Request, res: Response): Promise<void> => {
     }
 };
 
-export const deletePost = async (req: Request, res: Response): Promise<void> => {
+export const remove = async (req: Request, res: Response): Promise<void> => {
     const userId = req.user?.id;
     const postId = req.params.id;
 
@@ -149,7 +149,7 @@ export const deletePost = async (req: Request, res: Response): Promise<void> => 
     }
 };
 
-export const commentOnPost = async (req: Request, res: Response): Promise<void> => {
+export const comment = async (req: Request, res: Response): Promise<void> => {
     const userId = req.user?.id;
     const postId = req.params.id;
     const { text } = req.body;
@@ -285,7 +285,7 @@ export const toggleBookmark = async (req: Request, res: Response): Promise<void>
     }
 };
 
-export const getAllPosts = async (req: Request, res: Response): Promise<void> => {
+export const getAll = async (req: Request, res: Response): Promise<void> => {
     try {
         const postResult = await pool.query(
             `SELECT
@@ -330,7 +330,7 @@ export const getAllPosts = async (req: Request, res: Response): Promise<void> =>
     }
 };
 
-export const getFollowingPosts = async (req: Request, res: Response): Promise<void> => {
+export const getFromFollowing = async (req: Request, res: Response): Promise<void> => {
     const userId = req.user?.id;
     if (!userId) {
         res.status(401).json({ success: false, message: '사용자를 찾을 수 없습니다.' });
@@ -390,7 +390,7 @@ export const getFollowingPosts = async (req: Request, res: Response): Promise<vo
     }
 };
 
-export const getLikedPosts = async (req: Request, res: Response): Promise<void> => {
+export const getLiked = async (req: Request, res: Response): Promise<void> => {
     const { nickname } = req.params;
     const currentUserId = req.user?.id;
     if (!currentUserId) {
@@ -455,7 +455,7 @@ export const getLikedPosts = async (req: Request, res: Response): Promise<void> 
     }
 };
 
-export const getBookmarkedPosts = async (req: Request, res: Response): Promise<void> => {
+export const getBookmarked = async (req: Request, res: Response): Promise<void> => {
     const userId = req.user?.id;
     const keyword = typeof req.query.q === 'string' ? req.query.q.trim() : '';
 

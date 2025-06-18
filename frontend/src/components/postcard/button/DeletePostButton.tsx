@@ -2,7 +2,7 @@ import toast from 'react-hot-toast';
 
 import { TrashSvg } from '@/components/svgs';
 import { removePostFromCache } from '@/lib/queryCacheHelpers';
-import { useDeletePost } from '@/queries/post';
+import { useDelete } from '@/queries/post';
 
 type Props = {
     postId: number;
@@ -10,7 +10,7 @@ type Props = {
 };
 
 export default function DeletePostButton({ postId, onClose }: Props) {
-    const { mutate: deletePost } = useDeletePost();
+    const { mutate: deletePost } = useDelete();
     
     const handleDeletePost = () => {
         deletePost({ postId }, {

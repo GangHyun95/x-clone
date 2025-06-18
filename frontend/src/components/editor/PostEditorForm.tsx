@@ -3,7 +3,7 @@ import { useState } from 'react';
 import Avatar from '@/components/common/Avatar';
 
 import { prependPostToCache } from '@/lib/queryCacheHelpers';
-import { useCreatePost } from '@/queries/post';
+import { useCreate } from '@/queries/post';
 import { getCurrentUser } from '@/store/authStore';
 import type { Post } from '@/types/post';
 
@@ -25,7 +25,7 @@ export default function PostEditorForm({ variant = 'home' }: Props) {
     const isDisabled = text.trim().length === 0 && !selectedImage;
 
     const me = getCurrentUser();
-    const { mutate: createPost, isPending } = useCreatePost();
+    const { mutate: createPost, isPending } = useCreate();
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();

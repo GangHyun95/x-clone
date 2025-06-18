@@ -42,7 +42,7 @@ export const getMe = async (req: Request, res:Response): Promise<void> => {
     }
 };
 
-export const getUserPosts = async (req: Request, res: Response): Promise<void> => {
+export const getPosts = async (req: Request, res: Response): Promise<void> => {
     const { nickname } = req.params;
 
     try {
@@ -98,8 +98,7 @@ export const getUserPosts = async (req: Request, res: Response): Promise<void> =
     }
 };
 
-
-export const getUserProfile = async (req: Request, res: Response): Promise<void> => {
+export const getProfile = async (req: Request, res: Response): Promise<void> => {
     const { nickname } = req.params;
 
     try {
@@ -146,6 +145,47 @@ export const getUserProfile = async (req: Request, res: Response): Promise<void>
             success: false,
             message: '서버 오류가 발생했습니다.',
         });
+    }
+};
+
+export const getSuggested = async (req: Request, res: Response): Promise<void> => {
+    if (!req.user) {
+        res.status(401).json({ success: false, message: '사용자를 찾을 수 없습니다.' });
+        return;
+    }
+
+    const userId = req.user.id;
+    const excludedNickname = req.query.exclude as string | undefined;
+
+    try {
+        const values: (number|string)[] = [userId];
+        let sql = `
+            SELECT id, nickname, full_name, profile_img
+            FROM users
+            WHERE id != $1
+                AND id NOT IN (
+                    SELECT to_user_id FROM user_follows WHERE from_user_id = $1
+                )
+        `;
+
+        if (excludedNickname) {
+            sql += ` AND nickname != $2`;
+            values.push(excludedNickname);
+        }
+
+        sql += ` ORDER BY RANDOM() LIMIT 4`;
+
+        const randomUserResult = await pool.query(sql, values);
+
+        res.status(200).json({
+            success: true,
+            data: {
+                users: randomUserResult.rows.map(user => buildUserSummary(user)),
+            },
+        });
+    } catch (err) {
+        console.error('Error in getSuggestedUsers:', err);
+        res.status(500).json({ success: false, message: '서버 오류가 발생했습니다.' });
     }
 };
 
@@ -225,82 +265,7 @@ export const toggleFollow = async (req: Request, res: Response): Promise<void> =
     }
 };
 
-export const getSuggestedUsers = async (req: Request, res: Response): Promise<void> => {
-    if (!req.user) {
-        res.status(401).json({ success: false, message: '사용자를 찾을 수 없습니다.' });
-        return;
-    }
-
-    const userId = req.user.id;
-    const excludedNickname = req.query.exclude as string | undefined;
-
-    try {
-        const values: (number|string)[] = [userId];
-        let sql = `
-            SELECT id, nickname, full_name, profile_img
-            FROM users
-            WHERE id != $1
-                AND id NOT IN (
-                    SELECT to_user_id FROM user_follows WHERE from_user_id = $1
-                )
-        `;
-
-        if (excludedNickname) {
-            sql += ` AND nickname != $2`;
-            values.push(excludedNickname);
-        }
-
-        sql += ` ORDER BY RANDOM() LIMIT 4`;
-
-        const randomUserResult = await pool.query(sql, values);
-
-        res.status(200).json({
-            success: true,
-            data: {
-                users: randomUserResult.rows.map(user => buildUserSummary(user)),
-            },
-        });
-    } catch (err) {
-        console.error('Error in getSuggestedUsers:', err);
-        res.status(500).json({ success: false, message: '서버 오류가 발생했습니다.' });
-    }
-};
-
-export const checkNickname = async (req: Request, res: Response): Promise<void> => {
-    const { nickname } = req.query;
-
-    if (!nickname || typeof nickname !== 'string') {
-        res.status(400).json({
-            success: false,
-            message: '닉네임을 입력해 주세요.',
-        });
-        return;
-    }
-    try {
-        const { rows } = await pool.query('SELECT 1 FROM users WHERE nickname = $1', [nickname]);
-        if (rows.length > 0) {
-            res.status(400).json({
-                success: false,
-                message: '이미 사용중인 닉네임입니다.',
-            });
-            return;
-        }
-
-        res.status(200).json({
-            success: true,
-            message: '사용 가능한 닉네임입니다.',
-            data: {},
-        });
-    } catch (error) {
-        console.error('Error in checkNickname:', error);
-        res.status(500).json({
-            success: false,
-            message: '서버 오류가 발생했습니다.',
-        });
-    }
-};
-
-export const updateUserProfile = async (req: Request, res: Response): Promise<void> => {
+export const updateProfile = async (req: Request, res: Response): Promise<void> => {
     if (!req.user) {
         res.status(401).json({ success: false, message: '사용자를 찾을 수 없습니다.' });
         return;
@@ -394,15 +359,6 @@ export const deleteAccount = async (req: Request, res: Response): Promise<void> 
     const userId = req.user.id;
 
     try {
-        const { rows } = await pool.query('SELECT 1 FROM users WHERE id = $1', [userId]);
-        if (rows.length === 0) {
-            res.status(404).json({
-                success: false,
-                message: '사용자를 찾을 수 없습니다.',
-            });
-            return;
-        }
-
         await pool.query(
             'DELETE FROM user_follows WHERE follower_id = $1 OR following_id = $1',
             [userId]

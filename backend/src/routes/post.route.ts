@@ -1,32 +1,32 @@
 import express from 'express';
 
 import {
-    commentOnPost,
-    createPost,
-    deletePost,
-    editPost,
-    getAllPosts,
-    getBookmarkedPosts,
-    getFollowingPosts,
-    getLikedPosts,
+    comment,
+    create,
+    getAll,
+    getBookmarked,
+    getFromFollowing,
+    getLiked,
+    remove,
     toggleBookmark,
     toggleLike,
+    update,
 } from '../controllers/post.controller.ts';
 import { upload } from '../middleware/upload.middleware.ts';
 
 const router = express.Router();
 
-router.get('/', getAllPosts);
-router.get('/following', getFollowingPosts);
+router.get('/', getAll);
+router.get('/following', getFromFollowing);
 
-router.get('/likes/:nickname', getLikedPosts);
-router.get('/bookmarks', getBookmarkedPosts);
+router.get('/likes/:nickname', getLiked);
+router.get('/bookmarks', getBookmarked);
 
-router.post('/', upload.single('img'), createPost);
-router.patch('/:id', editPost);
-router.delete('/:id', deletePost);
+router.post('/', upload.single('img'), create);
+router.patch('/:id', update);
+router.delete('/:id', remove);
 
-router.post('/:id/comment', commentOnPost);
+router.post('/:id/comment', comment);
 router.post('/:id/like', toggleLike);
 router.post('/:id/bookmark', toggleBookmark);
 

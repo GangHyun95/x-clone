@@ -1,15 +1,15 @@
 import { useMutation, useQuery } from '@tanstack/react-query';
 
-import { getLikedPosts } from '@/service/post';
+import { getPostsLikedByNickname } from '@/service/post';
 import {
+    getPosts,
+    getProfile,
     getSuggestedUsers,
-    getUserPosts,
-    getUserProfile,
     toggleFollow,
-    updateUserProfile,
+    updateProfile,
 } from '@/service/user';
 
-export function useSuggestedUsers(nickname?: string) {
+export function useSuggested(nickname?: string) {
     const excluded = nickname ?? 'default'
     return useQuery({
         queryKey: ['users', 'suggested', excluded],
@@ -24,11 +24,11 @@ export function useSuggestedUsers(nickname?: string) {
     });
 }
 
-export function useUserProfile(nickname: string, options?: { enabled?: boolean }) {
+export function useProfile(nickname: string, options?: { enabled?: boolean }) {
     return useQuery({
         queryKey: ['user', nickname],
         queryFn: async () => {
-            const res = await getUserProfile(nickname);
+            const res = await getProfile(nickname);
             return res.data.user;
         },
         staleTime: 1000 * 60 * 50,
@@ -39,12 +39,12 @@ export function useUserProfile(nickname: string, options?: { enabled?: boolean }
     });
 }
 
-export function useUserPosts(nickname: string, tab: 'post' | 'like') {
+export function usePosts(nickname: string, tab: 'post' | 'like') {
     const key = tab === 'like' ? 'like' : 'post';
     return useQuery({
         queryKey: ['posts', nickname, key],
         queryFn: async () => {
-            const res = tab === 'like' ? await getLikedPosts(nickname) : await getUserPosts(nickname);
+            const res = tab === 'like' ? await getPostsLikedByNickname(nickname) : await getPosts(nickname);
             return res.data.posts;
         },
         enabled: !!nickname,
@@ -63,6 +63,6 @@ export function useToggleFollow() {
 
 export function useUpdateProfile() {
     return useMutation({
-        mutationFn: updateUserProfile,
+        mutationFn: updateProfile,
     })
 }

@@ -7,14 +7,14 @@ import PageLayout from '@/components/layout/PageLayout';
 import PostCard from '@/components/postcard';
 import { SearchSvg } from '@/components/svgs';
 import { useDebounce } from '@/hooks/useDebounce';
-import { useBookmarkedPost } from '@/queries/post';
+import { useBookmarked } from '@/queries/post';
 
 export default function BookmarkPage() {
     const navigate = useNavigate();
     const [input, setInput] = useState('');
     const debounced = useDebounce(input, 300);
 
-    const { data: bookmarkPosts = [], isLoading } = useBookmarkedPost(debounced);
+    const { data: bookmarkPosts = [], isLoading } = useBookmarked(debounced);
     return (
         <PageLayout>
             <StickyHeader>

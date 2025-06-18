@@ -1,29 +1,27 @@
 import express from 'express';
 
 import {
-    checkNickname,
     deleteAccount,
     getMe,
-    getSuggestedUsers,
-    getUserPosts,
-    getUserProfile,
+    getPosts,
+    getProfile,
+    getSuggested,
     toggleFollow,
-    updateUserProfile,
+    updateProfile,
 } from '../controllers/user.controller.ts';
 import { upload } from '../middleware/upload.middleware.ts';
 
 const router = express.Router();
 
 router.get('/me', getMe);
-router.patch('/me', upload.fields([{ name: 'profileImg', maxCount: 1 }, { name: 'coverImg', maxCount: 1 }]), updateUserProfile);
+router.patch('/me', upload.fields([{ name: 'profileImg', maxCount: 1 }, { name: 'coverImg', maxCount: 1 }]), updateProfile);
 router.delete('/me', deleteAccount);
 
-router.get('/check-nickname', checkNickname);
-router.get('/suggested', getSuggestedUsers);
+router.get('/suggested', getSuggested);
 router.post('/:id/follow', toggleFollow);
-router.get('/:nickname/posts', getUserPosts);
+router.get('/:nickname/posts', getPosts);
 
-router.get('/profile/:nickname', getUserProfile);
+router.get('/profile/:nickname', getProfile);
 
 
 
