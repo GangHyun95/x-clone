@@ -41,22 +41,19 @@ function App() {
                     </Route>
                 </Route>
             </Routes>
-
-            <Routes>
-                {!accessToken && (
-                    <>
-                        <Route path='/signup' element={<SignUpModal />} />
-                        <Route path='/login' element={<LoginModal />} />
-                        <Route path='/reset-password' element={<ResetPasswordModal />} />
-                    </>
-                )}
-                {accessToken && (
-                    <>
-                        <Route path='/post/new' element={<NewPostModal />} />
-                        <Route path='/settings/profile' element={<EditProfileModal />} />
-                    </>
-                )}
-            </Routes>
+            {!accessToken && (
+                <>
+                    {location.pathname === '/signup' && <SignUpModal />}
+                    {location.pathname === '/login' && <LoginModal />}
+                    {location.pathname === '/reset-password' && <ResetPasswordModal />}
+                </>
+            )}
+            {accessToken && (
+                <>
+                    {location.pathname === '/post/new' && <NewPostModal />}
+                    {location.pathname === '/settings/profile' && <EditProfileModal />}
+                </>
+            )}
             <Toaster />
         </>
     );
