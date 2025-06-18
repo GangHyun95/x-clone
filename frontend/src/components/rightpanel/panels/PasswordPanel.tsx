@@ -1,9 +1,12 @@
 import { useForm } from 'react-hook-form';
 
+import { useNavigate } from 'react-router-dom';
+
 import { PasswordInput } from '@/components/common/input';
 import StickyHeader from '@/components/common/StickyHeader';
 
 export default function PasswordPanel() {
+    const navigate = useNavigate();
     const form = useForm<{
         currentPassword: string;
         newPassword: string;
@@ -21,7 +24,7 @@ export default function PasswordPanel() {
 
     return (
         <>
-            <StickyHeader.Header>
+            <StickyHeader.Header onPrev={() => navigate(-1)}>
                 <p className='text-xl font-bold'>Change your password</p>
             </StickyHeader.Header>
 

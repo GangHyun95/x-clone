@@ -1,12 +1,8 @@
-// RightPanel.tsx
 import { useLocation } from 'react-router-dom';
 
-import AccountPanel from '@/components/Panel/AccountPanel';
-import DeletePanel from '@/components/Panel/DeletePanel';
-import EditUsernamePanel from '@/components/Panel/EditUsernamePanel';
-import PasswordPanel from '@/components/Panel/PasswordPanel';
-import SettingsPanel from '@/components/rightpanel/SettingsPanel';
 import SuggestedUserList from '@/components/rightpanel/SuggestedUserList';
+
+import { AccountPanel, DeletePanel, EditUsernamePanel, PasswordPanel } from './panels';
 
 export default function RightPanel() {
     const { pathname } = useLocation();
@@ -38,6 +34,10 @@ export default function RightPanel() {
     const content = panelMap[key] ?? null;
 
     return (
-        <SettingsPanel>{content}</SettingsPanel>
+        <div className='hidden lg:flex flex-col w-full max-w-[600px]'>
+            <aside className='flex flex-col'>
+                {content}
+            </aside>
+        </div>
     );
 }

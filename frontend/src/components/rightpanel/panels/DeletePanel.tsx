@@ -1,12 +1,15 @@
+import { useNavigate } from 'react-router-dom';
+
 import Avatar from '@/components/common/Avatar';
 import StickyHeader from '@/components/common/StickyHeader';
 import { getCurrentUser } from '@/store/authStore';
 
 export default function DeletePanel() {
     const me = getCurrentUser();
+    const navigate = useNavigate();
     return (
         <>
-            <StickyHeader.Header>
+            <StickyHeader.Header onPrev={() => navigate(-1)}>
                 <p className='text-xl font-bold'>Delete Account</p>
             </StickyHeader.Header>
             <div>

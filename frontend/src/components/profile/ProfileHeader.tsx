@@ -1,5 +1,3 @@
-import { Link } from 'react-router-dom';
-
 import FollowButton from '@/components/common/FollowButton';
 import ModalRouteBtn from '@/components/common/ModalRouteBtn';
 import CoverImageSection from '@/components/profile/CoverImageSection';
@@ -36,10 +34,15 @@ export default function ProfileHeader({ user, isMe }: { user: User; isMe: boolea
                 {user.bio && <div className='mb-3'><span>{user.bio}</span></div>}
                 <div className='flex items-center mb-3'>
                     {user.link && (
-                        <Link to={user.link} className='flex items-center mr-3 group cursor-pointer'>
+                        <a
+                            href={user.link.startsWith('http') ? user.link : `https://${user.link}`}
+                            target='_blank'
+                            rel='noopener noreferrer'
+                            className='flex items-center mr-3 group cursor-pointer'
+                        >
                             <span><LinkSvg className='size-5 fill-gray-500 mr-1' /></span>
                             <span className='group-hover:underline text-primary'>{user.link}</span>
-                        </Link>
+                        </a>
                     )}
                     <div className='flex items-center'>
                         <span><CalendarSvg className='size-5 fill-gray-500 mr-1' /></span>

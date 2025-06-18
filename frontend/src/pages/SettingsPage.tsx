@@ -2,10 +2,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 
 import StickyHeader from '@/components/common/StickyHeader';
 import PageLayout from '@/components/layout/PageLayout';
-import AccountPanel from '@/components/Panel/AccountPanel';
-import DeletePanel from '@/components/Panel/DeletePanel';
-import EditUsernamePanel from '@/components/Panel/EditUsernamePanel';
-import PasswordPanel from '@/components/Panel/PasswordPanel';
+import { AccountPanel, DeletePanel, EditUsernamePanel, PasswordPanel } from '@/components/rightpanel/panels';
 import { AlertSvg, KeySvg, RightArrowSvg, UserSvg } from '@/components/svgs';
 
 function isDesktop() {
@@ -26,6 +23,11 @@ export default function SettingsPage() {
     };
 
     const content = panelMap[key];
+    const isPanelOpen = pathname !== '/settings';
+
+    const handleNavigate = (path: string) => {
+        navigate(path, { replace: isPanelOpen });
+    };
 
     if (!isDesktop() && content) {
         return content;
@@ -40,7 +42,7 @@ export default function SettingsPage() {
             <PageLayout.Content>
                 <div className='flex flex-col'>
                     <div
-                        onClick={() => navigate('/settings/account', { replace: true })}
+                        onClick={() => handleNavigate('/settings/account')}
                         className='flex items-center px-4 py-3 hover:bg-base-200 cursor-pointer'
                     >
                         <div className='w-12 h-12 flex justify-center items-center mr-4'><UserSvg className='h-5' /></div>
@@ -52,7 +54,7 @@ export default function SettingsPage() {
                     </div>
 
                     <div
-                        onClick={() => navigate('/settings/password', { replace: true })}
+                        onClick={() => handleNavigate('/settings/password')}
                         className='flex items-center px-4 py-3 hover:bg-base-200 cursor-pointer'
                     >
                         <div className='w-12 h-12 flex justify-center items-center mr-4'><KeySvg className='h-5' /></div>
@@ -67,7 +69,7 @@ export default function SettingsPage() {
                         <h4 className='text-sm font-semibold text-red-500 mb-2 px-4 pt-4'>Danger zone</h4>
 
                         <div
-                            onClick={() => navigate('/settings/delete', { replace: true })}
+                            onClick={() => handleNavigate('/settings/delete')}
                             className='flex items-center px-4 py-3 text-red-500 hover:bg-red-100 cursor-pointer'
                         >
                             <div className='w-12 h-12 flex justify-center items-center mr-4'><AlertSvg className='h-5' /></div>
