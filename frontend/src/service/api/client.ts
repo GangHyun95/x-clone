@@ -86,6 +86,25 @@ export async function del<TData>(
     );
 }
 
+export async function patch<TPayload, TData>(
+    url: string,
+    payload: TPayload,
+    options?: RequestOptions
+): Promise<ApiResponse<TData>> {
+    return request<TData>(
+        url,
+        {
+            method: 'PATCH',
+            body: JSON.stringify(payload),
+            headers: {
+                'Content-Type': 'application/json',
+                ...(options?.headers || {}),
+            },
+        },
+        options?.withAuth
+    );
+}
+
 export async function patchFormData<TData>(
     url: string,
     formData: FormData,

@@ -6,6 +6,7 @@ import {
     getProfile,
     getSuggestedUsers,
     toggleFollow,
+    updateNickname,
     updateProfile,
 } from '@/service/user';
 
@@ -64,5 +65,11 @@ export function useToggleFollow() {
 export function useUpdateProfile() {
     return useMutation({
         mutationFn: updateProfile,
+    })
+}
+
+export function useUpdateNickname() {
+    return useMutation({
+        mutationFn: updateNickname,
     })
 }

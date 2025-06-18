@@ -1,12 +1,24 @@
 
 import type { Post } from '@/types/post';
-import type { User, UserSummary } from '@/types/user';
+import type { UpdatePasswordPayload, User, UserSummary } from '@/types/user';
 
-import { get, patchFormData, post } from './api/client';
+import { del, get, patch, patchFormData, post } from './api/client';
 
 export async function getMe() {
     return get<{ user: User }>('/api/users/me', { withAuth: true });
 }
+
+export async function updateNickname(nickname: string) {
+    return patch<{ nickname: string }, { nickname: string }>('/api/users/me/nickname', { nickname }, { withAuth: true })
+};
+
+export async function updatePassword(payload: UpdatePasswordPayload) {
+    return patch<UpdatePasswordPayload, void>('/api/users/me/password', payload, { withAuth: true })
+};
+
+export async function deleteAccount() {
+    return del<void>('/api/users/me', { withAuth: true })
+};
 
 export async function getSuggestedUsers(nickname?: string) {
     return get<{ users: UserSummary[] }>(`/api/users/suggested${nickname ? `?exclude=${encodeURIComponent(nickname)}` : ''}`, { withAuth: true });

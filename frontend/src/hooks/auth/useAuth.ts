@@ -37,7 +37,8 @@ export function useSignup({ setError, onSuccess }: WithSetError<SignupPayload, {
         setIsSigningUp(true);
         await handleApiAction(() => signup(payload), {
             setError,
-            onSuccess: (res) => onSuccess(res.data) });
+            onSuccess: (res) => onSuccess(res.data)
+        });
         setIsSigningUp(false);
     };
 

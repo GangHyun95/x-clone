@@ -2,6 +2,7 @@ import type { Request, Response } from 'express';
 
 import { pool } from '../lib/db.ts';
 import { buildUserDetail, buildUserSummary, uploadAndReplaceImage } from '../lib/util.ts';
+import bcrypt from 'bcryptjs';
 
 export const getMe = async (req: Request, res:Response): Promise<void> => {
     const user = req.user;
@@ -350,6 +351,106 @@ export const updateProfile = async (req: Request, res: Response): Promise<void> 
     }
 };
 
+export const updateNickname = async (req: Request, res: Response): Promise<void> => {
+    if (!req.user) {
+        res.status(401).json({ success: false, message: '사용자를 찾을 수 없습니다.' });
+        return;
+    }
+
+    const userId = req.user.id;
+    const { nickname } = req.body;
+
+    if (!nickname) {
+        res.status(400).json({
+            success: false,
+            message: '닉네임을 입력해 주세요.',
+            errors: [{ field: 'nickname', message: '닉네임을 입력해 주세요.'}]
+        })
+    }
+
+    try {
+        const { rows } = await pool.query(
+            'SELECT 1 FROM users WHERE nickname = $1 AND id != $2',
+            [nickname, userId]
+        );
+
+        if (rows.length > 0) {
+            res.status(400).json({
+                success: false,
+                message: '이미 사용 중인 닉네임입니다.',
+                errors: [{ field: 'nickname', message: '이미 사용 중인 닉네임입니다.'}],
+            });
+            return;
+        }
+
+        await pool.query(
+            'UPDATE users SET nickname = $1 WHERE id = $2',
+            [nickname, userId]
+        );
+
+        res.status(200).json({
+            success: true,
+            message: '닉네임이 성공적으로 변경되었습니다.',
+            data: { nickname: nickname },
+        });
+    } catch (error) {
+        console.error('Error updating nickname:', error);
+        res.status(500).json({
+            success: false,
+            message: '서버 오류가 발생했습니다.',
+        });
+    }
+};
+
+export const changePassword = async (req: Request, res: Response): Promise<void> => {
+    if (!req.user) {
+        res.status(401).json({ success: false, message: '사용자를 찾을 수 없습니다.' });
+        return;
+    }
+
+    const { currentPassword, newPassword, confirmPassword} = req.body;
+    const userId = req.user?.id;
+    const errors: { field: string; message: string}[] = [];
+
+    if (!currentPassword) errors.push({ field: 'currentPassword', message: '현재 비밀번호를 입력해 주세요.'})
+    if (!newPassword) errors.push({ field: 'newPassword', message: '새 비밀번호를 입력해주세요.'})
+    if (newPassword && newPassword.length < 6) errors.push({ field: 'newPassword', message: '비밀번호는 최소 6자 이상이어야 합니다.' });
+    if (!confirmPassword) errors.push({ field: 'confirmPassword', message: '비밀번호 확인을 입력해 주세요.'});
+    if (newPassword !== confirmPassword) errors.push({ field: 'confirmPassword', message: '비밀번호가 일치하지 않습니다.'});
+
+    if (errors.length > 0) {
+        res.status(400).json({ success: false, message: '비밀번호 변경에 실패했습니다.', errors });
+        return;
+    }
+
+    try {
+        const { rows } = await pool.query('SELECT password from users WHERE id = $1', [userId])
+        const { password } = rows[0];
+
+        const isMatch = await bcrypt.compare(currentPassword, password);
+        if (!isMatch) {
+            res.status(403).json({
+                success: false,
+                message: '현재 비밀번호가 올바르지 않습니다.',
+                errors: [{ field: 'currentPassword', message: '현재 비밀번호가 올바르지 않습니다.'}],
+            });
+            return;
+        }
+
+        const hashedPassword = await bcrypt.hash(newPassword, 10);
+        await pool.query('UPDATE users SET password = $1 WHERE id = $2', [hashedPassword, userId]);
+
+        res.status(200).json({
+            success: true,
+            message: '비밀번호가 변경되었습니다.',
+            data: {},
+        });
+    } catch (error) {
+        console.error('Error in changePassword:', error);
+        res.status(500).json({ success: false, message: '서버 오류가 발생했습니다.' });
+    }
+};
+
 export const deleteAccount = async (req: Request, res: Response): Promise<void> => {
     if (!req.user) {
         res.status(401).json({ success: false, message: '사용자를 찾을 수 없습니다.' });
@@ -360,11 +461,17 @@ export const deleteAccount = async (req: Request, res: Response): Promise<void> 
 
     try {
         await pool.query(
-            'DELETE FROM user_follows WHERE follower_id = $1 OR following_id = $1',
+            'DELETE FROM user_follows WHERE from_user_id = $1 OR to_user_id = $1',
             [userId]
         );
 
         await pool.query('DELETE FROM users WHERE id = $1', [userId]);
+
+        res.clearCookie('x_clone_refresh_token', {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: 'strict',
+        });
 
         res.status(200).json({
             success: true,

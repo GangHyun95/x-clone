@@ -25,3 +25,9 @@ export type UserSummary = {
     profile_img: string;
     is_following: boolean;
 };
+
+export type UpdatePasswordPayload = {
+    currentPassword: string;
+    newPassword: string;
+    confirmPassword: string;
+};

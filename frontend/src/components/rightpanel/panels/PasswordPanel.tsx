@@ -4,14 +4,14 @@ import { useNavigate } from 'react-router-dom';
 
 import { PasswordInput } from '@/components/common/input';
 import StickyHeader from '@/components/common/StickyHeader';
+import { useUpdatePassword } from '@/hooks/user/useUser';
+import toast from 'react-hot-toast';
+import type { UpdatePasswordPayload } from '@/types/user';
+import { SpinnerSvg } from '@/components/svgs';
 
 export default function PasswordPanel() {
     const navigate = useNavigate();
-    const form = useForm<{
-        currentPassword: string;
-        newPassword: string;
-        confirmPassword: string;
-    }>({
+    const form = useForm<UpdatePasswordPayload>({
         mode: 'onChange',
         defaultValues: {
             currentPassword: '',
@@ -20,10 +20,19 @@ export default function PasswordPanel() {
         },
     });
 
-    const { register, watch, formState: { errors } } = form;
+    const { register, handleSubmit, watch, setError, formState: { errors, isValid } } = form;
+    const { update, updating } = useUpdatePassword({
+        onSuccess: () => {
+            toast.success('비밀번호가 변경되었습니다.');
+        },
+        setError,
+    })
+    const onSubmit = (data: UpdatePasswordPayload) => {
+        update(data);
+    };
 
     return (
-        <>
+        <form onSubmit={handleSubmit(onSubmit)}>
             <StickyHeader.Header onPrev={() => navigate(-1)}>
                 <p className='text-xl font-bold'>Change your password</p>
             </StickyHeader.Header>
@@ -68,10 +77,17 @@ export default function PasswordPanel() {
             </div>
 
             <div className='flex justify-end py-3'>
-                <button className='btn btn-primary btn-circle text-white w-auto h-auto min-h-9 px-4 mr-3'>
-                    Save
+                <button className='btn btn-primary btn-circle text-white w-auto h-auto min-h-9 px-4 mr-3' disabled={!isValid || updating}>
+                    {updating ? (
+                        <>
+                            <SpinnerSvg className='size-5 text-primary animate-spin'/>
+                            <span className='ml-1'>Saving...</span>
+                        </>
+                    ) : (
+                        <span>Save</span>
+                    )}
                 </button>
             </div>
-        </>
+        </form>
     );
 }
