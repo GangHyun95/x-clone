@@ -22,4 +22,5 @@ export type UserSummary = {
     full_name: string;
     email: string;
     profile_img: string;
+    bio: string;
 };

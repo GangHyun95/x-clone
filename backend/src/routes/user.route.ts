@@ -10,6 +10,9 @@ import {
     toggleFollow,
     updateUsername,
     updateProfile,
+    getRecommended,
+    getFollowers,
+    getFollowing,
 } from '../controllers/user.controller.ts';
 import { upload } from '../middleware/upload.middleware.ts';
 
@@ -22,9 +25,13 @@ router.patch('/me/password', changePassword);
 router.post('/me/delete', deleteAccount);
 
 router.get('/suggested', getSuggested);
-router.post('/:id/follow', toggleFollow);
-router.get('/:username/posts', getPosts);
+router.get('/recommended', getRecommended);
 
+router.get('/followers', getFollowers);
+router.get('/following', getFollowing);
+router.post('/:id/follow', toggleFollow);
+
+router.get('/:username/posts', getPosts);
 router.get('/profile/:username', getProfile);
 
 

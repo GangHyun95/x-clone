@@ -31,6 +31,7 @@ export const buildUserSummary = (user: User): UserSummary => {
         full_name: user.full_name,
         email: user.email,
         profile_img: user.profile_img,
+        bio: user.bio,
     }
 };
 
