@@ -5,6 +5,7 @@ import ProfileImageSection from '@/components/profile/ProfileImageSection';
 import { CalendarSvg, LinkSvg } from '@/components/svgs';
 import type { User } from '@/types/user';
 import { formatJoinDate } from '@/utils/formatters';
+import { Link } from 'react-router-dom';
 
 export default function ProfileHeader({ user, isMe }: { user: User; isMe: boolean }) {
     return (
@@ -50,14 +51,14 @@ export default function ProfileHeader({ user, isMe }: { user: User; isMe: boolea
                     </div>
                 </div>
                 <div className='flex text-sm'>
-                    <div className='mr-5'>
+                    <Link to='/users?tab=following' className='mr-5 cursor-pointer hover:underline'>
                         <span className='font-bold text-black'>{user.status.following} </span>
                         <span className='text-gray-500'>Following</span>
-                    </div>
-                    <div className='mr-5'>
+                    </Link>
+                    <Link to='/users?tab=follower' className='mr-5 cursor-pointer hover:underline'>
                         <span className='font-bold text-black'>{user.status.follower} </span>
                         <span className='text-gray-500'>Follower</span>
-                    </div>
+                    </Link>
                 </div>
             </div>
         </section>

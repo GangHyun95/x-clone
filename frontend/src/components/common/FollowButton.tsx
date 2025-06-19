@@ -1,7 +1,4 @@
 import toast from 'react-hot-toast';
-
-import { useParams } from 'react-router-dom';
-
 import { InlineSpinner } from '@/components/common/Spinner';
 import { queryClient } from '@/lib/queryClient';
 import { useToggleFollow } from '@/queries/user';
@@ -16,14 +13,12 @@ type Props = {
 
 export default function FollowButton({ id: userId, username, is_following }: Props) {
     const { mutate: toggleFollow, isPending } = useToggleFollow();
-    const { username: excluded = 'default' } = useParams();
     const handleFollowToggle = () => {
         toggleFollow({ userId }, {
             onSuccess: (data) => {
                 const isNowFollowing = data.data.is_following;
                 toast.success(data.message);
-
-                queryClient.setQueryData(['users', 'suggested', excluded], (old: UserSummary[]) => {
+                queryClient.setQueriesData<UserSummary[]>({ queryKey: ['users'] }, (old) => {
                     if (!old) return old;
                     return old.map((user) =>
                         user.id === userId
@@ -32,7 +27,7 @@ export default function FollowButton({ id: userId, username, is_following }: Pro
                     );
                 });
 
-                queryClient.setQueryData(['user', username], (old: User) => {
+                queryClient.setQueryData<User>(['user', username], (old) => {
                     if (!old || old.id !== userId) return old;
 
                     return {
@@ -45,7 +40,7 @@ export default function FollowButton({ id: userId, username, is_following }: Pro
                     };
                 });
 
-                queryClient.setQueryData(['me'], (old: User) => {
+                queryClient.setQueryData<User>(['me'], (old) => {
                     if (!old) return old;
                     return {
                         ...old,

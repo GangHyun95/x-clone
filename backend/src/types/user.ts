@@ -23,4 +23,5 @@ export type UserSummary = {
     email: string;
     profile_img: string;
     bio: string;
+    is_following: boolean;
 };

@@ -233,7 +233,11 @@ export const getFollowers = async (req: Request, res: Response): Promise<void> =
     try {
         const userResult = await pool.query(
             `
-            SELECT id, username, full_name, profile_img, bio
+            SELECT id, username, full_name, profile_img, bio,
+                EXISTS ( 
+                    SELECT 1 FROM user_follows
+                    WHERE from_user_id = $1 AND to_user_id = users.id
+                ) AS is_following
             FROM users
             WHERE id IN (
                 SELECT from_user_id
@@ -268,7 +272,11 @@ export const getFollowing = async (req: Request, res: Response): Promise<void> =
     try {
         const userResult = await pool.query(
             `
-            SELECT id, username, full_name, profile_img, bio
+            SELECT id, username, full_name, profile_img, bio,
+                EXISTS ( 
+                    SELECT 1 FROM user_follows
+                    WHERE from_user_id = $1 AND to_user_id = users.id
+                ) AS is_following
             FROM users
             WHERE id IN (
                 SELECT to_user_id

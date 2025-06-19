@@ -8,6 +8,9 @@ import {
     toggleFollow,
     updateUsername,
     updateProfile,
+    getRecommended,
+    getFollowers,
+    getFollowing,
 } from '@/service/user';
 
 export function useSuggested(username?: string) {
@@ -16,6 +19,29 @@ export function useSuggested(username?: string) {
         queryKey: ['users', 'suggested', excluded],
         queryFn: async () => {
             const res = await getSuggestedUsers(excluded);
+            return res.data.users;
+        },
+        staleTime: 1000 * 60 * 50,
+        gcTime: 1000 * 60 * 60,
+        retry: false,
+        refetchOnWindowFocus: false,
+    });
+}
+
+export function useListByType(type: 'suggest' | 'follower' | 'following') {
+    const key = type ?? 'suggest';
+
+    const queryFn =
+        key === 'suggest'
+            ? getRecommended
+            : key === 'follower'
+            ? getFollowers
+            : getFollowing;
+
+    return useQuery({
+        queryKey: ['users', key],
+        queryFn: async () => {
+            const res = await queryFn();
             return res.data.users;
         },
         staleTime: 1000 * 60 * 50,
