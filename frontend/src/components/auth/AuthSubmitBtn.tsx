@@ -1,4 +1,4 @@
-import { SpinnerSvg } from '@/components/svgs';
+import { InlineSpinner } from '@/components/common/Spinner';
 
 type Props = {
     label: string;
@@ -16,10 +16,7 @@ export default function AuthSubmitBtn({ label, isLoading, loadingLabel,  disable
             disabled={disabled || isLoading}
         >   
             {isLoading ? (
-                <>
-                    <SpinnerSvg className='size-5 text-primary animate-spin'/>
-                    <span className='ml-1'>{loadingLabel ?? `${label}...`}</span>
-                </>
+                <InlineSpinner label={loadingLabel ?? label}/>
             ) : (
                 <span>{label}</span>
             )}

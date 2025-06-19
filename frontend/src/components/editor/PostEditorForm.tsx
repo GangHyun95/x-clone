@@ -2,7 +2,7 @@ import { EditorState } from 'draft-js';
 import { useState } from 'react';
 
 import Avatar from '@/components/common/Avatar';
-
+import { InlineSpinner } from '@/components/common/Spinner';
 import { prependPostToCache } from '@/lib/queryCacheHelpers';
 import { useCreate } from '@/queries/post';
 import { getCurrentUser } from '@/store/authStore';
@@ -111,7 +111,7 @@ export default function PostEditorForm({ variant = 'home' }: Props) {
                         className='btn btn-secondary btn-circle w-auto h-auto min-h-[36px] px-4'
                         disabled={isDisabled || isPending}
                     >
-                        Post
+                        { isPending ? <InlineSpinner label='Posting' /> : <span>Post</span> }
                     </button>
                 </div>
             </footer>

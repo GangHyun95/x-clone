@@ -1,8 +1,42 @@
 import { SpinnerSvg } from '@/components/svgs';
 
-export default function Spinner() {
+export function FullPageSpinner() {
     return (
         <div className='fixed inset-0 flex items-center justify-center z-50 bg-white'>
+            <SpinnerSvg className='size-10 md:size-8 text-primary animate-spin' />
+        </div>
+    );
+}
+
+export function InlineSpinner({ label='Saving' }: { label?: string }) {
+    return (
+        <div className='flex items-center'>
+            <SpinnerSvg className='size-5 text-primary animate-spin' />
+            <span className='ml-1'>{label}...</span>
+        </div>
+    );
+}
+
+export  function AuthModalSpinner() {
+    return (
+        <div className='flex flex-col h-full'>
+            <div className='flex-1 flex items-center justify-center mb-12'>
+                <SpinnerSvg className='size-10 md:size-8 text-primary animate-spin' />
+            </div>
+        </div>
+    );
+}
+export function SectionSpinner() {
+    return (
+        <section className='w-full grow flex items-center justify-center'>
+            <SpinnerSvg className='size-10 md:size-8 text-primary animate-spin' />
+        </section>
+    );
+}
+
+export function ListSpinner() {
+    return (
+        <div className='w-full flex grow items-center justify-center min-h-[300px]'>
             <SpinnerSvg className='size-10 md:size-8 text-primary animate-spin' />
         </div>
     );

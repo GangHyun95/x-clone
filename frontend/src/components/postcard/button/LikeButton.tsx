@@ -10,8 +10,9 @@ type Props = {
     likeCount: number;
 }
 export default function LikeButton({ id: postId, is_liked, likeCount }: Props) {
-    const { mutate: toggleLike } = useToggleLike();
+    const { mutate: toggleLike, isPending } = useToggleLike();
     const handleToggleLike = () => {
+        if (isPending) return;
         toggleLike({ postId }, {
             onSuccess: (data) => {
                 toast.success(data.message);

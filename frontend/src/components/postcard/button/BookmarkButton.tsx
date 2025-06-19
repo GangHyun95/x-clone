@@ -5,8 +5,9 @@ import { updatePostCacheById } from '@/lib/queryCacheHelpers';
 import { useToggleBookmark } from '@/queries/post';
 
 export default function BookmarkButton({ id: postId, is_bookmarked }: { id: number, is_bookmarked: boolean }) {
-    const { mutate: toggleBookmark } = useToggleBookmark();
+    const { mutate: toggleBookmark, isPending } = useToggleBookmark();
     const handleToggleBookmark = () => {
+        if (isPending) return;
         toggleBookmark({ postId }, {
             onSuccess: (data) => {
                 toast.success(data.message);

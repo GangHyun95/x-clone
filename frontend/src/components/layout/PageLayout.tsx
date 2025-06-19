@@ -1,19 +1,13 @@
-import { SpinnerSvg } from '@/components/svgs';
+import { SectionSpinner } from '@/components/common/Spinner';
 
 export default function PageLayout({ children }: { children: React.ReactNode }) {
     return <div className='flex flex-col h-full'>{children}</div>;
 }
 
 PageLayout.Content = function Content({ children, isLoading, className }: { children: React.ReactNode, isLoading?: boolean, className?: string }) {
-    if (isLoading) {
-        return (
-            <section className='w-full grow flex items-center justify-center'>
-                <SpinnerSvg className='size-10 md:size-8 text-primary animate-spin' />
-            </section>
-        );
-    }
+    if (isLoading) return <SectionSpinner />;
     return (
-        <section className={`w-full max-w-[600px] grow ${className}`}>
+        <section className={`w-full max-w-[600px] grow ${className ? className : ''}`}>
             {children}
         </section>
     )

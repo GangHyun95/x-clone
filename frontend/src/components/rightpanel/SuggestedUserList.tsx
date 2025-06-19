@@ -1,44 +1,30 @@
-import { useParams } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 
-import Avatar from '@/components/common/Avatar';
-import FollowButton from '@/components/common/FollowButton';
-
-import { SpinnerSvg } from '@/components/svgs';
+import { ListSpinner } from '@/components/common/Spinner';
+import UserListItem from '@/components/common/UserListItem';
 import { useSuggested } from '@/queries/user';
+import { getCurrentUser } from '@/store/authStore';
 
 
 export default function SuggestedUserList() {
-    const { username } = useParams();
-    const { data: suggestedUsers = [], isLoading } = useSuggested(username);
-    if (isLoading) return (
-        <div className='w-full flex grow items-center justify-center min-h-[300px]'>
-            <SpinnerSvg className='size-10 md:size-8 text-primary animate-spin' />
-        </div>
-    )
+    const { username } = useParams<{ username: string }>();
+    const me = getCurrentUser();
+    const currentUsername = me.username !== username ? username : undefined;
+
+    const { data: suggestedUsers = [], isLoading } = useSuggested(currentUsername);
+
+    if (isLoading) return <ListSpinner />
 
     return (
         <>
             <ul className='flex flex-col'>
                 {suggestedUsers.map((user) => (
-                    <li key={user.id} className='px-4 py-3 leading-5'>
-                        <article className='flex'>
-                            <Avatar username={user.username} src={user.profile_img} className='mr-2' />
-                            <div className='flex grow items-center justify-between'>
-                                <div className='flex flex-col w-full'>
-                                    <h3 className='font-bold'>{user.full_name}</h3>
-                                    <span className='text-gray-500'>@{user.username}</span>
-                                </div>
-                                <div className='ml-4'>
-                                    <FollowButton id={user.id} username={user.username} is_following={user.is_following}/>
-                                </div>
-                            </div>
-                        </article>
-                    </li>
+                    <UserListItem key={user.id} user={user} />
                 ))}
             </ul>
-            <button className='bn btn-ghost justify-start rounded-t-none border-0 p-4 text-left text-primary'>
+            <Link to='/users' className='bn btn-ghost justify-start rounded-t-none border-0 p-4 text-left text-primary'>
                 Show more
-            </button>
+            </Link>
         </>
     );
 }

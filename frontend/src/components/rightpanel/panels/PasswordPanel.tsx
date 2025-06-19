@@ -4,8 +4,8 @@ import toast from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
 
 import { PasswordInput } from '@/components/common/input';
+import { InlineSpinner } from '@/components/common/Spinner';
 import StickyHeader from '@/components/common/StickyHeader';
-import { SpinnerSvg } from '@/components/svgs';
 import { useUpdatePassword } from '@/hooks/user/useUser';
 import type { UpdatePasswordPayload } from '@/types/user';
 
@@ -79,14 +79,7 @@ export default function PasswordPanel() {
 
             <div className='flex justify-end py-3'>
                 <button className='btn btn-primary btn-circle text-white w-auto h-auto min-h-9 px-4 mr-3' disabled={!isValid || updating}>
-                    {updating ? (
-                        <>
-                            <SpinnerSvg className='size-5 text-primary animate-spin'/>
-                            <span className='ml-1'>Saving...</span>
-                        </>
-                    ) : (
-                        <span>Save</span>
-                    )}
+                    {updating ? <InlineSpinner /> : <span>Save</span>}
                 </button>
             </div>
         </form>

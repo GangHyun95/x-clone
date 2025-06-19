@@ -3,8 +3,8 @@ import { useForm } from 'react-hook-form';
 import toast, { Toaster } from 'react-hot-toast';
 
 import AuthSubmitBtn from '@/components/auth/AuthSubmitBtn';
-import Spinner from '@/components/auth/Spinner';
 import { TextInput } from '@/components/common/input';
+import { AuthModalSpinner } from '@/components/common/Spinner';
 import { useResendCode, useVerifyCode } from '@/hooks/auth/useAuth';
 import useCountdown from '@/hooks/useCountdown';
 import type { VerifyCodePayload } from '@/types/auth';
@@ -54,7 +54,7 @@ export default function StepTwo({ onNext, email, expiresAt, setExpiresAt }: Prop
         return () => clearTimeout(timer);
     }, [setFocus]);
 
-    if (isVerifying) return <Spinner />;
+    if (isVerifying) return <AuthModalSpinner />;
 
     return (
         <>

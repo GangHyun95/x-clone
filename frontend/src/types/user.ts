@@ -24,6 +24,7 @@ export type UserSummary = {
     email: string;
     profile_img: string;
     is_following: boolean;
+    bio: string;
 };
 
 export type UpdatePasswordPayload = {

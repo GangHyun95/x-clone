@@ -3,9 +3,9 @@ import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
 
 import AuthSubmitBtn from '@/components/auth/AuthSubmitBtn';
-import Spinner from '@/components/auth/Spinner';
 import { PasswordInput } from '@/components/common/input';
 import ModalRouteBtn from '@/components/common/ModalRouteBtn';
+import { AuthModalSpinner } from '@/components/common/Spinner';
 import { useLogin } from '@/hooks/auth/useAuth';
 import { setAccessToken } from '@/store/authStore';
 
@@ -35,7 +35,7 @@ export default function StepTwo({ email }: { email: string }) {
         login({ email, password: data.password });
     };
 
-    if (isLoggingIn) return <Spinner />;
+    if (isLoggingIn) return <AuthModalSpinner />;
 
     return (
         <form className='flex flex-col h-full' onSubmit={handleSubmit(onSubmit)}>

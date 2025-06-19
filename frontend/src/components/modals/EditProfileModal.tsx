@@ -4,9 +4,10 @@ import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
 
 import { TextAreaField, TextInput } from '@/components/common/input';
+import { InlineSpinner } from '@/components/common/Spinner';
 import CoverImageSection from '@/components/profile/CoverImageSection';
 import ProfileImageSection from '@/components/profile/ProfileImageSection';
-import { CloseSvg, SpinnerSvg } from '@/components/svgs';
+import { CloseSvg } from '@/components/svgs';
 import RouteModal from '@/layouts/RouteModal';
 import { queryClient } from '@/lib/queryClient';
 import { useUpdateProfile } from '@/queries/user';
@@ -100,14 +101,7 @@ export default function EditProfileModal() {
                             className='btn btn-secondary btn-circle px-4 w-auto h-auto min-h-8 font-bold'
                             disabled={!isValid || isPending}
                         >
-                            {isPending ? (
-                                <>
-                                    <SpinnerSvg className='size-5 text-primary animate-spin' />
-                                    <span className='ml-1'>Saving...</span>
-                                </>
-                            ) : (
-                                <span>Save</span>
-                            )}
+                            {isPending ? <InlineSpinner /> : <span>Save</span>}
                         </button>
                     </div>
                 </header>

@@ -2,9 +2,9 @@ import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 
 import AuthSubmitBtn from '@/components/auth/AuthSubmitBtn';
-import Spinner from '@/components/auth/Spinner';
 import { TextInput } from '@/components/common/input';
 import ModalRouteBtn from '@/components/common/ModalRouteBtn';
+import { AuthModalSpinner } from '@/components/common/Spinner';
 import { useSendCode } from '@/hooks/auth/useAuth';
 import type { SendCodePayload } from '@/types/auth';
 
@@ -35,7 +35,7 @@ export default function StepOne({ onNext }: Props) {
         sendCode(data);
     };
 
-    if (isSending) return <Spinner />;
+    if (isSending) return <AuthModalSpinner />;
 
     return (
         <form className='flex flex-col h-full' onSubmit={handleSubmit(onSubmit)}>

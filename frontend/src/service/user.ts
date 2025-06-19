@@ -24,6 +24,18 @@ export async function getSuggestedUsers(username?: string) {
     return get<{ users: UserSummary[] }>(`/api/users/suggested${username ? `?exclude=${encodeURIComponent(username)}` : ''}`, { withAuth: true });
 }
 
+export async function getRecommended() {
+    return get<{ users: UserSummary[] }>(`/api/users/recommended`, { withAuth: true });
+};
+
+export async function getFollowers() {
+    return get<{ users: UserSummary[] }>(`/api/users/followers`, { withAuth: true });
+};
+
+export async function getFollowing() {
+    return get<{ users: UserSummary[] }>(`/api/users/following`, { withAuth: true });
+};
+
 export async function getProfile(username: string) {
     return get<{ user: User }>(`/api/users/profile/${username}`, { withAuth: true });
 }

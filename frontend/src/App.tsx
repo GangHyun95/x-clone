@@ -1,12 +1,12 @@
 import { Toaster } from 'react-hot-toast';
 import { Route, Routes, useLocation } from 'react-router-dom';
 
+import { FullPageSpinner } from '@/components/common/Spinner';
 import { LoginModal, ResetPasswordModal, SignUpModal } from '@/components/modals/auth';
 import EditProfileModal from '@/components/modals/EditProfileModal';
 import NewPostModal from '@/components/modals/NewPostModal';
-import { SpinnerSvg } from '@/components/svgs';
 import AppLayout from '@/layouts/AppLayout';
-import { AuthLandingPage, BookmarkPage, HomePage, NotificationsPage, ProfilePage, SettingsPage } from '@/pages';
+import { AuthLandingPage, BookmarkPage, HomePage, NotificationsPage, ProfilePage, SettingsPage, UsersTabPage } from '@/pages';
 import { useCheckAuth, useMe } from '@/queries/auth';
 import ProtectedRoute from '@/routes/ProtectedRoute';
 
@@ -19,12 +19,7 @@ function App() {
         enabled: !!accessToken && !isAuthLoading
     });
 
-    if ((isAuthLoading && !accessToken) || (isMeLoading && !user))
-        return (
-            <div className='flex items-center justify-center h-screen'>
-                <SpinnerSvg className='size-10 animate-spin text-primary'/>
-            </div>
-        );
+    if ((isAuthLoading && !accessToken) || (isMeLoading && !user)) return <FullPageSpinner />;
     return (
         <>
             <Routes location={state?.backgroundLocation || location}>
@@ -37,6 +32,7 @@ function App() {
                         <Route path='notifications' element={<NotificationsPage />} />
                         <Route path='bookmarks' element={<BookmarkPage />} />
                         <Route path='settings/*' element={<SettingsPage />} />
+                        <Route path='users' element={<UsersTabPage />} />
                         <Route path='profile/:username' element={<ProfilePage />} />
                     </Route>
                 </Route>

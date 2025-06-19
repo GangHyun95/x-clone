@@ -4,8 +4,8 @@ import toast from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
 
 import AuthSubmitBtn from '@/components/auth/AuthSubmitBtn';
-import Spinner from '@/components/auth/Spinner';
 import { PasswordInput, TextInput } from '@/components/common/input';
+import { AuthModalSpinner } from '@/components/common/Spinner';
 import { useSignup } from '@/hooks/auth/useAuth';
 import { setAccessToken } from '@/store/authStore';
 import type { SignupPayload } from '@/types/auth';
@@ -47,7 +47,7 @@ export default function StepThree({ email, fullName }: Props) {
         return () => clearTimeout(timer);
     }, [setFocus]);
 
-    if (isSigningUp) return <Spinner />;
+    if (isSigningUp) return <AuthModalSpinner />;
 
     return (
         <form className='flex flex-col h-full' onSubmit={handleSubmit(onSubmit)}>

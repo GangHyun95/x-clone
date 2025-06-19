@@ -2,6 +2,7 @@ import toast from 'react-hot-toast';
 
 import { useParams } from 'react-router-dom';
 
+import { InlineSpinner } from '@/components/common/Spinner';
 import { queryClient } from '@/lib/queryClient';
 import { useToggleFollow } from '@/queries/user';
 import type { User, UserSummary } from '@/types/user';
@@ -14,7 +15,7 @@ type Props = {
 }
 
 export default function FollowButton({ id: userId, username, is_following }: Props) {
-    const { mutate: toggleFollow } = useToggleFollow();
+    const { mutate: toggleFollow, isPending } = useToggleFollow();
     const { username: excluded = 'default' } = useParams();
     const handleFollowToggle = () => {
         toggleFollow({ userId }, {
@@ -69,8 +70,10 @@ export default function FollowButton({ id: userId, username, is_following }: Pro
         : 'btn-secondary text-white';
 
     return (
-        <button className={`${baseClass} ${followingClass}`} onClick={handleFollowToggle}>
-            {is_following ? (
+        <button className={`${baseClass} ${followingClass}`} onClick={handleFollowToggle} disabled={isPending}>
+            {isPending ? (
+                <InlineSpinner label='Following' />
+            ) : is_following ? (
                 <span className='relative block'>
                     <span className='group-hover:hidden'>Following</span>
                     <span className='hidden group-hover:inline text-red-500'>Unfollow</span>
@@ -79,5 +82,6 @@ export default function FollowButton({ id: userId, username, is_following }: Pro
                 <span>Follow</span>
             )}
         </button>
+
     );
 }

@@ -1,7 +1,7 @@
 import toast from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
 
-import { SpinnerSvg } from '@/components/svgs';
+import { FullPageSpinner } from '@/components/common/Spinner';
 import { useLogout } from '@/hooks/auth/useAuth';
 import { queryClient } from '@/lib/queryClient';
 import GlobalPortal from '@/portals/GlobalPortal';
@@ -40,9 +40,7 @@ export default function UserMenuDropdown({ open, position, onClose, username }: 
     if (isLoggingOut) {
         return (
             <GlobalPortal>
-                <div className='fixed inset-0 flex items-center justify-center z-50 bg-white'>
-                    <SpinnerSvg className='size-10 md:size-8 text-primary animate-spin' />
-                </div>
+                <FullPageSpinner />
             </GlobalPortal>
         )
     }

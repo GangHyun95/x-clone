@@ -3,8 +3,8 @@ import toast from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
 
 import { PasswordInput } from '@/components/common/input';
+import { InlineSpinner } from '@/components/common/Spinner';
 import StickyHeader from '@/components/common/StickyHeader';
-import { SpinnerSvg } from '@/components/svgs';
 import { useDeleteAccount } from '@/hooks/user/useUser';
 
 
@@ -63,14 +63,7 @@ export default function ConfirmDeletePanel() {
                     className='btn btn-circle w-auto bg-red-500 text-white border-0 text-base hover:bg-red-700 p-4'
                     disabled={deleting}
                 >
-                    {deleting ? (
-                        <>
-                            <SpinnerSvg className='size-5 text-primary animate-spin' />
-                            <span className='ml-1'>Deleting...</span>
-                        </>
-                    ) : (
-                        <span>Delete account</span>
-                    )}
+                    {deleting ? <InlineSpinner label='Deleting' /> : <span>Delete account</span> }
                 </button>
             </div>
         </form>
