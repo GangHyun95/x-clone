@@ -16,7 +16,7 @@ export default function ProfileImageSection({ src, editable = false, onChange }:
         return (
             <div className='relative w-1/4 max-w-32 min-w-12 -mt-[15%] mb-3'>
                 <div className='pb-[100%] w-full'>
-                    <div className='absolute inset-0 flex items-center justify-center'>
+                    <div className='absolute inset-0 flex items-center justify-center overflow-hidden'>
                         <div className='relative group rounded-full bg-white p-1'>
                             <div className='relative rounded-full overflow-hidden w-full h-full'>
                                 <img
@@ -45,7 +45,7 @@ export default function ProfileImageSection({ src, editable = false, onChange }:
         <div className='relative w-1/4 max-w-32 min-w-12 -mt-[15%] mb-3'>
             <div className='pb-[100%] w-full'>
                 <div className='absolute inset-0 flex items-center justify-center'>
-                    <div className='relative group rounded-full bg-white p-1'>
+                    <div className='relative group rounded-full bg-white p-1 w-full h-full'>
                         <div className='relative rounded-full overflow-hidden w-full h-full'>
                             <img
                                 src={(previewUrl ?? src) || '/avatar-placeholder.png'}

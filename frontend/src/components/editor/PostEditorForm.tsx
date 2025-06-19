@@ -1,3 +1,4 @@
+import { EditorState } from 'draft-js';
 import { useState } from 'react';
 
 import Avatar from '@/components/common/Avatar';
@@ -20,6 +21,7 @@ export default function PostEditorForm({ variant = 'home' }: Props) {
     const [selectedImage, setSelectedImage] = useState<File | null>(null);
     const [imagePreviewUrl, setImagePreviewUrl] = useState<string | null>(null);
     const [insertEmoji, setInsertEmoji] = useState<(emoji: string) => void>(() => () => {});
+    const [editorState, setEditorState] = useState(() => EditorState.createEmpty());
 
     const isModal = variant === 'modal';
     const isDisabled = text.trim().length === 0 && !selectedImage;
@@ -43,6 +45,7 @@ export default function PostEditorForm({ variant = 'home' }: Props) {
                 setText('');
                 setSelectedImage(null);
                 setImagePreviewUrl(null);
+                setEditorState(EditorState.createEmpty());
                 prependPostToCache(newPost);
             },
             onError: (error) => {
@@ -53,7 +56,7 @@ export default function PostEditorForm({ variant = 'home' }: Props) {
     };
 
     return (
-        <form className={`flex flex-col px-4 ${!isModal && 'border-b border-base-300'}`} onSubmit={handleSubmit}>
+        <form className={`flex flex-col px-4 ${!isModal ? 'border-b border-base-300' : ''}`} onSubmit={handleSubmit}>
             <div className={`flex px-4 ${isModal && 'border-b border-base-300'}`}>
                 <div className='mr-2 pt-3'>
                     {isModal ? (
@@ -64,6 +67,8 @@ export default function PostEditorForm({ variant = 'home' }: Props) {
                 </div>
                 <div className='flex grow flex-col pt-1'>
                     <SingleLineEditor
+                        editorState={editorState}
+                        setEditorState={setEditorState}
                         isModal={isModal}
                         onTextChange={setText}
                         bindInsertEmoji={(handler) =>

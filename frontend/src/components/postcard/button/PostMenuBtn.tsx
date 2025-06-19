@@ -29,7 +29,6 @@ export default function PostMenuBtn({ user, postId }: PostMenuBtnProps) {
             </button>
             {open &&
                 <PostMenuDropDown
-                    open={true}
                     position={position}
                     onClose={() => setOpen(false)}
                     user={user}

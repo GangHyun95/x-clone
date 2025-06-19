@@ -1,7 +1,9 @@
 import { Editor, EditorState, Modifier } from 'draft-js';
-import { useState, useRef, useEffect } from 'react';
+import { useRef, useEffect } from 'react';
 
 type Props = {
+    editorState: EditorState,
+    setEditorState: (state: EditorState) => void;
     onTextChange: (text: string) => void;
     isModal?: boolean;
     bindInsertEmoji: (handler: (emoji: string) => void) => void;
@@ -18,8 +20,7 @@ function insertEmoji(editorState: EditorState, emoji: string): EditorState {
 }
 
 
-export default function SingleLineEditor({ onTextChange, isModal = false, bindInsertEmoji }: Props) {
-    const [editorState, setEditorState] = useState(() => EditorState.createEmpty());
+export default function SingleLineEditor({ editorState, setEditorState, onTextChange, isModal = false, bindInsertEmoji }: Props) {
     const editorRef = useRef<Editor>(null);
 
     const handleChange = (state: EditorState) => {

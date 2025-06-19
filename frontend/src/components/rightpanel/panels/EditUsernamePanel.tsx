@@ -1,4 +1,5 @@
 import { useForm } from 'react-hook-form';
+import toast from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
 
 import { TextInput } from '@/components/common/input';
@@ -8,7 +9,6 @@ import { queryClient } from '@/lib/queryClient';
 import { useUpdateUsername } from '@/queries/user';
 import { getCurrentUser } from '@/store/authStore';
 import type { User } from '@/types/user';
-import toast from 'react-hot-toast';
 
 export default function EditUsernamePanel() {
     const me = getCurrentUser();

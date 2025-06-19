@@ -41,7 +41,7 @@ export default function CoverImageSection({ src, editable = false, onChange }: P
         <div className='relative bg-slate-300 z-0'>
             <div className='pb-[calc(100%/3)]' />
             <div className='absolute inset-0 overflow-hidden'>
-                {src && (
+                {(previewUrl || src) && (
                     <img
                         src={previewUrl ?? src}
                         alt='cover'
