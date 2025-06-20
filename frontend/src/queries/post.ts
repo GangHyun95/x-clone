@@ -1,6 +1,6 @@
 import { useMutation, useQuery } from '@tanstack/react-query';
 
-import { createPost, deletePost, getPostsAll, getPostsBookmarked, getPostsFromFollowing, togglePostBookmark, togglePostLike,  } from '@/service/post';
+import { createPost, deletePost, getPostOne, getPostsAll, getPostsBookmarked, getPostsFromFollowing, togglePostBookmark, togglePostLike,  } from '@/service/post';
 
 export function useCreate() {
     return useMutation({
@@ -13,6 +13,16 @@ export function usePosts(tab: 'foryou' | 'following') {
     return useQuery({
         queryKey: ['posts', key],
         queryFn: tab === 'following' ? getPostsFromFollowing : getPostsAll,
+        staleTime: 1000 * 60 * 50,
+        gcTime: 1000 * 60 * 60,
+        retry: false,
+    });
+}
+
+export function usePost(postId: number) {
+    return useQuery({
+        queryKey: ['post', postId],
+        queryFn: () => getPostOne(postId),
         staleTime: 1000 * 60 * 50,
         gcTime: 1000 * 60 * 60,
         retry: false,

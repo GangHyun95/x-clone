@@ -3,7 +3,7 @@ import type { UserSummary } from '@/types/user';
 export type Post = {
     id: number;
     content: string;
-    img: string | null;
+    img: string;
     created_at: string;
     user: UserSummary;
     counts: {

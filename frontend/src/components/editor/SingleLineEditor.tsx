@@ -6,6 +6,7 @@ type Props = {
     setEditorState: (state: EditorState) => void;
     onTextChange: (text: string) => void;
     isModal?: boolean;
+    placeholder?: string;
 };
 
 export function insertEmoji(editorState: EditorState, emoji: string): EditorState {
@@ -18,7 +19,7 @@ export function insertEmoji(editorState: EditorState, emoji: string): EditorStat
     return EditorState.forceSelection(pushed, newContentState.getSelectionAfter());
 }
 
-export default function SingleLineEditor({ editorState, setEditorState, onTextChange, isModal = false }: Props) {
+export default function SingleLineEditor({ editorState, setEditorState, onTextChange, isModal = false, placeholder }: Props) {
     const editorRef = useRef<Editor>(null);
 
     const handleChange = (state: EditorState) => {
@@ -36,7 +37,7 @@ export default function SingleLineEditor({ editorState, setEditorState, onTextCh
                 ref={editorRef}
                 editorState={editorState}
                 onChange={handleChange}
-                placeholder="What's happening?"
+                placeholder={placeholder ?? 'What\'s happening?'}
             />
         </div>
     );

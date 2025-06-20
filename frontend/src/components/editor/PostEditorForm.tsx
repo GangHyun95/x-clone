@@ -14,9 +14,10 @@ import SingleLineEditor, { insertEmoji } from './SingleLineEditor';
 
 type Props = {
     variant?: 'home' | 'modal';
+    placeholder?: string;
 };
 
-export default function PostEditorForm({ variant = 'home' }: Props) {
+export default function PostEditorForm({ variant = 'home', placeholder}: Props) {
     const [text, setText] = useState('');
     const [selectedImage, setSelectedImage] = useState<File | null>(null);
     const [imagePreviewUrl, setImagePreviewUrl] = useState<string | null>(null);
@@ -56,7 +57,7 @@ export default function PostEditorForm({ variant = 'home' }: Props) {
 
     return (
         <form className={`flex flex-col px-4 ${!isModal ? 'border-b border-base-300' : ''}`} onSubmit={handleSubmit}>
-            <div className={`flex px-4 ${isModal && 'border-b border-base-300'}`}>
+            <div className={`flex ${isModal && 'border-b border-base-300'}`}>
                 <div className='mr-2 pt-3'>
                     {isModal ? (
                         <Avatar src={me.profile_img} />
@@ -70,6 +71,7 @@ export default function PostEditorForm({ variant = 'home' }: Props) {
                         setEditorState={setEditorState}
                         isModal={isModal}
                         onTextChange={setText}
+                        placeholder={placeholder}
                     />
                 </div>
             </div>

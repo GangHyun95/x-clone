@@ -8,11 +8,11 @@ export function FullPageSpinner() {
     );
 }
 
-export function InlineSpinner({ label='Saving' }: { label?: string }) {
+export function InlineSpinner({ label='Saving', color }: { label?: string; color?: string; }) {
     return (
         <div className='flex items-center'>
-            <SpinnerSvg className='size-5 text-primary animate-spin' />
-            <span className='ml-1'>{label}...</span>
+            <SpinnerSvg className={`size-5 animate-spin ${color ? `text-${color}` : 'text-primary'}`} />
+            <span className={`ml-1 ${color ? `text-${color}` : ''}`}>{label}...</span>
         </div>
     );
 }

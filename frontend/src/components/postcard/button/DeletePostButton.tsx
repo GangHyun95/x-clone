@@ -1,5 +1,6 @@
 import toast from 'react-hot-toast';
 
+import { InlineSpinner } from '@/components/common/Spinner';
 import { TrashSvg } from '@/components/svgs';
 import { removePostFromCache } from '@/lib/queryCacheHelpers';
 import { useDelete } from '@/queries/post';
@@ -10,7 +11,7 @@ type Props = {
 };
 
 export default function DeletePostButton({ postId, onClose }: Props) {
-    const { mutate: deletePost } = useDelete();
+    const { mutate: deletePost, isPending } = useDelete();
     
     const handleDeletePost = () => {
         deletePost({ postId }, {
@@ -29,10 +30,16 @@ export default function DeletePostButton({ postId, onClose }: Props) {
             className='flex items-center w-full px-4 py-3 hover:bg-base-300 cursor-pointer font-bold'
             onClick={handleDeletePost}
         >
-            <div className='pr-3'>
-                <TrashSvg className='size-5 fill-red-500' />
-            </div>
-            <div className='text-red-500'>Delete</div>
+            {isPending ? (
+                <InlineSpinner label='Deleting' color='red-500' />
+            ) : (
+                <>
+                    <div>
+                        <TrashSvg className='size-5 fill-red-500' />
+                    </div>
+                    <div className='text-red-500 ml-1'>Delete</div>
+                </>
+            )}
         </button>
     );
 }
