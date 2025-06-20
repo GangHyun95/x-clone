@@ -7,6 +7,7 @@ import {
     getBookmarked,
     getFromFollowing,
     getLiked,
+    getOne,
     remove,
     toggleBookmark,
     toggleLike,
@@ -18,9 +19,9 @@ const router = express.Router();
 
 router.get('/', getAll);
 router.get('/following', getFromFollowing);
-
 router.get('/likes/:username', getLiked);
 router.get('/bookmarks', getBookmarked);
+router.get('/:id', getOne);
 
 router.post('/', upload.single('img'), create);
 router.patch('/:id', update);

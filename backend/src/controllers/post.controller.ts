@@ -330,6 +330,64 @@ export const getAll = async (req: Request, res: Response): Promise<void> => {
     }
 };
 
+export const getOne = async (req: Request, res: Response): Promise<void> => {
+    const userId = req.user?.id;
+    if (!userId) {
+        res.status(401).json({ success: false, message: '사용자를 찾을 수 없습니다.' });
+        return;
+    }
+    const postId = req.params.id;
+
+    try {
+        const postResult = await pool.query(
+            `SELECT
+                posts.id,
+                posts.content,
+                posts.img,
+                posts.created_at,
+                posts.updated_at,
+                json_build_object(
+                    'id', users.id,
+                    'username', users.username,
+                    'full_name', users.full_name,
+                    'profile_img', users.profile_img,
+                    'is_following', EXISTS (
+                        SELECT 1 FROM user_follows WHERE from_user_id = $1 AND to_user_id = users.id
+                    )
+                ) as user,
+                json_build_object(
+                    'like', (SELECT COUNT(*) FROM post_likes WHERE post_id = posts.id), 
+                    'comment', (SELECT COUNT(*) FROM comments WHERE post_id = posts.id)
+                ) AS counts,
+                EXISTS (
+                    SELECT 1 FROM post_likes WHERE post_id = posts.id AND user_id = $1
+                ) AS is_liked,
+                EXISTS (
+                    SELECT 1 FROM post_bookmarks WHERE post_id = posts.id AND user_id = $1
+                ) AS is_bookmarked
+            FROM posts
+            JOIN users ON users.id = posts.user_id
+            WHERE posts.id = $2
+            `,
+            [userId, postId]
+        );
+
+        if (postResult.rows.length === 0) {
+            res.status(404).json({ success: false, message: '게시물을 찾을 수 없습니다.' });
+            return;
+        }
+        res.status(200).json({
+            success: true,
+            message: postResult.rows.length ? '게시물을 가져왔습니다.' : '게시물이 없습니다.',
+            data: { post: postResult.rows[0] },
+        });
+
+    } catch (error) {
+        console.error('Error in getOne:', error);
+        res.status(500).json({ success: false, message: '서버 오류가 발생했습니다.' });
+    }
+};
+
 export const getFromFollowing = async (req: Request, res: Response): Promise<void> => {
     const userId = req.user?.id;
     if (!userId) {
