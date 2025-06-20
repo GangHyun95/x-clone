@@ -28,6 +28,7 @@ export default function EmojiInsertBtn({ insertEmoji }: Props) {
     return (
         <>
             <button
+                type='button'
                 ref={btnRef}
                 onClick={() => setShow(prev => !prev)}
                 className='btn btn-sm btn-ghost btn-circle hover:bg-primary/10 border-0'

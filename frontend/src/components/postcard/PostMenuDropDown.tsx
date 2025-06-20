@@ -1,5 +1,4 @@
-import { FollowButton } from '@/components/postcard/button';
-import DeletePostButton from '@/components/postcard/button/DeletePostButton';
+import { DeletePostButton, FollowButton } from '@/components/postcard/button';
 import GlobalPortal from '@/portals/GlobalPortal';
 import { getCurrentUser } from '@/store/authStore';
 import type { UserSummary } from '@/types/user';

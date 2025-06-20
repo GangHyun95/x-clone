@@ -10,7 +10,7 @@ import type { Post } from '@/types/post';
 
 import EmojiInsertBtn from './EmojiInsertBtn';
 import ImageUploadBtn from './ImageUploadBtn';
-import SingleLineEditor from './SingleLineEditor';
+import SingleLineEditor, { insertEmoji } from './SingleLineEditor';
 
 type Props = {
     variant?: 'home' | 'modal';
@@ -20,7 +20,6 @@ export default function PostEditorForm({ variant = 'home' }: Props) {
     const [text, setText] = useState('');
     const [selectedImage, setSelectedImage] = useState<File | null>(null);
     const [imagePreviewUrl, setImagePreviewUrl] = useState<string | null>(null);
-    const [insertEmoji, setInsertEmoji] = useState<(emoji: string) => void>(() => () => {});
     const [editorState, setEditorState] = useState(() => EditorState.createEmpty());
 
     const isModal = variant === 'modal';
@@ -71,9 +70,6 @@ export default function PostEditorForm({ variant = 'home' }: Props) {
                         setEditorState={setEditorState}
                         isModal={isModal}
                         onTextChange={setText}
-                        bindInsertEmoji={(handler) =>
-                            setInsertEmoji(() => handler)
-                        }
                     />
                 </div>
             </div>
@@ -103,7 +99,13 @@ export default function PostEditorForm({ variant = 'home' }: Props) {
                             setImagePreviewUrl(previewUrl);
                         }}
                     />
-                    <EmojiInsertBtn insertEmoji={insertEmoji} />
+                    <EmojiInsertBtn
+                        insertEmoji={(emoji) => {
+                            const updated = insertEmoji(editorState, emoji);
+                            setEditorState(updated);
+                            setText(updated.getCurrentContent().getPlainText().trim());
+                        }}
+                    />
                 </div>
                 <div className='ml-4 mt-2'>
                     <button

@@ -1,3 +1,5 @@
+import { Link } from 'react-router-dom';
+
 import FollowButton from '@/components/common/FollowButton';
 import ModalRouteBtn from '@/components/common/ModalRouteBtn';
 import CoverImageSection from '@/components/profile/CoverImageSection';
@@ -5,7 +7,6 @@ import ProfileImageSection from '@/components/profile/ProfileImageSection';
 import { CalendarSvg, LinkSvg } from '@/components/svgs';
 import type { User } from '@/types/user';
 import { formatJoinDate } from '@/utils/formatters';
-import { Link } from 'react-router-dom';
 
 export default function ProfileHeader({ user, isMe }: { user: User; isMe: boolean }) {
     return (

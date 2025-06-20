@@ -1,12 +1,12 @@
 import { useNavigate, useSearchParams } from 'react-router-dom';
 
+import EmptyState from '@/components/common/EmptyState';
 import StickyHeader from '@/components/common/StickyHeader';
 import Tabs from '@/components/common/Tabs';
 import UserListItem from '@/components/common/UserListItem';
 import PageLayout from '@/components/layout/PageLayout';
-import { getCurrentUser } from '@/store/authStore';
 import { useListByType } from '@/queries/user';
-import EmptyState from '@/components/common/EmptyState';
+import { getCurrentUser } from '@/store/authStore';
 
 const tabMeta = {
     suggest: {

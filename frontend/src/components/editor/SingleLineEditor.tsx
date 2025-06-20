@@ -1,15 +1,14 @@
 import { Editor, EditorState, Modifier } from 'draft-js';
-import { useRef, useEffect } from 'react';
+import { useRef } from 'react';
 
 type Props = {
     editorState: EditorState,
     setEditorState: (state: EditorState) => void;
     onTextChange: (text: string) => void;
     isModal?: boolean;
-    bindInsertEmoji: (handler: (emoji: string) => void) => void;
 };
 
-function insertEmoji(editorState: EditorState, emoji: string): EditorState {
+export function insertEmoji(editorState: EditorState, emoji: string): EditorState {
     const contentState = editorState.getCurrentContent();
     const selection = editorState.getSelection();
 
@@ -19,8 +18,7 @@ function insertEmoji(editorState: EditorState, emoji: string): EditorState {
     return EditorState.forceSelection(pushed, newContentState.getSelectionAfter());
 }
 
-
-export default function SingleLineEditor({ editorState, setEditorState, onTextChange, isModal = false, bindInsertEmoji }: Props) {
+export default function SingleLineEditor({ editorState, setEditorState, onTextChange, isModal = false }: Props) {
     const editorRef = useRef<Editor>(null);
 
     const handleChange = (state: EditorState) => {
@@ -28,20 +26,6 @@ export default function SingleLineEditor({ editorState, setEditorState, onTextCh
         const text = state.getCurrentContent().getPlainText().trim();
         onTextChange(text);
     };
-
-    const handleInsertEmoji = (emoji: string) => {
-        if (!editorRef.current) return;
-
-        const updatedState = insertEmoji(editorState, emoji);
-        setEditorState(updatedState);
-
-        const text = updatedState.getCurrentContent().getPlainText().trim();
-        onTextChange(text);
-    };
-
-    useEffect(() => {
-        bindInsertEmoji(handleInsertEmoji);
-    }, [editorState]);
 
     return (
         <div

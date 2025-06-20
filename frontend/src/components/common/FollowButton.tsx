@@ -1,4 +1,5 @@
 import toast from 'react-hot-toast';
+
 import { InlineSpinner } from '@/components/common/Spinner';
 import { queryClient } from '@/lib/queryClient';
 import { useToggleFollow } from '@/queries/user';

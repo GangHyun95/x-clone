@@ -2,11 +2,11 @@ import { useEffect, useState, useMemo } from 'react';
 
 import Avatar from '@/components/common/Avatar';
 import PostMenuBtn from '@/components/postcard/button/PostMenuBtn';
-import { CommentSvg, ShareSvg } from '@/components/svgs';
+import { ShareSvg } from '@/components/svgs';
 import type { Post } from '@/types/post';
 import { formatTimeFromNow } from '@/utils/formatters';
 
-import { BookmarkButton, LikeButton } from './button';
+import { BookmarkButton, CommentButton, LikeButton } from './button';
 
 export default function PostCard(post: Post) {
     const { id, img, user, created_at, content, counts, is_liked, is_bookmarked } = post;
@@ -51,12 +51,7 @@ export default function PostCard(post: Post) {
                         </figure>
                     )}
                     <footer className='mt-3 flex justify-between gap-1'>
-                        <div className='flex-1 flex items-center cursor-pointer group'>
-                            <button className='btn btn-sm btn-ghost btn-circle border-0 group-hover:bg-primary/10'>
-                                <CommentSvg className='h-5 fill-gray-500 group-hover:fill-primary' />
-                            </button>
-                            <span className='text-sm px-1'>{counts.comment}</span>
-                        </div>
+                        <CommentButton id={id} commentCount={counts.comment}/>
                         <LikeButton id={id} is_liked={is_liked} likeCount={counts.like} />
                         <BookmarkButton id={id} is_bookmarked={is_bookmarked} />
                         <div className='flex-1 flex items-center cursor-pointer group'>
