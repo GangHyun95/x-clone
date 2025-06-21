@@ -1,7 +1,6 @@
 import express from 'express';
 
 import {
-    comment,
     create,
     getAll,
     getBookmarked,
@@ -27,7 +26,6 @@ router.post('/', upload.single('img'), create);
 router.patch('/:id', update);
 router.delete('/:id', remove);
 
-router.post('/:id/comment', comment);
 router.post('/:id/like', toggleLike);
 router.post('/:id/bookmark', toggleBookmark);
 

@@ -10,10 +10,8 @@ import { usePost } from '@/queries/post';
 export default function NewCommentModal() {
     const match = useMatch('/comment/new/:id');
     const postId = Number(match?.params.id);
-    console.log(postId);
     const { data: post, isLoading } = usePost(postId);
 
-    console.log(post);
     if (isLoading || !post) return null;
     return (
         <RouteModal position='start'>
@@ -56,8 +54,7 @@ export default function NewCommentModal() {
                     </div>
                     <div className=' py-4 border-b border-base-300'/>
                 </article>
-                <PostEditorForm variant='modal' placeholder='Post your reply' />
-
+                <PostEditorForm variant='modal' placeholder='Post your reply' postId={postId}/>
             </div>
         </RouteModal>
     );

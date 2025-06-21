@@ -1,10 +1,14 @@
 import { useMutation, useQuery } from '@tanstack/react-query';
 
+import { createComment } from '@/service/comment';
 import { createPost, deletePost, getPostOne, getPostsAll, getPostsBookmarked, getPostsFromFollowing, togglePostBookmark, togglePostLike,  } from '@/service/post';
 
-export function useCreate() {
+
+export function useCreate(postId?: number) {
     return useMutation({
-        mutationFn: createPost,
+        mutationFn: (formData: FormData) => {
+            return postId ? createComment(formData, postId) : createPost(formData);
+        }
     });
 }
 

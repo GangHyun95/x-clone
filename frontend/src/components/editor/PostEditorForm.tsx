@@ -1,9 +1,11 @@
 import { EditorState } from 'draft-js';
 import { useState } from 'react';
 
+import { useNavigate } from 'react-router-dom';
+
 import Avatar from '@/components/common/Avatar';
 import { InlineSpinner } from '@/components/common/Spinner';
-import { prependPostToCache } from '@/lib/queryCacheHelpers';
+import { prependPostToCache, updatePostCacheById } from '@/lib/queryCacheHelpers';
 import { useCreate } from '@/queries/post';
 import { getCurrentUser } from '@/store/authStore';
 import type { Post } from '@/types/post';
@@ -15,9 +17,12 @@ import SingleLineEditor, { insertEmoji } from './SingleLineEditor';
 type Props = {
     variant?: 'home' | 'modal';
     placeholder?: string;
+    postId?: number;
 };
 
-export default function PostEditorForm({ variant = 'home', placeholder}: Props) {
+export default function PostEditorForm({ variant = 'home', placeholder, postId }: Props) {
+    const navigate = useNavigate();
+
     const [text, setText] = useState('');
     const [selectedImage, setSelectedImage] = useState<File | null>(null);
     const [imagePreviewUrl, setImagePreviewUrl] = useState<string | null>(null);
@@ -27,7 +32,7 @@ export default function PostEditorForm({ variant = 'home', placeholder}: Props) 
     const isDisabled = text.trim().length === 0 && !selectedImage;
 
     const me = getCurrentUser();
-    const { mutate: createPost, isPending } = useCreate();
+    const { mutate: createPost, isPending } = useCreate(postId);
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -46,7 +51,18 @@ export default function PostEditorForm({ variant = 'home', placeholder}: Props) 
                 setSelectedImage(null);
                 setImagePreviewUrl(null);
                 setEditorState(EditorState.createEmpty());
-                prependPostToCache(newPost);
+                navigate(-1);
+                if (postId) {
+                        updatePostCacheById(postId, (post) => ({
+                            ...post,
+                            counts: {
+                                ...post.counts,
+                                comment: post.counts.comment + 1,
+                            },
+                        }));
+                } else {
+                    prependPostToCache(newPost);
+                }
             },
             onError: (error) => {
                 console.error(error);

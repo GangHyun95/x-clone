@@ -45,8 +45,8 @@ export const create = async (req: Request, res: Response): Promise<void> => {
                     'profile_img', users.profile_img
                 ) as user,
                 json_build_object(
-                    'like', (SELECT COUNT(*) FROM post_likes WHERE post_id = posts.id),
-                    'comment', (SELECT COUNT(*) FROM comments WHERE post_id = posts.id)
+                    'like', 0,
+                    'comment', 0
                 ) AS counts
             FROM posts
             JOIN users ON users.id = posts.user_id
@@ -145,40 +145,6 @@ export const remove = async (req: Request, res: Response): Promise<void> => {
         res.status(200).json({ success: true, message: '게시물이 삭제되었습니다.', data: {} });
     } catch (error) {
         console.error('Error in deletePost:', error);
-        res.status(500).json({ success: false, message: '서버 오류가 발생했습니다.' });
-    }
-};
-
-export const comment = async (req: Request, res: Response): Promise<void> => {
-    const userId = req.user?.id;
-    const postId = req.params.id;
-    const { text } = req.body;
-
-    if (!userId) {
-        res.status(401).json({ success: false, message: '사용자를 찾을 수 없습니다.' });
-        return;
-    }
-
-    if (!text) {
-        res.status(400).json({ success: false, message: '댓글을 입력해야 합니다.' });
-        return;
-    }
-
-    try {
-        const postCheck = await pool.query('SELECT 1 FROM posts WHERE id = $1', [postId]);
-        if (postCheck.rows.length === 0) {
-            res.status(404).json({ success: false, message: '게시물을 찾을 수 없습니다.' });
-            return;
-        }
-
-        const newComment = await pool.query(
-            `INSERT INTO comments (post_id, user_id, content) VALUES ($1, $2, $3) RETURNING *`,
-            [postId, userId, text]
-        );
-
-        res.status(200).json({ success: true, message: '댓글이 작성되었습니다.', data: { post: newComment.rows[0] } });
-    } catch (error) {
-        console.error('Error in commentOnPost:', error);
         res.status(500).json({ success: false, message: '서버 오류가 발생했습니다.' });
     }
 };
