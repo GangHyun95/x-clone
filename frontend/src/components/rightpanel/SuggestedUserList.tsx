@@ -22,7 +22,7 @@ export default function SuggestedUserList() {
                     <UserListItem key={user.id} user={user} />
                 ))}
             </ul>
-            <Link to='/users' className='bn btn-ghost justify-start rounded-t-none border-0 p-4 text-left text-primary'>
+            <Link to={`/users/${me.username}?tab=suggest`} className='bn btn-ghost justify-start rounded-t-none border-0 p-4 text-left text-primary'>
                 Show more
             </Link>
         </>

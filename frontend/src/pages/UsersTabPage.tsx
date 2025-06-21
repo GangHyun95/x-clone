@@ -1,4 +1,4 @@
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 
 import EmptyState from '@/components/common/EmptyState';
 import StickyHeader from '@/components/common/StickyHeader';
@@ -10,37 +10,41 @@ import { getCurrentUser } from '@/store/authStore';
 
 const tabMeta = {
     suggest: {
-        heading: 'Suggested for You',
-        empty: {
+        getHeading: () => 'Suggested for You',
+        getEmpty: () => ({
             title: 'Be in the know',
             desc: 'Following accounts is an easy way to curate your timeline and know what’s happening with the topics and people you’re interested in.',
-        },
+        }),
     },
     follower: {
-        heading: 'Your Followers',
-        empty: {
-            title: 'Looking for followers?',
+        getHeading: (name: string) => `${name}'s Followers`,
+        getEmpty: (name: string) => ({
+            title: `Looking for ${name}'s followers?`,
             desc: 'When someone follows this account, they’ll show up here. Posting and interacting with others helps boost followers.',
-        },
+        }),
     },
     following: {
-        heading: 'Following Users',
-        empty: {
-            title: 'Be in the know',
-            desc: 'Following accounts is an easy way to curate your timeline and know what’s happening with the topics and people you’re interested in.',
-        },
+        getHeading: (name: string) => `${name} is Following`,
+        getEmpty: (name: string) => ({
+            title: `${name} isn't following anyone yet`,
+            desc: 'Following accounts is an easy way to curate a timeline and discover more content.',
+        }),
     },
 } as const;
 
 export default function UsersTabPage() {
     const navigate = useNavigate();
-    const me = getCurrentUser();
+    const { username = '' } = useParams();
     const [searchParams, setSearchParams] = useSearchParams();
+    const me = getCurrentUser();
 
     const raw = searchParams.get('tab') ?? 'suggest';
     const tab = ['suggest', 'follower', 'following'].includes(raw)
         ? (raw as keyof typeof tabMeta)
         : 'suggest';
+
+    const displayName = tab === 'suggest' ? '' : username;
+    const queryUsername = tab === 'suggest' ? me.username : username;
 
     const tabs = [
         { label: 'Suggested', active: tab === 'suggest', onClick: () => setSearchParams({ tab: 'suggest' }) },
@@ -48,37 +52,39 @@ export default function UsersTabPage() {
         { label: 'Following', active: tab === 'following', onClick: () => setSearchParams({ tab: 'following' }) },
     ];
 
-    const { data: users = [], isLoading } = useListByType(tab);
-
-    console.log(users);
-
+    const { data: users, isLoading, isError } = useListByType(tab, queryUsername);
     const meta = tabMeta[tab];
 
     return (
         <PageLayout>
             <StickyHeader>
-                <StickyHeader.Header onPrev={() => navigate(-1)}>
-                    <div className='flex flex-col items-start font-medium'>
-                        <h3 className='font-medium py-0.5'>{me.full_name}</h3>
-                        <span className='text-sm text-gray-500'>@{me.username}</span>
-                    </div>
-                </StickyHeader.Header>
+                <StickyHeader.Header onPrev={() => navigate(-1)}>Connect</StickyHeader.Header>
                 <div className='mb-2'>
                     <Tabs tabs={tabs} />
                 </div>
             </StickyHeader>
-
-            <h3 className='px-4 py-3 text-xl font-extrabold'>{meta.heading}</h3>
+            
+            {(tab === 'suggest' || !isError) && (
+                <h3 className='px-4 py-3 text-xl font-extrabold'>
+                    {meta.getHeading(displayName)}
+                </h3>
+            )}
 
             <PageLayout.Content isLoading={isLoading}>
-                {users.length === 0 && (
+                {isError && (
                     <EmptyState
-                        title={meta.empty.title}
-                        description={meta.empty.desc}
+                        title='존재하지 않는 사용자입니다.'
+                        description='입력한 사용자를 찾을 수 없습니다. 사용자 이름을 다시 확인해 주세요.'
+                    />
+                )}
+                {users?.length === 0 && (
+                    <EmptyState
+                        title={meta.getEmpty(displayName).title}
+                        description={meta.getEmpty(displayName).desc}
                     />
                 )}
                 <ul>
-                    {users.map((user) => (
+                    {users?.map((user) => (
                         <UserListItem key={user.id} user={user} />
                     ))}
                 </ul>

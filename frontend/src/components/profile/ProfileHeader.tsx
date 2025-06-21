@@ -52,11 +52,12 @@ export default function ProfileHeader({ user, isMe }: { user: User; isMe: boolea
                     </div>
                 </div>
                 <div className='flex text-sm'>
-                    <Link to='/users?tab=following' className='mr-5 cursor-pointer hover:underline'>
+                    <Link to={`/users/${user.username}?tab=following`} className='mr-5 cursor-pointer hover:underline'>
                         <span className='font-bold text-black'>{user.status.following} </span>
                         <span className='text-gray-500'>Following</span>
                     </Link>
-                    <Link to='/users?tab=follower' className='mr-5 cursor-pointer hover:underline'>
+
+                    <Link to={`/users/${user.username}?tab=follower`} className='mr-5 cursor-pointer hover:underline'>
                         <span className='font-bold text-black'>{user.status.follower} </span>
                         <span className='text-gray-500'>Follower</span>
                     </Link>

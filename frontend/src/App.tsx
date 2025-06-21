@@ -34,7 +34,7 @@ function App() {
                         <Route path='notifications' element={<NotificationsPage />} />
                         <Route path='bookmarks' element={<BookmarkPage />} />
                         <Route path='settings/*' element={<SettingsPage />} />
-                        <Route path='users' element={<UsersTabPage />} />
+                        <Route path='users/:username' element={<UsersTabPage />} />
                         <Route path='profile/:username' element={<ProfilePage />} />
                     </Route>
                 </Route>

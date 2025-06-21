@@ -223,36 +223,41 @@ export const getRecommended = async (req: Request, res: Response): Promise<void>
 };
 
 export const getFollowers = async (req: Request, res: Response): Promise<void> => {
-    if (!req.user) {
-        res.status(401).json({ success: false, message: '사용자를 찾을 수 없습니다.' });
-        return;
-    }
-
-    const userId = req.user.id;
+    const { username } = req.params;
+    const currentUserId = req.user?.id;
 
     try {
-        const userResult = await pool.query(
+        const targetUserResult = await pool.query(`SELECT id FROM users WHERE username = $1`, [username]);
+        const targetUserId = targetUserResult.rows[0]?.id;
+        
+        if (!targetUserId) {
+            res.status(404).json({
+                success: false,
+                message: '해당 유저를 찾을 수 없습니다.'
+            });
+            return;
+        }
+        
+        const result = await pool.query(
             `
             SELECT id, username, full_name, profile_img, bio,
-                EXISTS ( 
+                EXISTS (
                     SELECT 1 FROM user_follows
                     WHERE from_user_id = $1 AND to_user_id = users.id
                 ) AS is_following
             FROM users
             WHERE id IN (
-                SELECT from_user_id
-                FROM user_follows
-                WHERE to_user_id = $1
+                SELECT from_user_id FROM user_follows WHERE to_user_id = $2
             )
             ORDER BY id DESC
             `,
-            [userId]
+            [currentUserId, targetUserId]
         );
 
         res.status(200).json({
             success: true,
             data: {
-                users: userResult.rows.map(user => buildUserSummary(user))
+                users: result.rows.map(user => buildUserSummary(user))
             }
         })
     } catch (err) {
@@ -262,40 +267,45 @@ export const getFollowers = async (req: Request, res: Response): Promise<void> =
 };
 
 export const getFollowing = async (req: Request, res: Response): Promise<void> => {
-    if (!req.user) {
-        res.status(401).json({ success: false, message: '사용자를 찾을 수 없습니다.' });
-        return;
-    }
-
-    const userId = req.user.id;
+    const { username } = req.params;
+    const currentUserId = req.user?.id;
 
     try {
-        const userResult = await pool.query(
+        const targetUserResult = await pool.query(`SELECT id FROM users WHERE username = $1`, [username]);
+        const targetUserId = targetUserResult.rows[0]?.id;
+
+        if (!targetUserId) {
+            res.status(404).json({
+                success: false,
+                message: '해당 유저를 찾을 수 없습니다.'
+            });
+            return;
+        }
+
+        const result = await pool.query(
             `
             SELECT id, username, full_name, profile_img, bio,
-                EXISTS ( 
+                EXISTS (
                     SELECT 1 FROM user_follows
                     WHERE from_user_id = $1 AND to_user_id = users.id
                 ) AS is_following
             FROM users
             WHERE id IN (
-                SELECT to_user_id
-                FROM user_follows
-                WHERE from_user_id = $1
+                SELECT to_user_id FROM user_follows WHERE from_user_id = $2
             )
             ORDER BY id DESC
             `,
-            [userId]
+            [currentUserId, targetUserId]
         );
 
         res.status(200).json({
             success: true,
             data: {
-                users: userResult.rows.map(user => buildUserSummary(user))
+                users: result.rows.map(user => buildUserSummary(user))
             }
-        })
+        });
     } catch (err) {
-        console.error('Error in getFollowers:', err);
+        console.error('Error in getFollowing:', err);
         res.status(500).json({ success: false, message: '서버 오류가 발생했습니다.' });
     }
 };

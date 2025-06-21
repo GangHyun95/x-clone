@@ -28,18 +28,18 @@ export function useSuggested(username?: string) {
     });
 }
 
-export function useListByType(type: 'suggest' | 'follower' | 'following') {
+export function useListByType(type: 'suggest' | 'follower' | 'following', username: string) {
     const key = type ?? 'suggest';
 
     const queryFn =
         key === 'suggest'
             ? getRecommended
             : key === 'follower'
-            ? getFollowers
-            : getFollowing;
+            ? () => getFollowers(username)
+            : () => getFollowing(username);
 
     return useQuery({
-        queryKey: ['users', key],
+        queryKey: ['users', key, username],
         queryFn: async () => {
             const res = await queryFn();
             return res.data.users;

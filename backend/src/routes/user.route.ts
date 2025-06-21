@@ -27,8 +27,8 @@ router.post('/me/delete', deleteAccount);
 router.get('/suggested', getSuggested);
 router.get('/recommended', getRecommended);
 
-router.get('/followers', getFollowers);
-router.get('/following', getFollowing);
+router.get('/:username/followers', getFollowers);
+router.get('/:username/following', getFollowing);
 router.post('/:id/follow', toggleFollow);
 
 router.get('/:username/posts', getPosts);
