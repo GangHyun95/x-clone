@@ -59,6 +59,14 @@ CREATE TABLE comments (
     updated_at TIMESTAMP DEFAULT NOW()
 );
 
+CREATE TABLE comment_likes (
+    id SERIAL PRIMARY KEY,
+    comment_id INTEGER NOT NULL REFERENCES comments(id) ON DELETE CASCADE,
+    user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    created_at TIMESTAMP DEFAULT NOW(),
+    UNIQUE (comment_id, user_id)
+);
+
 CREATE TABLE notifications (
     id SERIAL PRIMARY KEY,
     from_user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,

@@ -1,7 +1,7 @@
 import type { Request, Response } from 'express';
 
 import { pool } from '../lib/db.ts';
-import { uploadAndReplaceImage } from '../lib/util.ts';
+import { deleteImage, uploadAndReplaceImage } from '../lib/util.ts';
 
 export const create = async (req: Request, res: Response): Promise<void> => {
     const userId = req.user?.id;
@@ -72,7 +72,7 @@ export const create = async (req: Request, res: Response): Promise<void> => {
     }
 };
 
-export const getByPostId = async (req: Request, res: Response): Promise<void> => {
+export const getAll = async (req: Request, res: Response): Promise<void> => {
     const userId = req.user?.id;
     const postId = req.params.id;
 
@@ -120,6 +120,39 @@ export const getByPostId = async (req: Request, res: Response): Promise<void> =>
         });
     } catch (error) {
         console.error('Error in getAllComments:', error);
+        res.status(500).json({ success: false, message: '서버 오류가 발생했습니다.' });
+    }
+};
+
+export const remove = async (req: Request, res: Response): Promise<void> => {
+    const userId = req.user?.id;
+    const commentId = req.params.id;
+
+    if (!userId) {
+        res.status(401).json({ success: false, message: '사용자를 찾을 수 없습니다.' });
+        return;
+    }
+
+    try {
+        const result = await pool.query('SELECT * FROM comments WHERE id = $1', [commentId]);
+        const comment = result.rows[0];
+
+        if (!comment) {
+            res.status(404).json({ success: false, message: '댓글을 찾을 수 없습니다.' });
+            return;
+        }
+
+        if (comment.user_id !== userId) {
+            res.status(403).json({ success: false, message: '댓글 삭제 권한이 없습니다.' });
+            return;
+        }
+
+        if (comment.img) await deleteImage(comment.img);
+        await pool.query('DELETE FROM comments WHERE id = $1', [commentId]);
+
+        res.status(200).json({ success: true, message: '댓글이 삭제되었습니다.', data: {} });
+    } catch (error) {
+        console.error('Error in deleteComment:', error);
         res.status(500).json({ success: false, message: '서버 오류가 발생했습니다.' });
     }
 };
