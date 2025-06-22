@@ -9,6 +9,6 @@ export type Notification = {
     post?: {
         id: number;
         content: string;
-        img: string | null;
+        img: string;
     };
 };

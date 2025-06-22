@@ -1,5 +1,6 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo } from 'react';
 
+import { useImageAspectRatio } from '@/hooks/useImageAspectRatio';
 import type { UserSummary } from '@/types/user';
 
 import { formatTimeFromNow } from '@/utils/formatters';
@@ -17,16 +18,7 @@ type Props = {
 };
 
 export default function PostBody({ user, content, created_at, img, postId, variant = 'post' }: Props) {
-    const [aspectRatio, setAspectRatio] = useState(100);
-    useEffect(() => {
-        if (!img) return;
-        const image = new Image();
-        image.src = img;
-        image.onload = () => {
-            const ratio = (image.height / image.width) * 100;
-            setAspectRatio(ratio);
-        };
-    }, [img]);
+    const aspectRatio = useImageAspectRatio(img);
     const formattedTime = useMemo(() => formatTimeFromNow(created_at), [created_at]);
 
     return (
@@ -58,7 +50,7 @@ export default function PostBody({ user, content, created_at, img, postId, varia
                         </a>
                     </div>
                 ) : (
-                    <figure className='relative mt-3 cursor-pointer border border-gray-300 rounded-2xl overflow-hidden'>
+                    <figure className='relative mt-3 cursor-pointer border border-gray-300 rounded-2xl overflow-hidden bg-white'>
                         <div className='w-full' style={{ paddingBottom: `${aspectRatio}%` }} />
                         <img src={img} alt='post' className='absolute inset-0 w-full h-full object-cover' />
                     </figure>

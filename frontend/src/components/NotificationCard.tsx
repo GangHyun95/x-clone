@@ -1,26 +1,15 @@
-import { useEffect, useState } from 'react';
-
 import { useNavigate } from 'react-router-dom';
 
 import Avatar from '@/components/common/Avatar';
 import { HeartSvg, UserSvg } from '@/components/svgs';
+import { useImageAspectRatio } from '@/hooks/useImageAspectRatio';
 import type { Notification } from '@/types/notification';
 import { formatTimeFromNow } from '@/utils/formatters';
 
 export default function NotificationCard(notification: Notification) {
     const { type, user, post, created_at } = notification;
-    const [aspectRatio, setAspectRatio] = useState(100);
     const navigate = useNavigate();
-
-    useEffect(() => {
-        if (!post?.img) return;
-        const image = new Image();
-        image.src = post?.img;
-        image.onload = () => {
-            const ratio = (image.height / image.width) * 100;
-            setAspectRatio(ratio)
-        };
-    }, [post?.img])
+    const aspectRatio = useImageAspectRatio(post?.img);
 
     const iconMap = {
         like: <HeartSvg filled className='size-8 fill-red-500' />,
