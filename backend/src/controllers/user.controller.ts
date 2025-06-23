@@ -4,18 +4,17 @@ import type { Request, Response } from 'express';
 import { pool } from '../lib/db.ts';
 import { buildUserDetail, buildUserSummary, uploadAndReplaceImage } from '../lib/util.ts';
 
-export const getMe = async (req: Request, res:Response): Promise<void> => {
+export const getMe = async (req: Request, res: Response): Promise<void> => {
     const user = req.user;
     if (!user) {
-        res.status(401).json({ success: false, message: '사용자를 찾을 수 없습니다.'});
+        res.status(401).json({ success: false, message: '사용자를 찾을 수 없습니다.' });
         return;
     }
 
     try {
         const result = await pool.query(
-            `
-            SELECT
-                (SELECT COUNT(*) FROM posts WHERE user_id = $1) AS post_count,
+            `SELECT
+                (SELECT COUNT(*) FROM posts WHERE user_id = $1 AND parent_id IS NULL) AS post_count,
                 (SELECT COUNT(*) FROM user_follows WHERE from_user_id = $1) AS following_count,
                 (SELECT COUNT(*) FROM user_follows WHERE to_user_id = $1) AS follower_count
             `,
@@ -73,7 +72,7 @@ export const getPosts = async (req: Request, res: Response): Promise<void> => {
                 ) AS user,
                 json_build_object(
                     'like', (SELECT COUNT(*) FROM post_likes WHERE post_id = posts.id),
-                    'comment', (SELECT COUNT(*) FROM comments WHERE post_id = posts.id)
+                    'comment', (SELECT COUNT(*) FROM posts WHERE parent_id = posts.id)
                 ) AS counts,
                 EXISTS (
                     SELECT 1 FROM post_likes WHERE post_id = posts.id AND user_id = $1
@@ -83,7 +82,7 @@ export const getPosts = async (req: Request, res: Response): Promise<void> => {
                 ) AS is_bookmarked
             FROM posts
             JOIN users ON users.id = posts.user_id
-            WHERE posts.user_id = $2
+            WHERE posts.user_id = $2 AND posts.parent_id IS NULL
             ORDER BY posts.created_at DESC`,
             [req.user?.id, user.id]
         );
@@ -123,7 +122,7 @@ export const getProfile = async (req: Request, res: Response): Promise<void> => 
                     )
                     ELSE NULL
                 END AS is_following,
-                (SELECT COUNT(*) FROM posts WHERE posts.user_id = users.id) AS post_count,
+                (SELECT COUNT(*) FROM posts WHERE posts.user_id = users.id AND posts.parent_id IS NULL) AS post_count,
                 json_build_object(
                     'following', (SELECT COUNT(*) FROM user_follows WHERE users.id = from_user_id),
                     'follower',  (SELECT COUNT(*) FROM user_follows WHERE users.id = to_user_id)

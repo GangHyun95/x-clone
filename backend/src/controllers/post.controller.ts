@@ -5,7 +5,7 @@ import { deleteImage, uploadAndReplaceImage } from '../lib/util.ts';
 
 export const create = async (req: Request, res: Response): Promise<void> => {
     const userId = req.user?.id;
-    const { text } = req.body;
+    const { text, parentId } = req.body;
     const file = req.file;
 
     if (!userId) {
@@ -25,8 +25,8 @@ export const create = async (req: Request, res: Response): Promise<void> => {
         }
 
         const insertResult = await pool.query(
-            `INSERT INTO posts (user_id, content, img) VALUES ($1, $2, $3) RETURNING id`,
-            [userId, text || null, uploadImgUrl]
+            `INSERT INTO posts (user_id, content, img, parent_id) VALUES ($1, $2, $3, $4) RETURNING id`,
+            [userId, text || null, uploadImgUrl,parentId || null]
         );
 
         const postId = insertResult.rows[0].id;
@@ -36,6 +36,7 @@ export const create = async (req: Request, res: Response): Promise<void> => {
                 posts.id,
                 posts.content,
                 posts.img,
+                posts.parent_id,
                 posts.created_at,
                 posts.updated_at,
                 json_build_object(
@@ -252,14 +253,24 @@ export const toggleBookmark = async (req: Request, res: Response): Promise<void>
 };
 
 export const getAll = async (req: Request, res: Response): Promise<void> => {
+    if (!req.user) {
+        res.status(401).json({ success: false, message: '사용자를 찾을 수 없습니다.' });
+        return;
+    }
+
+    const userId = req.user.id;
+    const parentId = typeof req.query.parentId === 'string' ? parseInt(req.query.parentId, 10) : null;
+
     try {
-        const postResult = await pool.query(
-            `SELECT
-                posts.id,
-                posts.content,
-                posts.img,
-                posts.created_at,
-                posts.updated_at,
+        const values: (number | string)[] = [userId];
+        let sql = `
+            SELECT
+                p.id,
+                p.content,
+                p.img,
+                p.parent_id,
+                p.created_at,
+                p.updated_at,
                 json_build_object(
                     'id', users.id,
                     'username', users.username,
@@ -270,24 +281,34 @@ export const getAll = async (req: Request, res: Response): Promise<void> => {
                     )
                 ) as user,
                 json_build_object(
-                    'like', (SELECT COUNT(*) FROM post_likes WHERE post_id = posts.id), 
-                    'comment', (SELECT COUNT(*) FROM comments WHERE post_id = posts.id)
+                    'like', (SELECT COUNT(*) FROM post_likes WHERE post_id = p.id),
+                    'comment', (SELECT COUNT(*) FROM posts WHERE parent_id = p.id)
                 ) AS counts,
                 EXISTS (
-                    SELECT 1 FROM post_likes WHERE post_id = posts.id AND user_id = $1
+                    SELECT 1 FROM post_likes WHERE post_id = p.id AND user_id = $1
                 ) AS is_liked,
                 EXISTS (
-                    SELECT 1 FROM post_bookmarks WHERE post_id = posts.id AND user_id = $1
+                    SELECT 1 FROM post_bookmarks WHERE post_id = p.id AND user_id = $1
                 ) AS is_bookmarked
-            FROM posts
-            JOIN users ON users.id = posts.user_id
-            ORDER BY posts.created_at DESC`,
-            [req.user?.id]
-        );
+            FROM posts p
+            JOIN users ON users.id = p.user_id
+        `;
+
+
+        if (parentId === null) {
+            sql += ' WHERE p.parent_id IS NULL';
+        } else {
+            sql += ' WHERE p.parent_id = $2';
+            values.push(parentId);
+        }
+
+        sql += ' ORDER BY p.created_at DESC';
+
+        const postResult = await pool.query(sql, values);
 
         res.status(200).json({
             success: true,
-            message: postResult.rows.length ? '게시물 목록을 가져왔습니다.' : '게시물이 없습니다.',
+            message: postResult.rows.length ? '게시물을 가져왔습니다.' : '게시물이 없습니다.',
             data: { posts: postResult.rows },
         });
     } catch (error) {
@@ -297,21 +318,24 @@ export const getAll = async (req: Request, res: Response): Promise<void> => {
 };
 
 export const getOne = async (req: Request, res: Response): Promise<void> => {
-    const userId = req.user?.id;
-    if (!userId) {
+    if (!req.user) {
         res.status(401).json({ success: false, message: '사용자를 찾을 수 없습니다.' });
         return;
     }
+
+    const userId = req.user.id;
     const postId = req.params.id;
 
     try {
         const postResult = await pool.query(
-            `SELECT
-                posts.id,
-                posts.content,
-                posts.img,
-                posts.created_at,
-                posts.updated_at,
+            `
+            SELECT
+                p.id,
+                p.content,
+                p.img,
+                p.parent_id,
+                p.created_at,
+                p.updated_at,
                 json_build_object(
                     'id', users.id,
                     'username', users.username,
@@ -322,18 +346,19 @@ export const getOne = async (req: Request, res: Response): Promise<void> => {
                     )
                 ) as user,
                 json_build_object(
-                    'like', (SELECT COUNT(*) FROM post_likes WHERE post_id = posts.id), 
-                    'comment', (SELECT COUNT(*) FROM comments WHERE post_id = posts.id)
+                    'like', (SELECT COUNT(*) FROM post_likes WHERE post_id = p.id), 
+                    'comment', (SELECT COUNT(*) FROM posts WHERE parent_id = p.id)
                 ) AS counts,
                 EXISTS (
-                    SELECT 1 FROM post_likes WHERE post_id = posts.id AND user_id = $1
+                    SELECT 1 FROM post_likes WHERE post_id = p.id AND user_id = $1
                 ) AS is_liked,
                 EXISTS (
-                    SELECT 1 FROM post_bookmarks WHERE post_id = posts.id AND user_id = $1
+                    SELECT 1 FROM post_bookmarks WHERE post_id = p.id AND user_id = $1
                 ) AS is_bookmarked
-            FROM posts
-            JOIN users ON users.id = posts.user_id
-            WHERE posts.id = $2
+            FROM posts p
+            JOIN users ON users.id = p.user_id
+            WHERE p.id = $2
+
             `,
             [userId, postId]
         );
@@ -342,9 +367,10 @@ export const getOne = async (req: Request, res: Response): Promise<void> => {
             res.status(404).json({ success: false, message: '게시물을 찾을 수 없습니다.' });
             return;
         }
+
         res.status(200).json({
             success: true,
-            message: postResult.rows.length ? '게시물을 가져왔습니다.' : '게시물이 없습니다.',
+            message: '게시물을 가져왔습니다.',
             data: { post: postResult.rows[0] },
         });
 
@@ -375,6 +401,7 @@ export const getFromFollowing = async (req: Request, res: Response): Promise<voi
                 posts.id,
                 posts.content,
                 posts.img,
+                posts.parent_id,
                 posts.created_at,
                 posts.updated_at,
                 json_build_object(
@@ -388,7 +415,7 @@ export const getFromFollowing = async (req: Request, res: Response): Promise<voi
                 ) as user,
                 json_build_object(
                     'like', (SELECT COUNT(*) FROM post_likes WHERE post_id = posts.id), 
-                    'comment', (SELECT COUNT(*) FROM comments WHERE post_id = posts.id)
+                    'comment', (SELECT COUNT(*) FROM posts WHERE parent_id = posts.id)
                 ) AS counts,
                 EXISTS (
                     SELECT 1 FROM post_likes WHERE post_id = posts.id AND user_id = $2
@@ -439,6 +466,7 @@ export const getLiked = async (req: Request, res: Response): Promise<void> => {
                 posts.id,
                 posts.content,
                 posts.img,
+                posts.parent_id,
                 posts.created_at,
                 posts.updated_at,
                 json_build_object(
@@ -452,7 +480,7 @@ export const getLiked = async (req: Request, res: Response): Promise<void> => {
                 ) AS user,
                 json_build_object(
                     'like', (SELECT COUNT(*) FROM post_likes WHERE post_id = posts.id),
-                    'comment', (SELECT COUNT(*) FROM comments WHERE post_id = posts.id)
+                    'comment', (SELECT COUNT(*) FROM posts WHERE parent_id = posts.id)
                 ) AS counts,
                 TRUE AS is_liked,
                 EXISTS (
@@ -495,6 +523,7 @@ export const getBookmarked = async (req: Request, res: Response): Promise<void> 
                 posts.id,
                 posts.content,
                 posts.img,
+                posts.parent_id,
                 posts.created_at,
                 posts.updated_at,
                 json_build_object(
@@ -508,7 +537,7 @@ export const getBookmarked = async (req: Request, res: Response): Promise<void> 
                 ) AS user,
                 json_build_object(
                 'like', (SELECT COUNT(*) FROM post_likes WHERE post_id = posts.id),
-                'comment', (SELECT COUNT(*) FROM comments WHERE post_id = posts.id)
+                'comment', (SELECT COUNT(*) FROM posts WHERE parent_id = posts.id)
                 ) AS counts,
                 EXISTS (
                 SELECT 1 FROM post_likes WHERE post_id = posts.id AND user_id = $1

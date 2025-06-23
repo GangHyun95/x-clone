@@ -7,7 +7,6 @@ import { connectDB } from './lib/db.ts';
 import { connectRedis } from './lib/redis.ts';
 import { protectRoute } from './middleware/auth.middleware.ts';
 import authRoutes from './routes/auth.route.ts';
-import commentRoutes from './routes/comment.route.ts';
 import notificationRoutes from './routes/notification.route.ts';
 import postRoutes from './routes/post.route.ts';
 import userRoutes from './routes/user.route.ts';
@@ -30,7 +29,6 @@ app.use(
 app.use('/api/auth', authRoutes);
 app.use('/api/users', protectRoute, userRoutes);
 app.use('/api/posts', protectRoute, postRoutes);
-app.use('/api/comments', protectRoute, commentRoutes);
 app.use('/api/notifications', protectRoute, notificationRoutes);
 
 app.listen(PORT, () => {

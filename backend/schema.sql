@@ -1,4 +1,4 @@
-DROP TABLE IF EXISTS notifications, comments, post_likes, posts, user_follows, users CASCADE;
+DROP TABLE IF EXISTS notifications, post_likes, post_bookmarks, posts, user_follows, users CASCADE;
 
 CREATE TABLE users (
     id SERIAL PRIMARY KEY,
@@ -27,6 +27,7 @@ CREATE TABLE user_follows (
 CREATE TABLE posts (
     id SERIAL PRIMARY KEY,
     user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    parent_id INTEGER REFERENCES posts(id) ON DELETE CASCADE,
     content TEXT,
     img TEXT,
     created_at TIMESTAMP DEFAULT NOW(),
@@ -49,29 +50,11 @@ CREATE TABLE post_bookmarks (
     UNIQUE (post_id, user_id)
 );
 
-CREATE TABLE comments (
-    id SERIAL PRIMARY KEY,
-    post_id INTEGER NOT NULL REFERENCES posts(id) ON DELETE CASCADE,
-    user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-    content TEXT NOT NULL,
-    img TEXT,
-    created_at TIMESTAMP DEFAULT NOW(),
-    updated_at TIMESTAMP DEFAULT NOW()
-);
-
-CREATE TABLE comment_likes (
-    id SERIAL PRIMARY KEY,
-    comment_id INTEGER NOT NULL REFERENCES comments(id) ON DELETE CASCADE,
-    user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-    created_at TIMESTAMP DEFAULT NOW(),
-    UNIQUE (comment_id, user_id)
-);
-
 CREATE TABLE notifications (
     id SERIAL PRIMARY KEY,
     from_user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
     to_user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-    type VARCHAR(10) NOT NULL CHECK (type IN ('follow', 'like')),
+    type VARCHAR(10) NOT NULL CHECK (type IN ('follow', 'like', 'comment_like')),
     post_id INTEGER REFERENCES posts(id) ON DELETE CASCADE,
     read BOOLEAN DEFAULT false,
     created_at TIMESTAMP DEFAULT NOW(),
