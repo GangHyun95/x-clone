@@ -62,61 +62,6 @@ export const create = async (req: Request, res: Response): Promise<void> => {
     }
 };
 
-export const update = async (req: Request, res: Response): Promise<void> => {
-    const userId = req.user?.id;
-    const postId = req.params.id;
-    const { text, removeImage } = req.body;
-    const file = req.file
-
-    if (!userId) {
-        res.status(401).json({ success: false, message: '사용자를 찾을 수 없습니다.' });
-        return;
-    }
-
-    if (!text && !file && removeImage !== 'true') {
-        res.status(400).json({ success: false, message: '수정할 내용이 없습니다.' });
-        return;
-    }
-
-    try {
-        const result = await pool.query('SELECT * FROM posts WHERE id = $1', [postId]);
-        const post = result.rows[0];
-
-        if (!post) {
-            res.status(404).json({ success: false, message: '게시물을 찾을 수 없습니다.' });
-            return;
-        }
-
-        if (post.user_id !== userId) {
-            res.status(403).json({ success: false, message: '게시물 수정 권한이 없습니다.' });
-            return;
-        }
-
-        let newImg = post.img;
-
-        if (removeImage === 'true') {
-            if (post.img) {
-                await deleteImage(post.img);
-                newImg = null;
-            }
-        }
-        
-        if (file) {
-            newImg = await uploadAndReplaceImage(post.img ?? null, file.path);
-        }
-
-        const updateResult = await pool.query(
-            `UPDATE posts SET content = $1, img = $2, updated_at = NOW() WHERE id = $3 RETURNING *`,
-            [text ?? post.content, newImg, postId]
-        );
-
-        res.status(200).json({ success: true, message: '게시물이 수정되었습니다.', data: { post: updateResult.rows[0] } });
-    } catch (error) {
-        console.error('Error in editPost:', error);
-        res.status(500).json({ success: false, message: '서버 오류가 발생했습니다.' });
-    }
-};
-
 export const remove = async (req: Request, res: Response): Promise<void> => {
     const userId = req.user?.id;
     const postId = req.params.id;
@@ -160,7 +105,7 @@ export const toggleLike = async (req: Request, res: Response): Promise<void> => 
     }
 
     try {
-        const postResult = await pool.query('SELECT id, user_id, content, img FROM posts WHERE id = $1', [postId]);
+        const postResult = await pool.query('SELECT id, user_id, content, img, parent_id FROM posts WHERE id = $1', [postId]);
         const post = postResult.rows[0];
 
         if (!post) {
@@ -182,6 +127,7 @@ export const toggleLike = async (req: Request, res: Response): Promise<void> => 
                 data: {},
             });
         } else {
+            const type = post.parent_id !== null ? 'comment_like' : 'like';
             await pool.query(
                 `INSERT INTO post_likes (post_id, user_id, created_at) VALUES ($1, $2, NOW())`,
                 [postId, userId]
@@ -189,8 +135,8 @@ export const toggleLike = async (req: Request, res: Response): Promise<void> => 
 
             await pool.query(
                 `INSERT INTO notifications (from_user_id, to_user_id, type, post_id, created_at)
-                VALUES ($1, $2, 'like', $3, NOW())`,
-                [userId, post.user_id, post.id]
+                VALUES ($1, $2, $3, $4, NOW())`,
+                [userId, post.user_id, type, post.id]
             );
 
             res.status(200).json({

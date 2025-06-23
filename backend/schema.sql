@@ -54,17 +54,17 @@ CREATE TABLE notifications (
     id SERIAL PRIMARY KEY,
     from_user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
     to_user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-    type VARCHAR(10) NOT NULL CHECK (type IN ('follow', 'like', 'comment_like')),
+    type VARCHAR(20) NOT NULL CHECK (type IN ('follow', 'like', 'comment_like')),
     post_id INTEGER REFERENCES posts(id) ON DELETE CASCADE,
     read BOOLEAN DEFAULT false,
     created_at TIMESTAMP DEFAULT NOW(),
     updated_at TIMESTAMP DEFAULT NOW(),
 
     CHECK (
-        (type = 'like' AND post_id IS NOT NULL)
+        (type IN ('like', 'comment_like') AND post_id IS NOT NULL)
         OR
         (type = 'follow' AND post_id IS NULL)
-    )
+    );
 );
 
 /*

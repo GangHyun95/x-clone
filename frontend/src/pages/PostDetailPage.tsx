@@ -79,7 +79,9 @@ export default function PostDetailPage() {
                     </div>
                 </article>
 
-                <PostEditorForm postId={postId} placeholder='Post your reply' />
+                {!post.parent_id && (
+                    <PostEditorForm postId={postId} placeholder='Post your reply' />
+                )}
 
                 {comments.map((comment) => (
                     <PostCard key={comment.id} post={comment} />

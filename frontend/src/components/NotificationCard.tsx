@@ -13,6 +13,7 @@ export default function NotificationCard(notification: Notification) {
 
     const iconMap = {
         like: <HeartSvg filled className='size-8 fill-red-500' />,
+        comment_like: <HeartSvg filled className='size-8 fill-red-500' />,
         follow: <UserSvg filled className='size-8 fill-primary' />,
     };
 
@@ -24,24 +25,23 @@ export default function NotificationCard(notification: Notification) {
                 <div className='mr-2'>{iconMap[type]}</div>
                 <div className='flex flex-col grow pr-5 min-w-0'>
                     <Avatar username={user.username} src={user.profile_img} className='mb-3' />
-                    {type === 'like' && (
+                    {(type === 'like' || type === 'comment_like') && (
                         <>
-                            <p>{`${user.username} liked your post`}</p>
-                            <div>
-                                {post?.content && (
-                                    <span className='mt-3 text-gray-500 whitespace-pre-wrap break-words'>{post.content}</span>
-                                )}
-                                {post?.img && (
-                                    <figure className='relative mt-3 border border-gray-300 rounded-2xl overflow-hidden'>
-                                        <div className='w-full' style={{ paddingBottom: `${aspectRatio}%` }} />
-                                        <img
-                                            src={post.img}
-                                            alt='notification-post'
-                                            className='absolute inset-0 w-full h-full object-cover'
-                                        />
-                                    </figure>
-                                )}
-                            </div>
+                            <p>{`${user.username} liked your ${type === 'comment_like' ? 'comment' : 'post'}`}</p>
+
+                            {post?.content && (
+                                <span className='mt-3 text-gray-500 whitespace-pre-wrap break-words'>{post.content}</span>
+                            )}
+                            {post?.img && (
+                                <figure className='relative mt-3 border border-gray-300 rounded-2xl overflow-hidden'>
+                                    <div className='w-full' style={{ paddingBottom: `${aspectRatio}%` }} />
+                                    <img
+                                        src={post.img}
+                                        alt='notification-post'
+                                        className='absolute inset-0 w-full h-full object-cover'
+                                    />
+                                </figure>
+                            )}
                         </>
                     )}
 
