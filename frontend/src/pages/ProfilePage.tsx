@@ -22,6 +22,8 @@ export default function ProfilePage() {
     const { data: user, isLoading: isUserLoading } = useProfile(username, {
         enabled: !isMe,
     });
+
+    console.log(user);
     const current = isMe ? me : user;
 
     const { data: posts = [], isLoading: isPostLoading } = usePosts(username, tab);
@@ -75,7 +77,7 @@ export default function ProfilePage() {
                         />
                     )}
                     {posts.map((post) => (
-                        <PostCard key={post.id} {...post} />
+                        <PostCard key={post.id} post={post} />
                     ))}
                 </section>
             </PageLayout.Content>

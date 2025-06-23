@@ -2,6 +2,7 @@ import type { UserSummary } from '@/types/user';
 
 export type Post = {
     id: number;
+    parent_id: number;
     content: string;
     img: string;
     created_at: string;

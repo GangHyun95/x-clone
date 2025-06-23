@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
-
 import { useNavigate } from 'react-router-dom';
 
 import { TextAreaField, TextInput } from '@/components/common/input';
@@ -9,12 +8,9 @@ import CoverImageSection from '@/components/profile/CoverImageSection';
 import ProfileImageSection from '@/components/profile/ProfileImageSection';
 import { CloseSvg } from '@/components/svgs';
 import RouteModal from '@/layouts/RouteModal';
-import { queryClient } from '@/lib/queryClient';
+import { updateMeCache } from '@/lib/queryCacheHelpers';
 import { useUpdateProfile } from '@/queries/user';
 import { getCurrentUser } from '@/store/authStore';
-
-
-import type { User } from '@/types/user';
 
 type EditProfileFormValues = {
     fullName: string;
@@ -55,18 +51,7 @@ export default function EditProfileModal() {
         updateProfile(formData, {
             onSuccess: (data) => {
                 const updated = data.data.user;
-                queryClient.setQueryData(['me'], (old: User | undefined) => {
-                    if (!old) return old;
-                    return {
-                        ...old,
-                        full_name: updated.full_name ?? old.full_name,
-                        bio: updated.bio ?? old.bio,
-                        link: updated.link ?? old.link,
-                        profile_img: updated.profile_img ?? old.profile_img,
-                        cover_img: updated.cover_img ?? old.cover_img,
-                    };
-                });
-
+                updateMeCache(updated);
                 setFiles({ cover: null, profile: null });
                 navigate(-1);
             },

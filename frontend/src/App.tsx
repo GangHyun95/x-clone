@@ -7,7 +7,7 @@ import EditProfileModal from '@/components/modals/EditProfileModal';
 import NewCommentModal from '@/components/modals/NewCommentModal';
 import NewPostModal from '@/components/modals/NewPostModal';
 import AppLayout from '@/layouts/AppLayout';
-import { AuthLandingPage, BookmarkPage, HomePage, NotificationsPage, ProfilePage, SettingsPage, UsersTabPage } from '@/pages';
+import { AuthLandingPage, BookmarkPage, HomePage, NotificationsPage, PostDetailPage, ProfilePage, SettingsPage, UsersTabPage } from '@/pages';
 import { useCheckAuth, useMe } from '@/queries/auth';
 import ProtectedRoute from '@/routes/ProtectedRoute';
 
@@ -34,6 +34,7 @@ function App() {
                         <Route path='notifications' element={<NotificationsPage />} />
                         <Route path='bookmarks' element={<BookmarkPage />} />
                         <Route path='settings/*' element={<SettingsPage />} />
+                        <Route path='posts/:postId' element={<PostDetailPage />} />
                         <Route path='users/:username' element={<UsersTabPage />} />
                         <Route path='profile/:username' element={<ProfilePage />} />
                     </Route>

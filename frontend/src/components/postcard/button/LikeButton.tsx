@@ -1,37 +1,45 @@
 import toast from 'react-hot-toast';
 
 import { HeartSvg } from '@/components/svgs';
-import { updatePostCacheById } from '@/lib/queryCacheHelpers';
+import { updatePostCacheById, updatePostDetailCache } from '@/lib/queryCacheHelpers';
 import { useToggleLike } from '@/queries/post';
+import type { Post } from '@/types/post';
 
 type Props = {
     id: number;
     is_liked: boolean;
     likeCount: number;
-}
+};
+
 export default function LikeButton({ id: postId, is_liked, likeCount }: Props) {
     const { mutate: toggleLike, isPending } = useToggleLike();
+
     const handleToggleLike = () => {
         if (isPending) return;
+
         toggleLike({ postId }, {
-            onSuccess: (data) => {
-                toast.success(data.message);
-                updatePostCacheById(postId, (post) => {
-                    const liked = post.is_liked;
-                    return {
-                        ...post,
-                        is_liked: !liked,
-                        counts: {
-                            ...post.counts,
-                            like: liked ? post.counts.like - 1 : post.counts.like + 1,
-                        },
+                onSuccess: (data) => {
+                    toast.success(data.message);
+
+                    const updater = (post: Post) => {
+                        const liked = post.is_liked;
+                        return {
+                            ...post,
+                            is_liked: !liked,
+                            counts: {
+                                ...post.counts,
+                                like: Math.max(0, post.counts.like + (liked ? -1 : 1)),
+                            },
+                        };
                     };
-                });
-            },
-            onError: (error) => {
-                console.error('Error liking/unliking post:', error);
-            },
-        });
+
+                    updatePostCacheById(postId, updater);
+                    updatePostDetailCache(postId, updater);
+                },
+                onError: (error) => {
+                    console.error('Error liking/unliking post:', error);
+                },
+            });
     };
 
     return (

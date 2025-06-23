@@ -5,10 +5,9 @@ import { useNavigate } from 'react-router-dom';
 import { TextInput } from '@/components/common/input';
 import { InlineSpinner } from '@/components/common/Spinner';
 import StickyHeader from '@/components/common/StickyHeader';
-import { queryClient } from '@/lib/queryClient';
+import { updateMeCache } from '@/lib/queryCacheHelpers';
 import { useUpdateUsername } from '@/queries/user';
 import { getCurrentUser } from '@/store/authStore';
-import type { User } from '@/types/user';
 
 export default function EditUsernamePanel() {
     const me = getCurrentUser();
@@ -27,13 +26,7 @@ export default function EditUsernamePanel() {
 		updateUsername(data.username, {
 			onSuccess: (data) => {
 				toast.success(data.message);
-				queryClient.setQueryData(['me'], (old: User | undefined) => {
-					if (!old) return old;
-					return {
-						...old,
-						username: data.data.username,
-					}
-				});
+				updateMeCache({ username: data.data.username });
 			}
 		})
 	};

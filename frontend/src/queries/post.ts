@@ -1,14 +1,11 @@
 import { useMutation, useQuery } from '@tanstack/react-query';
 
-import { createComment } from '@/service/comment';
-import { createPost, deletePost, getPostOne, getPostsAll, getPostsBookmarked, getPostsFromFollowing, togglePostBookmark, togglePostLike,  } from '@/service/post';
+import { createPost, deletePost, getPostOne, getPostsAll, getPostsBookmarked, getPostsByParentId, getPostsFromFollowing, togglePostBookmark, togglePostLike,  } from '@/service/post';
 
 
-export function useCreate(postId?: number) {
+export function useCreate() {
     return useMutation({
-        mutationFn: (formData: FormData) => {
-            return postId ? createComment(formData, postId) : createPost(formData);
-        }
+        mutationFn: createPost
     });
 }
 
@@ -29,6 +26,15 @@ export function usePost(postId: number) {
         queryFn: () => getPostOne(postId),
         staleTime: 1000 * 60 * 50,
         gcTime: 1000 * 60 * 60,
+        retry: false,
+    });
+}
+export function useChildrenPosts(postId: number) {
+    return useQuery({
+        queryKey: ['posts', 'children', postId],
+        queryFn: () => getPostsByParentId(postId),
+        staleTime: 1000 * 60 * 5,
+        gcTime: 1000 * 60 * 10,
         retry: false,
     });
 }

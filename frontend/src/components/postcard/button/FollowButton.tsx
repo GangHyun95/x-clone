@@ -1,7 +1,9 @@
 import toast from 'react-hot-toast';
 
+import { useParams } from 'react-router-dom';
+
 import { UserPlusSvg, UserRemoveSvg } from '@/components/svgs';
-import { updatePostCacheByUserId } from '@/lib/queryCacheHelpers';
+import { updatePostCacheByUserId, updatePostDetailCache } from '@/lib/queryCacheHelpers';
 import { useToggleFollow } from '@/queries/user';
 
 type Props = {
@@ -12,6 +14,8 @@ type Props = {
 }
 export default function FollowButton({ postAuthorId, is_following, username, onClose }: Props) {
     const { mutate: toggleFollow } = useToggleFollow();
+
+    const postId = Number(useParams().postId ?? '');
 
     const handleFollowToggle = () => {
         toggleFollow({ userId: postAuthorId }, {
@@ -26,6 +30,12 @@ export default function FollowButton({ postAuthorId, is_following, username, onC
                         is_following: !post.user.is_following,
                     },
                 }));
+                if (postId) {
+                    updatePostDetailCache(postId, (post) => ({
+                        ...post,
+                        user: { ...post.user, is_following: !post.user.is_following }
+                    }));
+                }
             },
             onError: ({ message }) => {
                 console.error(message);

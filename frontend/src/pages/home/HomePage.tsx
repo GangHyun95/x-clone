@@ -39,9 +39,9 @@ export default function HomePage() {
                         }
                     />
                 )}
-
+                
                 {posts.map((post) => (
-                    <PostCard key={post.id} {...post} />
+                    <PostCard key={post.id} post={post} />
                 ))}
             </PageLayout.Content>
         </PageLayout>

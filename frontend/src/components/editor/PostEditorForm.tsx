@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router-dom';
 
 import Avatar from '@/components/common/Avatar';
 import { InlineSpinner } from '@/components/common/Spinner';
-import { prependPostToCache, updatePostCacheById } from '@/lib/queryCacheHelpers';
+import { prependCommentToCache, prependPostToCache, updatePostCacheById, updatePostDetailCache } from '@/lib/queryCacheHelpers';
 import { useCreate } from '@/queries/post';
 import { getCurrentUser } from '@/store/authStore';
 import type { Post } from '@/types/post';
@@ -32,7 +32,7 @@ export default function PostEditorForm({ variant = 'home', placeholder, postId }
     const isDisabled = text.trim().length === 0 && !selectedImage;
 
     const me = getCurrentUser();
-    const { mutate: createPost, isPending } = useCreate(postId);
+    const { mutate: createItem, isPending } = useCreate();
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -44,31 +44,38 @@ export default function PostEditorForm({ variant = 'home', placeholder, postId }
         if (selectedImage) {
             formData.append('img', selectedImage);
         }
-
-        createPost(formData, {
-            onSuccess: (newPost: Post) => {
+        if (postId) {
+            formData.append('parentId', postId.toString());
+        }
+        createItem(formData, {
+            onSuccess: (newItem: Post) => {
                 setText('');
                 setSelectedImage(null);
                 setImagePreviewUrl(null);
                 setEditorState(EditorState.createEmpty());
-                navigate(-1);
-                if (postId) {
-                        updatePostCacheById(postId, (post) => ({
-                            ...post,
-                            counts: {
-                                ...post.counts,
-                                comment: post.counts.comment + 1,
-                            },
-                        }));
-                } else {
-                    prependPostToCache(newPost);
+
+                if (!postId) {
+                    prependPostToCache(newItem);
+                    return;
                 }
+
+                const updater = (post: Post) => ({
+                    ...post,
+                    counts: {
+                        ...post.counts,
+                        comment: post.counts.comment + 1,
+                    },
+                });
+                updatePostCacheById(postId, updater);
+                updatePostDetailCache(postId, updater);
+                prependCommentToCache(postId, newItem);
+
+                if (isModal) navigate(-1);
             },
             onError: (error) => {
                 console.error(error);
             },
         });
-        
     };
 
     return (
@@ -131,7 +138,7 @@ export default function PostEditorForm({ variant = 'home', placeholder, postId }
                         className='btn btn-secondary btn-circle w-auto h-auto min-h-[36px] px-4'
                         disabled={isDisabled || isPending}
                     >
-                        { isPending ? <InlineSpinner label='Posting' /> : <span>Post</span> }
+                        {isPending ? <InlineSpinner label={postId ? 'Replying' : 'Posting'} /> : <span>{postId ? 'Reply' : 'Post'}</span>}
                     </button>
                 </div>
             </footer>

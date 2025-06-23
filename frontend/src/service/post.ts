@@ -1,10 +1,15 @@
 import type { Post } from '@/types/post';
 
-import { del, get, post, postFormData, type ApiResponse } from './api/client';
+import { del, get, post, postFormData } from './api/client';
 
 export async function getPostsAll() {
     const res = await get<{ posts: Post[] }>('/api/posts/', { withAuth: true });
 
+    return res.data.posts;
+}
+
+export async function getPostsByParentId(postId: number) {
+    const res = await get<{ posts: Post[] }>(`/api/posts?parentId=${postId}`, { withAuth: true });
     return res.data.posts;
 }
 
@@ -34,7 +39,7 @@ export async function createPost(formData: FormData) {
     return res.data.post;
 }
 
-export async function deletePost(payload: { postId: number }): Promise<ApiResponse<void>> {
+export async function deletePost(payload: { postId: number }) {
     const { postId } = payload;
     return del<void>(`/api/posts/${postId}`, { withAuth: true });
 }

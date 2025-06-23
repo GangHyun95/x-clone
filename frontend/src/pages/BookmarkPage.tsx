@@ -50,7 +50,7 @@ export default function BookmarkPage() {
 
                 {bookmarkPosts.length ? (
                     bookmarkPosts.map((post) => (
-                        <PostCard key={post.id} {...post} />
+                        <PostCard key={post.id} post={post} />
                     ))
                 ) : debounced && (
                     <EmptyState

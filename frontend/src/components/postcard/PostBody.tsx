@@ -14,10 +14,10 @@ type Props = {
     img?: string;
     postId: number;
     showImageAsLink?: boolean;
-    variant?: 'post' | 'comment';
+    showMenuBtn?: boolean;
 };
 
-export default function PostBody({ user, content, created_at, img, postId, variant = 'post' }: Props) {
+export default function PostBody({ user, content, created_at, img, postId, showImageAsLink = false, showMenuBtn = true }: Props) {
     const aspectRatio = useImageAspectRatio(img);
     const formattedTime = useMemo(() => formatTimeFromNow(created_at), [created_at]);
 
@@ -32,13 +32,13 @@ export default function PostBody({ user, content, created_at, img, postId, varia
                         <time dateTime={created_at}>{formattedTime}</time>
                     </li>
                 </ul>
-                {variant === 'post' && <PostMenuBtn user={user} postId={postId} />}
+                {showMenuBtn && <PostMenuBtn user={user} postId={postId} />}
             </div>
             <div className='flex flex-col'>
                 <p className='whitespace-pre-wrap break-words'>{content}</p>
             </div>
             {img && (
-                variant === 'comment' ? (
+                showImageAsLink ? (
                     <div className='mt-3'>
                         <a
                             href={img}

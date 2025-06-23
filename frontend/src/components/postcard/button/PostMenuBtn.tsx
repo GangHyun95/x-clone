@@ -19,7 +19,7 @@ export default function PostMenuBtn({ user, postId }: PostMenuBtnProps) {
     };
 
     return (
-        <>
+        <div onClick={(e) => e.stopPropagation()}>
             <button
                 ref={btnRef}
                 onClick={handleClick}
@@ -35,6 +35,6 @@ export default function PostMenuBtn({ user, postId }: PostMenuBtnProps) {
                     postId={postId}
                 />
             }
-        </>
+        </div>
     );
 }

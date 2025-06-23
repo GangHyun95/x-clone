@@ -48,7 +48,8 @@ export default function NewCommentModal() {
                                 created_at={post.created_at}
                                 img={post.img}
                                 postId={postId}
-                                variant='comment'
+                                showImageAsLink={true}
+                                showMenuBtn={false}
                             />
                         </div>
                     </div>

@@ -1,28 +1,32 @@
 import toast from 'react-hot-toast';
 
 import { BookmarkSvg } from '@/components/svgs';
-import { updatePostCacheById } from '@/lib/queryCacheHelpers';
+import { updatePostCacheById, updatePostDetailCache } from '@/lib/queryCacheHelpers';
 import { useToggleBookmark } from '@/queries/post';
+import type { Post } from '@/types/post';
 
 export default function BookmarkButton({ id: postId, is_bookmarked }: { id: number, is_bookmarked: boolean }) {
     const { mutate: toggleBookmark, isPending } = useToggleBookmark();
+
     const handleToggleBookmark = () => {
         if (isPending) return;
         toggleBookmark({ postId }, {
             onSuccess: (data) => {
                 toast.success(data.message);
-                updatePostCacheById(postId, (post) => {
-                    return {
-                        ...post,
-                        is_bookmarked: !post.is_bookmarked,
-                    };
+                const updater = (post: Post) => ({
+                    ...post,
+                    is_bookmarked: !post.is_bookmarked,
                 });
+
+                updatePostCacheById(postId, updater);
+                updatePostDetailCache(postId, updater);
             },
             onError: (error) => {
                 console.error('Error bookmarking/unbookmarking post:', error);
             },
-        })
-    }
+        });
+    };
+
     return (
         <div
             className='flex-1 flex items-center cursor-pointer group'
