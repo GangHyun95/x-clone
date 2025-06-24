@@ -1,11 +1,34 @@
-import type { Post } from '@/types/post';
+import type { Cursor, Post, PostsResponse } from '@/types/post';
 
 import { del, get, post, postFormData } from './api/client';
 
-export async function getPostsAll() {
-    const res = await get<{ posts: Post[] }>('/api/posts/', { withAuth: true });
+export async function getPostsAll(cursor?: Cursor) {
+    const searchParams = new URLSearchParams();
+    console.log(cursor);
+    if (cursor) {
+        searchParams.set('cursorDate', cursor.cursorDate);
+        searchParams.set('cursorId', cursor.cursorId.toString());
+    }
 
-    return res.data.posts;
+    const res = await get<PostsResponse>(`/api/posts/?${searchParams}`, {
+        withAuth: true,
+    });
+
+    return res.data;
+}
+
+export async function getPostsFromFollowing(cursor?: Cursor) {
+    const searchParams = new URLSearchParams();
+    if (cursor) {
+        searchParams.set('cursorDate', cursor.cursorDate);
+        searchParams.set('cursorId', cursor.cursorId.toString());
+    }
+
+    const res = await get<PostsResponse>(`/api/posts/following?${searchParams}`, {
+        withAuth: true,
+    });
+
+    return res.data;
 }
 
 export async function getPostsByParentId(postId: number) {
@@ -18,11 +41,6 @@ export async function getPostOne(postId: number) {
     return res.data.post;
 }
 
-export async function getPostsFromFollowing() {
-    const res = await get<{ posts: Post[] }>('/api/posts/following', { withAuth: true });
-
-    return res.data.posts;
-}
 
 export async function getPostsBookmarked(q?: string) {
     const query = q?.trim() ? `?q=${encodeURIComponent(q)}` : '';

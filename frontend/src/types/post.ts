@@ -14,3 +14,10 @@ export type Post = {
     is_liked: boolean;
     is_bookmarked: boolean;
 };
+export type Cursor = { cursorDate: string; cursorId: number } | null;
+
+export type PostsResponse = {
+    posts: Post[];
+    hasNextPage: boolean;
+    nextCursor: Cursor;
+};

@@ -1,6 +1,7 @@
-import { useMutation, useQuery } from '@tanstack/react-query';
+import { useInfiniteQuery, useMutation, useQuery } from '@tanstack/react-query';
 
 import { createPost, deletePost, getPostOne, getPostsAll, getPostsBookmarked, getPostsByParentId, getPostsFromFollowing, togglePostBookmark, togglePostLike,  } from '@/service/post';
+import type { Cursor } from '@/types/post';
 
 
 export function useCreate() {
@@ -11,9 +12,15 @@ export function useCreate() {
 
 export function usePosts(tab: 'foryou' | 'following') {
     const key = tab === 'following' ? 'following' : 'all';
-    return useQuery({
+
+    return useInfiniteQuery({
         queryKey: ['posts', key],
-        queryFn: tab === 'following' ? getPostsFromFollowing : getPostsAll,
+        queryFn: ({ pageParam }) => {
+            if (tab === 'following') return getPostsFromFollowing(pageParam);
+            return getPostsAll(pageParam);
+        },
+        initialPageParam: null as Cursor,
+        getNextPageParam: (lastPage) => lastPage.hasNextPage ? lastPage.nextCursor : undefined,
         staleTime: 1000 * 60 * 50,
         gcTime: 1000 * 60 * 60,
         retry: false,
