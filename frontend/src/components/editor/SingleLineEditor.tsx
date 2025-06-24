@@ -1,41 +1,41 @@
-import { Editor, EditorState, Modifier } from 'draft-js';
-import { useRef } from 'react';
+import { LexicalComposer } from '@lexical/react/LexicalComposer';
+import { ContentEditable } from '@lexical/react/LexicalContentEditable';
+import { LexicalErrorBoundary } from '@lexical/react/LexicalErrorBoundary';
+import { PlainTextPlugin } from '@lexical/react/LexicalPlainTextPlugin';
+import { type LexicalEditor } from 'lexical';
+
+import { EditorInitEffect, EmojiPlugin, OnChangePlugin } from '@/components/editor/plugin/editorPlugins';
 
 type Props = {
-    editorState: EditorState,
-    setEditorState: (state: EditorState) => void;
-    isModal?: boolean;
+    onChangeText: (text: string) => void;
     placeholder?: string;
+    isModal?: boolean;
+    onEditorInit: (editor: LexicalEditor) => void;
 };
 
-export function insertEmoji(editorState: EditorState, emoji: string): EditorState {
-    const contentState = editorState.getCurrentContent();
-    const selection = editorState.getSelection();
-
-    const newContentState = Modifier.insertText(contentState, selection, emoji);
-    const pushed = EditorState.push(editorState, newContentState, 'insert-characters');
-
-    return EditorState.forceSelection(pushed, newContentState.getSelectionAfter());
-}
-
-export default function SingleLineEditor({ editorState, setEditorState, isModal = false, placeholder }: Props) {
-    const editorRef = useRef<Editor>(null);
-
-    const handleChange = (state: EditorState) => {
-        setEditorState(state);
+export default function SingleLineEditor({ onChangeText, placeholder, isModal, onEditorInit }: Props) {
+    const config = {
+        namespace: 'PostEditor',
+        theme: {},
+        onError: (error: Error) => console.error(error),
     };
 
     return (
-        <div
-            className={`py-3 ${isModal ? 'min-h-24' : 'min-h-6'}`}
-            onClick={() => editorRef.current?.focus()}
-        >
-            <Editor
-                ref={editorRef}
-                editorState={editorState}
-                onChange={handleChange}
-                placeholder={placeholder ?? 'What\'s happening?'}
-            />
-        </div>
+        <LexicalComposer initialConfig={config}>
+            <div className='relative'>
+                <PlainTextPlugin
+                    contentEditable={
+                        <ContentEditable
+                            className={`editor-input ${isModal ? 'min-h-24' : 'min-h-6'} py-3`}
+                        />
+                    }
+                    placeholder={<div className='editor-placeholder'>{placeholder ?? 'What\'s happening?'}</div>}
+                    ErrorBoundary={LexicalErrorBoundary}
+                />
+            </div>
+            <EditorInitEffect onEditorInit={onEditorInit} />
+            <OnChangePlugin onChangeText={onChangeText} />
+            <EmojiPlugin />
+        </LexicalComposer>
     );
 }

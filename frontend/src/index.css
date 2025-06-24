@@ -38,61 +38,27 @@ body {
     --breakpoint-xl-plus: 86.25rem;
 }
 
-.public-DraftEditor-content[contenteditable='true'] {
-    -moz-user-modify: read-write-plaintext-only;
-    -webkit-user-modify: read-write-plaintext-only;
+.editor-input::placeholder {
+    color: #9ca3af;
 }
 
-.DraftEditor-root {
+.editor-input {
     width: 100%;
-    position: relative;
-    -webkit-user-select: none;
-}
-
-.DraftEditor-editorContainer {
-    background-color: rgba(255, 255, 255, 0);
-    border-left: 0.1px solid transparent;
-    position: relative;
-    z-index: 1;
-}
-
-.DraftEditor-editorContainer, .DraftEditor-root, .public-DraftEditor-content {
-    height: inherit;
-    max-height: inherit;
-    min-height: inherit;
-    text-align: initial;
-}
-
-.public-DraftEditorPlaceholder-root {
-    padding-bottom: 2px;
-    padding-top: 2px;
-    position: absolute;
-    z-index: 1;
-    color: #6b7280;
-}
-
-.public-DraftEditorPlaceholder-inner {
-    user-select: none;
-    -webkit-user-select: none;
-}
-
-.public-DraftStyleDefault-block {
-    overflow: hidden;
-    padding-bottom: 2px;
-    padding-top: 2px;
-    position: relative;
-
+    outline: none;
+    border: none;
+    font-size: 20px;
+    line-height: 1.5;
+    padding: 12px 0;
     white-space: pre-wrap;
     word-break: break-word;
 }
 
-.public-DraftStyleDefault-rtl {
-    direction: rtl;
-    text-align: right;
-}
-
-.public-DraftEditorPlaceholder-root,
-.public-DraftEditorPlaceholder-inner,
-.public-DraftEditor-content {
+.editor-placeholder {
+    position: absolute;
+    inset: 0;
+    color: #9ca3af;
+    pointer-events: none;
     font-size: 20px;
+    line-height: 1.5;
+    padding: 12px 0;
 }

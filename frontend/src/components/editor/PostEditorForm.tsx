@@ -1,20 +1,19 @@
-import { EditorState } from 'draft-js';
+import type { LexicalEditor } from 'lexical';
 import { useState } from 'react';
-
 import { useNavigate } from 'react-router-dom';
 
 import Avatar from '@/components/common/Avatar';
 import { InlineSpinner } from '@/components/common/Spinner';
+import { INSERT_EMOJI_COMMAND } from '@/components/editor/plugin/editorPlugins';
 import { prependCommentToCache, prependPostToCache, updatePostCacheById, updatePostDetailCache } from '@/lib/queryCacheHelpers';
 import { useCreate } from '@/queries/post';
 import { getCurrentUser } from '@/store/authStore';
 import type { Post } from '@/types/post';
-
 import { getTweetLength } from '@/utils/formatters';
 
 import EmojiInsertBtn from './EmojiInsertBtn';
 import ImageUploadBtn from './ImageUploadBtn';
-import SingleLineEditor, { insertEmoji } from './SingleLineEditor';
+import SingleLineEditor from './SingleLineEditor';
 
 type Props = {
     variant?: 'home' | 'modal';
@@ -27,11 +26,12 @@ export default function PostEditorForm({ variant = 'home', placeholder, postId }
 
     const [selectedImage, setSelectedImage] = useState<File | null>(null);
     const [imagePreviewUrl, setImagePreviewUrl] = useState<string | null>(null);
-    const [editorState, setEditorState] = useState(() => EditorState.createEmpty());
-    const plainText = editorState.getCurrentContent().getPlainText().trim();
-    const tweetLength = getTweetLength(plainText);
-    const isDisabled = (plainText.length === 0 && !selectedImage) || tweetLength > 280;
+    const [editorKey, setEditorKey] = useState(0);
+    const [currentText, setCurrentText] = useState('');
+    const [editor, setEditor] = useState<LexicalEditor | null>(null);
 
+    const tweetLength = getTweetLength(currentText);
+    const isDisabled = (currentText.length === 0 && !selectedImage) || tweetLength > 280;
     const isModal = variant === 'modal';
 
     const me = getCurrentUser();
@@ -43,7 +43,7 @@ export default function PostEditorForm({ variant = 'home', placeholder, postId }
         if (isDisabled) return;
         
         const formData = new FormData();
-        formData.append('text', plainText);
+        formData.append('text', currentText);
         if (selectedImage) {
             formData.append('img', selectedImage);
         }
@@ -54,7 +54,8 @@ export default function PostEditorForm({ variant = 'home', placeholder, postId }
             onSuccess: (newItem: Post) => {
                 setSelectedImage(null);
                 setImagePreviewUrl(null);
-                setEditorState(EditorState.createEmpty());
+                setCurrentText('');
+                setEditorKey(prev => prev + 1);
 
                 if (!postId) {
                     prependPostToCache(newItem);
@@ -82,7 +83,7 @@ export default function PostEditorForm({ variant = 'home', placeholder, postId }
 
     return (
         <form className={`flex flex-col px-4 ${!isModal ? 'border-b border-base-300' : ''}`} onSubmit={handleSubmit}>
-            <div className={`flex ${isModal && 'border-b border-base-300'}`}>
+            <div className={`flex ${isModal ? 'border-b border-base-300' : ''}`}>
                 <div className='mr-2 pt-3'>
                     {isModal ? (
                         <Avatar src={me.profile_img} />
@@ -92,10 +93,11 @@ export default function PostEditorForm({ variant = 'home', placeholder, postId }
                 </div>
                 <div className='flex grow flex-col pt-1'>
                     <SingleLineEditor
-                        editorState={editorState}
-                        setEditorState={setEditorState}
-                        isModal={isModal}
+                        key={editorKey}
+                        onChangeText={setCurrentText}
                         placeholder={placeholder}
+                        isModal={isModal}
+                        onEditorInit={setEditor}
                     />
                 </div>
             </div>
@@ -127,8 +129,9 @@ export default function PostEditorForm({ variant = 'home', placeholder, postId }
                     />
                     <EmojiInsertBtn
                         insertEmoji={(emoji) => {
-                            const updated = insertEmoji(editorState, emoji);
-                            setEditorState(updated);
+                            if (editor) {
+                                editor.dispatchCommand(INSERT_EMOJI_COMMAND, emoji);
+                            }
                         }}
                     />
                 </div>
