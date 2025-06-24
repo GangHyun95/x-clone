@@ -430,8 +430,21 @@ export const updateProfile = async (req: Request, res: Response): Promise<void> 
         }
 
         if (typeof link === 'string') {
-            const trimmed = link.trim();
-            const cleanLink = trimmed === '' ? null : trimmed;
+            if (/\s/.test(link)) {
+                res.status(400).json({
+                    success: false,
+                    message: '링크에는 공백을 포함할 수 없습니다.',
+                    errors: [{ field: 'link', message: '링크에는 공백을 포함할 수 없습니다.' }],
+                });
+                return;
+            }
+
+            let cleanLink: string | null = link === '' ? null : link;
+
+            if (cleanLink && !cleanLink.startsWith('http://') && !cleanLink.startsWith('https://')) {
+                cleanLink = `http://${cleanLink}`;
+            }
+
             if (cleanLink !== user.link) {
                 sql += `link = $${idx++}, `;
                 values.push(cleanLink);

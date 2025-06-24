@@ -97,3 +97,19 @@ export function getTweetLength(text: string): number {
     }
     return length;
 }
+
+export function formatLinkDisplay(link: string): string {
+    let display = link;
+
+    if (display.startsWith('https://')) {
+        display = display.slice(8);
+    } else if (display.startsWith('http://')) {
+        display = display.slice(7);
+    }
+
+    if (display.startsWith('www.')) {
+        display = display.slice(4);
+    }
+
+    return display;
+}

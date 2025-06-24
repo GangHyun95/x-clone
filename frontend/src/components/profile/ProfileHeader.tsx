@@ -6,7 +6,7 @@ import CoverImageSection from '@/components/profile/CoverImageSection';
 import ProfileImageSection from '@/components/profile/ProfileImageSection';
 import { CalendarSvg, LinkSvg } from '@/components/svgs';
 import type { User } from '@/types/user';
-import { formatJoinDate } from '@/utils/formatters';
+import { formatJoinDate, formatLinkDisplay } from '@/utils/formatters';
 
 export default function ProfileHeader({ user, isMe }: { user: User; isMe: boolean }) {
     return (
@@ -47,7 +47,7 @@ export default function ProfileHeader({ user, isMe }: { user: User; isMe: boolea
                             className='flex items-center mr-3 group cursor-pointer'
                         >
                             <span><LinkSvg className='size-5 fill-gray-500 mr-1' /></span>
-                            <span className='group-hover:underline text-primary'>{user.link}</span>
+                            <span className='group-hover:underline text-primary'>{formatLinkDisplay(user.link)}</span>
                         </a>
                     )}
                     <div className='flex items-center'>
