@@ -12,8 +12,11 @@ export const signup = async (req: Request, res: Response): Promise<void> => {
 
     const errors: { field: string; message: string }[] = [];
     if (!email) errors.push({ field: 'root', message: '이메일이 확인되지 않았습니다. 처음부터 다시 시도해 주세요.' });
-    if (!fullName) errors.push({ field: 'root', message: '이름이 확인되지 않았습니다. 처음부터 다시 시도해 주세요.' });
-    if (!username) errors.push({ field: 'username', message: '사용자 이름을 입력해 주세요.' });
+    if (!username) {
+        errors.push({ field: 'username', message: '사용자 이름을 입력해 주세요.' });
+    } else if (username.length < 4 || username.length > 15) {
+        errors.push({ field: 'username', message: '사용자 이름은 4자 이상 15자 이하로 입력해 주세요.' });
+    }
     if (!password) errors.push({ field: 'password', message: '비밀번호를 입력해 주세요.' });
     if (password && password.length < 6) errors.push({ field: 'password', message: '비밀번호는 최소 6자 이상이어야 합니다.' });
 
@@ -33,7 +36,6 @@ export const signup = async (req: Request, res: Response): Promise<void> => {
             return;
         }
 
-        console.log(req.body);
         const usernameCheck = await pool.query('SELECT 1 FROM users WHERE username = $1', [username]);
         if (usernameCheck.rows.length > 0) {
             res.status(400).json({

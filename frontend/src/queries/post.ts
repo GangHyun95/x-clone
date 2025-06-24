@@ -29,6 +29,7 @@ export function usePost(postId: number) {
         retry: false,
     });
 }
+
 export function useChildrenPosts(postId: number) {
     return useQuery({
         queryKey: ['posts', 'children', postId],

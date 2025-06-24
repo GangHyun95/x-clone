@@ -33,7 +33,11 @@ export default function ProfileHeader({ user, isMe }: { user: User; isMe: boolea
                     <span className='text-xl font-bold'>{user.full_name}</span>
                     <span className='text-gray-500'>@{user.username}</span>
                 </div>
-                {user.bio && <div className='mb-3'><span>{user.bio}</span></div>}
+                {user.bio && (
+                    <div className='mb-3 whitespace-pre-wrap break-words'>
+                        <span>{user.bio}</span>
+                    </div>
+                )}
                 <div className='flex items-center mb-3'>
                     {user.link && (
                         <a

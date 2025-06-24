@@ -37,8 +37,8 @@ export default function EditProfileModal() {
         },
     });
     
-    const { register, handleSubmit, formState: { errors, isValid } } = form;
-
+    const { register, handleSubmit, formState: { errors, isValid }, watch } = form;
+    
     const onSubmit = (data: EditProfileFormValues) => {
         const formData = new FormData();
         formData.append('fullName', data.fullName);
@@ -59,8 +59,6 @@ export default function EditProfileModal() {
                 console.error(error);
             },
         });
-
-        console.log([...formData.entries()]);
     };
     return (
         <RouteModal>
@@ -118,8 +116,14 @@ export default function EditProfileModal() {
                                     label='Name'
                                     register={register('fullName', {
                                         required: '이름을 입력해 주세요.',
+                                        maxLength: {
+                                            value: 50,
+                                            message: '50자 이하로 입력해 주세요.',
+                                        },
                                     })}
                                     error={errors.fullName}
+                                    maxLength={50}
+                                    currentLength={watch('fullName').length || 0}
                                 />
                                 <TextAreaField
                                     id='bio'
@@ -131,6 +135,8 @@ export default function EditProfileModal() {
                                         },
                                     })}
                                     error={errors.bio}
+                                    maxLength={160}
+                                    currentLength={watch('bio').length || 0}
                                 />
                                 <TextInput
                                     id='link'

@@ -17,7 +17,7 @@ export default function NotificationCard(notification: Notification) {
         follow: <UserSvg filled className='size-8 fill-primary' />,
     };
 
-    const href = type === 'follow' ? `/profile/${user.username}` : '#';
+    const href = type === 'follow' ? `/profile/${user.username}` : `/posts/${post?.id}`;
 
     return (
         <article className='border-b border-base-300 px-4 py-3 hover:bg-base-300 cursor-pointer' onClick={() => navigate(href)}>
@@ -33,7 +33,7 @@ export default function NotificationCard(notification: Notification) {
                                 <span className='mt-3 text-gray-500 whitespace-pre-wrap break-words'>{post.content}</span>
                             )}
                             {post?.img && (
-                                <figure className='relative mt-3 border border-gray-300 rounded-2xl overflow-hidden'>
+                                <figure className='relative mt-3 border border-gray-300 rounded-2xl overflow-hidden bg-white'>
                                     <div className='w-full' style={{ paddingBottom: `${aspectRatio}%` }} />
                                     <img
                                         src={post.img}

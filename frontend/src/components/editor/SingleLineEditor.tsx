@@ -4,7 +4,6 @@ import { useRef } from 'react';
 type Props = {
     editorState: EditorState,
     setEditorState: (state: EditorState) => void;
-    onTextChange: (text: string) => void;
     isModal?: boolean;
     placeholder?: string;
 };
@@ -19,13 +18,11 @@ export function insertEmoji(editorState: EditorState, emoji: string): EditorStat
     return EditorState.forceSelection(pushed, newContentState.getSelectionAfter());
 }
 
-export default function SingleLineEditor({ editorState, setEditorState, onTextChange, isModal = false, placeholder }: Props) {
+export default function SingleLineEditor({ editorState, setEditorState, isModal = false, placeholder }: Props) {
     const editorRef = useRef<Editor>(null);
 
     const handleChange = (state: EditorState) => {
         setEditorState(state);
-        const text = state.getCurrentContent().getPlainText().trim();
-        onTextChange(text);
     };
 
     return (

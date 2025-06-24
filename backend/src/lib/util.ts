@@ -86,3 +86,24 @@ export const deleteImage = async (imageUrl: string): Promise<void> => {
 export const generateVerificationCode = (): string => {
     return Math.floor(100000 + Math.random() * 900000).toString();
 };
+
+export function getTweetLength(text: string): number {
+    let length = 0;
+    for (const char of Array.from(text)) {
+        const code = char.codePointAt(0) ?? 0;
+
+        if (
+            code > 0x1F000 ||
+            (code >= 0x1100 && code <= 0x11FF) ||
+            (code >= 0x3130 && code <= 0x318F) ||
+            (code >= 0xAC00 && code <= 0xD7A3) ||
+            (code >= 0x4E00 && code <= 0x9FFF) ||
+            (code >= 0x2000 && code <= 0x206F)
+        ) {
+            length += 2;
+        } else {
+            length += 1;
+        }
+    }
+    return length;
+}

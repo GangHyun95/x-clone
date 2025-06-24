@@ -47,6 +47,10 @@ export default function StepOne({ onNext }: Props) {
                     label='Name'
                     register={register('fullName', {
                         required: '이름을 입력해 주세요.',
+                        maxLength: {
+                            value: 50,
+                            message: '이름은 50자 이하로 입력해 주세요.',
+                        },
                     })}
                     error={errors.fullName}
                 />

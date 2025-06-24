@@ -47,9 +47,14 @@ export const sendEmailCode = async (req: Request, res: Response): Promise<void> 
 
     const errors: { field: string; message: string }[] = [];
     if (!email) errors.push({ field: 'email', message: '이메일을 입력해 주세요.' });
-    if (!isPasswordReset && !isResend && !fullName) {
-        errors.push({ field: 'fullName', message: '이름을 입력해 주세요.' });
+    if (!isPasswordReset && !isResend) {
+        if (!fullName) {
+            errors.push({ field: 'fullName', message: '이름을 입력해 주세요.' });
+        } else if (fullName.length > 50) {
+            errors.push({ field: 'fullName', message: '이름은 50자 이하로 입력해 주세요.' });
+        }
     }
+
     if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) errors.push({ field: 'email', message: '이메일 형식이 올바르지 않습니다.' });
 
     if (errors.length > 0) {

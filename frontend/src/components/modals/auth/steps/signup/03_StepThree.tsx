@@ -67,8 +67,12 @@ export default function StepThree({ email, fullName }: Props) {
                     register={register('username', {
                         required: '사용자 이름을 입력해 주세요.',
                         minLength: {
-                            value: 2,
-                            message: '사용자 이름은 최소 2자 이상이어야 합니다.',
+                            value: 4,
+                            message: '사용자 이름은 최소 4자 이상이어야 합니다.',
+                        },
+                        maxLength: {
+                            value: 15,
+                            message: '사용자 이름은 최대 15자 이하로 입력해 주세요.',
                         },
                     })}
                     error={errors.username}

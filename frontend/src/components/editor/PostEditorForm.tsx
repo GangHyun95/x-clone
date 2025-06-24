@@ -10,6 +10,8 @@ import { useCreate } from '@/queries/post';
 import { getCurrentUser } from '@/store/authStore';
 import type { Post } from '@/types/post';
 
+import { getTweetLength } from '@/utils/formatters';
+
 import EmojiInsertBtn from './EmojiInsertBtn';
 import ImageUploadBtn from './ImageUploadBtn';
 import SingleLineEditor, { insertEmoji } from './SingleLineEditor';
@@ -23,13 +25,14 @@ type Props = {
 export default function PostEditorForm({ variant = 'home', placeholder, postId }: Props) {
     const navigate = useNavigate();
 
-    const [text, setText] = useState('');
     const [selectedImage, setSelectedImage] = useState<File | null>(null);
     const [imagePreviewUrl, setImagePreviewUrl] = useState<string | null>(null);
     const [editorState, setEditorState] = useState(() => EditorState.createEmpty());
+    const plainText = editorState.getCurrentContent().getPlainText().trim();
+    const tweetLength = getTweetLength(plainText);
+    const isDisabled = (plainText.length === 0 && !selectedImage) || tweetLength > 280;
 
     const isModal = variant === 'modal';
-    const isDisabled = text.trim().length === 0 && !selectedImage;
 
     const me = getCurrentUser();
     const { mutate: createItem, isPending } = useCreate();
@@ -40,7 +43,7 @@ export default function PostEditorForm({ variant = 'home', placeholder, postId }
         if (isDisabled) return;
         
         const formData = new FormData();
-        formData.append('text', text);
+        formData.append('text', plainText);
         if (selectedImage) {
             formData.append('img', selectedImage);
         }
@@ -49,7 +52,6 @@ export default function PostEditorForm({ variant = 'home', placeholder, postId }
         }
         createItem(formData, {
             onSuccess: (newItem: Post) => {
-                setText('');
                 setSelectedImage(null);
                 setImagePreviewUrl(null);
                 setEditorState(EditorState.createEmpty());
@@ -93,7 +95,6 @@ export default function PostEditorForm({ variant = 'home', placeholder, postId }
                         editorState={editorState}
                         setEditorState={setEditorState}
                         isModal={isModal}
-                        onTextChange={setText}
                         placeholder={placeholder}
                     />
                 </div>
@@ -128,11 +129,13 @@ export default function PostEditorForm({ variant = 'home', placeholder, postId }
                         insertEmoji={(emoji) => {
                             const updated = insertEmoji(editorState, emoji);
                             setEditorState(updated);
-                            setText(updated.getCurrentContent().getPlainText().trim());
                         }}
                     />
                 </div>
-                <div className='ml-4 mt-2'>
+                <div className='flex items-center ml-4 mt-2'>
+                    <span className={`text-sm ${tweetLength> 280 ? 'text-error' : 'text-gray-500'} mr-4`}>
+                        {tweetLength}/280
+                    </span>
                     <button
                         type='submit'
                         className='btn btn-secondary btn-circle w-auto h-auto min-h-[36px] px-4'

@@ -7,7 +7,7 @@ export default function NewPostModal() {
         <RouteModal position='start'>
             <div
                 className={`
-                    relative modal-box flex flex-col w-full h-full max-w-none p-0 rounded-none top-[5%]
+                    relative modal-box flex flex-col w-full h-full max-w-none p-0 rounded-none md:top-[5%]
                     md:min-w-[600px] md:h-auto md:max-h-[90vh] md:rounded-2xl md:max-w-[600px]
                 `}
             >

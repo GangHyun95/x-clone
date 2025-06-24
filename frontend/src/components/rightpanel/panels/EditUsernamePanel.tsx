@@ -13,12 +13,13 @@ export default function EditUsernamePanel() {
     const me = getCurrentUser();
 	const navigate = useNavigate();
     const form = useForm<{ username: string }>({
+		mode: 'onChange',
         defaultValues: {
 			username: me.username,
 		},
     })
 
-    const { register, handleSubmit, formState: { errors, isValid } } = form;
+    const { register, handleSubmit, formState: { errors, isValid }, watch } = form;
 	const { mutate: updateUsername, isPending } = useUpdateUsername();
 
 	const onSubmit = (data: { username: string}) => {
@@ -30,7 +31,7 @@ export default function EditUsernamePanel() {
 			}
 		})
 	};
-
+	console.log(errors);
 	return (
 		<form onSubmit={handleSubmit(onSubmit)}>
 			<StickyHeader.Header onPrev={() => navigate(-1)}>
@@ -41,8 +42,18 @@ export default function EditUsernamePanel() {
 					id='username'
 					label='Username'
 					register={register('username', {
-						required: '이름을 입력해 주세요.',
+						required: true,
+						minLength: {
+							value: 5,
+							message: '사용자 이름은 최소 5자 이상이어야 합니다.',
+						},
+						maxLength: {
+							value: 15,
+							message: '사용자 이름은 최대 15자 이하로 입력해 주세요.',
+						},
 					})}
+					maxLength={15}
+					currentLength={watch('username').length || 0}
 					error={errors.username}
 				/>
 			</div>

@@ -399,6 +399,15 @@ export const updateProfile = async (req: Request, res: Response): Promise<void> 
         coverImg: Express.Multer.File[];
     };
 
+    if (typeof bio === 'string' && bio.length > 160) {
+        res.status(400).json({
+            success: false,
+            message: 'Bio는 160자 이하로 입력해 주세요.',
+            errors: [{ field: 'bio', message: 'Bio는 160자 이하로 입력해 주세요.' }],
+        });
+        return;
+    }
+
     try {
         const { rows } = await pool.query(
             `SELECT id, full_name, profile_img, cover_img, bio, link FROM users WHERE id = $1`,
@@ -485,6 +494,15 @@ export const updateUsername = async (req: Request, res: Response): Promise<void>
             message: '사용자 이름을 입력해 주세요.',
             errors: [{ field: 'username', message: '사용자 이름을 입력해 주세요.'}]
         })
+    }
+
+    if (username.length < 4 || username.length > 15) {
+        res.status(400).json({
+            success: false,
+            message: '사용자 이름은 4자 이상 15자 이하로 입력해 주세요.',
+            errors: [{ field: 'username', message: '사용자 이름은 4자 이상 15자 이하로 입력해 주세요.' }],
+        });
+        return;
     }
 
     try {

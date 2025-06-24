@@ -7,8 +7,11 @@ type Props = {
     placeholder?: string;
     register: UseFormRegisterReturn;
     error?: FieldError;
-}
-export default function TextInput({ id, label, type = 'text', placeholder, register, error }: Props) {
+    maxLength?: number;
+    currentLength?: number;
+};
+
+export default function TextInput({ id, label, type = 'text', placeholder, register, error, maxLength, currentLength }: Props) {
     return (
         <div className='py-3'>
             <label htmlFor={id} className='floating-label'>
@@ -24,6 +27,11 @@ export default function TextInput({ id, label, type = 'text', placeholder, regis
                 </span>
                 {error && <p className='text-sm text-red-500'>{error.message}</p>}
             </label>
+            {typeof maxLength === 'number' && typeof currentLength === 'number' && (
+                <div className='text-right text-sm text-gray-500 mt-1 px-1'>
+                    {currentLength}/{maxLength}
+                </div>
+            )}
         </div>
     );
 }

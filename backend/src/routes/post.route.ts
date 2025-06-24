@@ -10,7 +10,6 @@ import {
     remove,
     toggleBookmark,
     toggleLike,
-    update,
 } from '../controllers/post.controller.ts';
 import { upload } from '../middleware/upload.middleware.ts';
 
@@ -23,7 +22,6 @@ router.get('/bookmarks', getBookmarked);
 router.get('/:id', getOne);
 
 router.post('/', upload.single('img'), create);
-router.patch('/:id', update);
 router.delete('/:id', remove);
 
 router.post('/:id/like', toggleLike);

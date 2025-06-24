@@ -24,8 +24,10 @@ export default function PostBody({ user, content, created_at, img, postId, showI
     return (
         <>
             <div className='flex justify-between'>
-                <ul className='flex items-center'>
-                    <li><span className='font-extrabold'>{user.full_name}</span></li>
+                <ul className='flex items-center flex-1 min-w-0'>
+                    <li className='truncate whitespace-nowrap font-extrabold'>
+                        {user.full_name}
+                    </li>
                     <li className='ml-1.5 text-gray-500'>
                         <span>@{user.username}</span>
                         <span className='px-1'>·</span>

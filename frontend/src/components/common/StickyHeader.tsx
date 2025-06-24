@@ -18,7 +18,7 @@ StickyHeader.Header = function Header({ children, onPrev }: { children: React.Re
                     </button>
                 </div>
             )}
-            <h2 className='flex flex-col justify-center shrink-1 grow text-xl font-bold h-full'>{children}</h2>
+            <h2 className='flex flex-col justify-center shrink-1 grow text-xl font-bold h-full min-w-0'>{children}</h2>
         </div>
     );
 };

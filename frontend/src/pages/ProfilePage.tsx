@@ -48,7 +48,9 @@ export default function ProfilePage() {
                         'Profile'
                     ) : (
                         <div className='flex flex-col items-start font-medium'>
-                            <h3 className='font-medium py-0.5'>{current.full_name}</h3>
+                            <h3 className='font-medium py-0.5 truncate whitespace-nowrap overflow-hidden w-full'>
+                                {current.full_name}
+                            </h3>
                             <span className='text-xs text-gray-500'>{current.post_count} post</span>
                         </div>
                     )}

@@ -1,7 +1,7 @@
 import type { Request, Response } from 'express';
 
 import { pool } from '../lib/db.ts';
-import { deleteImage, uploadAndReplaceImage } from '../lib/util.ts';
+import { deleteImage, getTweetLength, uploadAndReplaceImage } from '../lib/util.ts';
 
 export const create = async (req: Request, res: Response): Promise<void> => {
     const userId = req.user?.id;
@@ -15,6 +15,15 @@ export const create = async (req: Request, res: Response): Promise<void> => {
 
     if (!text && !file) {
         res.status(400).json({ success: false, message: '텍스트 또는 이미지를 입력해야 합니다.' });
+        return;
+    }
+
+    if (text && getTweetLength(text) > 280) {
+        res.status(400).json({
+            success: false,
+            message: '텍스트는 280자 이하로 입력해 주세요.',
+            errors: [{ field: 'text', message: '텍스트는 280자 이하로 입력해 주세요.' }],
+        });
         return;
     }
 
