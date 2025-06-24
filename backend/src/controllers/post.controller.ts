@@ -214,10 +214,16 @@ export const getAll = async (req: Request, res: Response): Promise<void> => {
     }
 
     const userId = req.user.id;
-    const parentId = typeof req.query.parentId === 'string' ? parseInt(req.query.parentId, 10) : null;
+    const parentId = req.query.parentId ? parseInt(req.query.parentId as string, 10) : null;
+    const cursorDate = req.query.cursorDate ? new Date(req.query.cursorDate as string) : null;
+    const cursorId = req.query.cursorId ? parseInt(req.query.cursorId as string, 10) : null;
+
+    const LIMIT = 2;
 
     try {
-        const values: (number | string)[] = [userId];
+        const values: (number | string | Date)[] = [userId];
+        let idx = 2;
+
         let sql = `
             SELECT
                 p.id,
@@ -249,22 +255,35 @@ export const getAll = async (req: Request, res: Response): Promise<void> => {
             JOIN users ON users.id = p.user_id
         `;
 
-
         if (parentId === null) {
             sql += ' WHERE p.parent_id IS NULL';
         } else {
-            sql += ' WHERE p.parent_id = $2';
+            sql += ` WHERE p.parent_id = $${idx}`;
             values.push(parentId);
+            idx++;
         }
 
-        sql += ' ORDER BY p.created_at DESC';
+        if (cursorDate && cursorId) {
+            sql += ` AND (p.created_at < $${idx} OR (p.created_at = $${idx} AND p.id < $${idx + 1}))`;
+            values.push(cursorDate);
+            values.push(cursorId);
+        }
 
-        const postResult = await pool.query(sql, values);
+        sql += ` ORDER BY p.created_at DESC, p.id DESC LIMIT ${LIMIT + 1}`;
+
+        const result = await pool.query(sql, values);
+        const posts = result.rows.slice(0, LIMIT);
+        const hasNextPage = result.rows.length > LIMIT;
+        const nextCursor = hasNextPage ? {  cursorDate: posts[posts.length - 1].created_at, cursorId: posts[posts.length - 1].id,}: null;
 
         res.status(200).json({
             success: true,
-            message: postResult.rows.length ? '게시물을 가져왔습니다.' : '게시물이 없습니다.',
-            data: { posts: postResult.rows },
+            message: posts.length ? '게시물을 가져왔습니다.' : '게시물이 없습니다.',
+            data: {
+                posts,
+                hasNextPage,
+                nextCursor,
+            },
         });
     } catch (error) {
         console.error('Error in getAllPosts:', error);
@@ -342,17 +361,27 @@ export const getFromFollowing = async (req: Request, res: Response): Promise<voi
         return;
     }
 
+    const cursorDate = req.query.cursorDate ? new Date(req.query.cursorDate as string) : null;
+    const cursorId = req.query.cursorId ? parseInt(req.query.cursorId as string, 10) : null;
+    const LIMIT = 2;
     try {
         const followingResult = await pool.query('SELECT to_user_id FROM user_follows WHERE from_user_id = $1', [userId]);
         const followingIds = followingResult.rows.map(row => row.to_user_id);
 
         if (followingIds.length === 0) {
-            res.status(200).json({ success: true, message: '팔로우한 사용자의 게시물이 없습니다.', data: { posts: [] } });
+            res.status(200).json({
+                success: true,
+                message: '팔로우한 사용자의 게시물이 없습니다.',
+                data: { posts: [], hasNextPage: false, nextCursor: null },
+            });
             return;
         }
 
-        const postResult = await pool.query(
-            `SELECT
+        const values: (number | Date | number[])[] = [followingIds, userId];
+        let idx = 3;
+
+        let sql = `
+            SELECT
                 posts.id,
                 posts.content,
                 posts.img,
@@ -381,14 +410,29 @@ export const getFromFollowing = async (req: Request, res: Response): Promise<voi
             FROM posts
             JOIN users ON users.id = posts.user_id
             WHERE posts.user_id = ANY($1)
-            ORDER BY posts.created_at DESC`,
-            [followingIds, userId]
-        );
+        `;
+
+        if (cursorDate && cursorId) {
+            sql += ` AND (posts.created_at < $${idx} OR (posts.created_at = $${idx} AND posts.id < $${idx + 1}))`;
+            values.push(cursorDate, cursorId);
+            idx += 2;
+        }
+
+        sql += ` ORDER BY posts.created_at DESC, posts.id DESC LIMIT ${LIMIT + 1}`;
+
+        const result = await pool.query(sql, values);
+        const posts = result.rows.slice(0, LIMIT);
+        const hasNextPage = result.rows.length > LIMIT;
+        const nextCursor = hasNextPage ? {  cursorDate: posts[posts.length - 1].created_at, cursorId: posts[posts.length - 1].id,}: null;
 
         res.status(200).json({
             success: true,
-            message: postResult.rows.length ? '피드를 가져왔습니다.' : '팔로우한 사용자의 게시물이 없습니다.',
-            data: { posts: postResult.rows },
+            message: posts.length ? '피드를 가져왔습니다.' : '팔로우한 사용자의 게시물이 없습니다.',
+            data: {
+                posts,
+                hasNextPage,
+                nextCursor,
+            },
         });
     } catch (error) {
         console.error('Error in getFollowingPosts:', error);
