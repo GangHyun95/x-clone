@@ -8,7 +8,7 @@ import PageLayout from '@/components/layout/PageLayout';
 import PostCard from '@/components/postcard';
 import { BookmarkButton, CommentButton, LikeButton } from '@/components/postcard/button';
 import PostMenuBtn from '@/components/postcard/button/PostMenuBtn';
-import { ShareSvg } from '@/components/svgs';
+import ShareButton from '@/components/postcard/button/ShareButton';
 import { useImageAspectRatio } from '@/hooks/useImageAspectRatio';
 import { usePost, useChildrenPosts } from '@/queries/post';
 import { formatPostTimestamp } from '@/utils/formatters';
@@ -69,11 +69,8 @@ export default function PostDetailPage() {
                                 )}
                                 <LikeButton id={postId} is_liked={is_liked} likeCount={counts.like} />
                                 <BookmarkButton id={postId} is_bookmarked={is_bookmarked} />
-                                <div className='flex items-center cursor-pointer group'>
-                                    <button className='btn btn-sm btn-ghost btn-circle border-0 group-hover:bg-primary/10'>
-                                        <ShareSvg className='h-5 fill-gray-500 group-hover:fill-primary' />
-                                    </button>
-                                </div>
+                                <ShareButton />
+
                             </footer>
                         </div>
                     </div>

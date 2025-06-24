@@ -23,7 +23,7 @@ export default function DeletePostButton({ postId, onClose }: Props) {
                     toast.success(data.message);
                     removePostFromCache(postId);
 
-                    if (location.pathname === `/posts/${postId}`) {
+                    if (location.pathname === `/post/${postId}`) {
                         navigate(-1);
                     }
 

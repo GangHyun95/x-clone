@@ -17,7 +17,7 @@ export default function NotificationCard(notification: Notification) {
         follow: <UserSvg filled className='size-8 fill-primary' />,
     };
 
-    const href = type === 'follow' ? `/profile/${user.username}` : `/posts/${post?.id}`;
+    const href = type === 'follow' ? `/profile/${user.username}` : `/post/${post?.id}`;
 
     return (
         <article className='border-b border-base-300 px-4 py-3 hover:bg-base-300 cursor-pointer' onClick={() => navigate(href)}>
