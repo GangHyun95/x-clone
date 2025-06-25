@@ -3,6 +3,7 @@ import type { Request, Response } from 'express';
 import { deleteImage, uploadAndReplaceImage } from '../lib/cloudinary.ts';
 import { pool } from '../lib/db/index.ts';
 import { getTweetLength } from '../lib/util.ts';
+import { paginate } from '../lib/db/paginate.ts';
 
 export const create = async (req: Request, res: Response): Promise<void> => {
     const userId = req.user?.id;
@@ -216,10 +217,10 @@ export const getAll = async (req: Request, res: Response): Promise<void> => {
 
     const userId = req.user.id;
     const parentId = req.query.parentId ? parseInt(req.query.parentId as string, 10) : null;
-    const cursorDate = req.query.cursorDate ? new Date(req.query.cursorDate as string) : null;
-    const cursorId = req.query.cursorId ? parseInt(req.query.cursorId as string, 10) : null;
-
-    const LIMIT = 2;
+    const cursor =
+        req.query.cursorDate && req.query.cursorId
+            ? { cursorDate: new Date(req.query.cursorDate as string), cursorId: parseInt(req.query.cursorId as string, 10) }
+            : null;
 
     try {
         const values: (number | string | Date)[] = [userId];
@@ -264,18 +265,7 @@ export const getAll = async (req: Request, res: Response): Promise<void> => {
             idx++;
         }
 
-        if (cursorDate && cursorId) {
-            sql += ` AND (p.created_at < $${idx} OR (p.created_at = $${idx} AND p.id < $${idx + 1}))`;
-            values.push(cursorDate);
-            values.push(cursorId);
-        }
-
-        sql += ` ORDER BY p.created_at DESC, p.id DESC LIMIT ${LIMIT + 1}`;
-
-        const result = await pool.query(sql, values);
-        const posts = result.rows.slice(0, LIMIT);
-        const hasNextPage = result.rows.length > LIMIT;
-        const nextCursor = hasNextPage ? {  cursorDate: posts[posts.length - 1].created_at, cursorId: posts[posts.length - 1].id,}: null;
+        const { items: posts, hasNextPage, nextCursor } = await paginate(sql, values, cursor, { order: ['p.created_at', 'p.id']});
 
         res.status(200).json({
             success: true,
@@ -362,9 +352,11 @@ export const getFromFollowing = async (req: Request, res: Response): Promise<voi
         return;
     }
 
-    const cursorDate = req.query.cursorDate ? new Date(req.query.cursorDate as string) : null;
-    const cursorId = req.query.cursorId ? parseInt(req.query.cursorId as string, 10) : null;
-    const LIMIT = 2;
+    const cursor =
+        req.query.cursorDate && req.query.cursorId
+            ? { cursorDate: new Date(req.query.cursorDate as string), cursorId: parseInt(req.query.cursorId as string, 10) }
+            : null;
+
     try {
         const followingResult = await pool.query('SELECT to_user_id FROM user_follows WHERE from_user_id = $1', [userId]);
         const followingIds = followingResult.rows.map(row => row.to_user_id);
@@ -413,18 +405,7 @@ export const getFromFollowing = async (req: Request, res: Response): Promise<voi
             WHERE posts.user_id = ANY($1)
         `;
 
-        if (cursorDate && cursorId) {
-            sql += ` AND (posts.created_at < $${idx} OR (posts.created_at = $${idx} AND posts.id < $${idx + 1}))`;
-            values.push(cursorDate, cursorId);
-            idx += 2;
-        }
-
-        sql += ` ORDER BY posts.created_at DESC, posts.id DESC LIMIT ${LIMIT + 1}`;
-
-        const result = await pool.query(sql, values);
-        const posts = result.rows.slice(0, LIMIT);
-        const hasNextPage = result.rows.length > LIMIT;
-        const nextCursor = hasNextPage ? {  cursorDate: posts[posts.length - 1].created_at, cursorId: posts[posts.length - 1].id,}: null;
+        const { items: posts, hasNextPage, nextCursor } = await paginate(sql, values, cursor, { order: ['posts.created_at', 'posts.id']});
 
         res.status(200).json({
             success: true,
