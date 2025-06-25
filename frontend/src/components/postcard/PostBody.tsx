@@ -31,7 +31,7 @@ export default function PostBody({ user, content, created_at, img, postId, showI
                     <li className='ml-1.5 text-gray-500'>
                         <span>@{user.username}</span>
                         <span className='px-1'>·</span>
-                        <time dateTime={created_at}>{formattedTime}</time>
+                        <time className='whitespace-nowrap' dateTime={created_at}>{formattedTime}</time>
                     </li>
                 </ul>
                 {showMenuBtn && <PostMenuBtn user={user} postId={postId} />}

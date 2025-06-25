@@ -1,14 +1,14 @@
 import { useSearchParams } from 'react-router-dom';
 
 import EmptyState from '@/components/common/EmptyState';
+import { SectionSpinner } from '@/components/common/Spinner';
 import StickyHeader from '@/components/common/StickyHeader';
 import Tabs from '@/components/common/Tabs';
 import PostEditorForm from '@/components/editor/PostEditorForm';
 import PageLayout from '@/components/layout/PageLayout';
 import PostCard from '@/components/postcard';
+import { useInfiniteScroll } from '@/hooks/useInfiniteScroll';
 import { usePosts } from '@/queries/post';
-import { useCallback, useRef } from 'react';
-import { SectionSpinner } from '@/components/common/Spinner';
 
 export default function HomePage() {
     const [searchParams, setSearchParams] = useSearchParams();
@@ -16,21 +16,8 @@ export default function HomePage() {
     const { data = { pages: [], hasNextPage: false, nextCursor: null }, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage, } = usePosts(tab);
     const posts = data.pages.flatMap((page) => page.posts) ?? [];
 
-    console.log('rerender');
-    const observer = useRef<IntersectionObserver | null>(null);
+    const lastPostRef = useInfiniteScroll({hasNextPage, isFetchingNextPage, fetchNextPage});
 
-    const lastPostRef = useCallback((node: HTMLElement | null) => {
-        if (isFetchingNextPage) return;
-        if (observer.current) observer.current.disconnect();
-
-        observer.current = new IntersectionObserver((entries) => {
-            if (entries[0].isIntersecting && hasNextPage) {
-                fetchNextPage();
-            }
-        });
-
-        if (node) observer.current.observe(node);
-    }, [isFetchingNextPage, hasNextPage, fetchNextPage]);
     const tabs = [
         { label: 'For you', active: tab === 'foryou', onClick: () => setSearchParams({ tab: 'foryou' }) },
         { label: 'Following', active: tab === 'following', onClick: () => setSearchParams({ tab: 'following' }) },
@@ -68,7 +55,7 @@ export default function HomePage() {
                     );
                 })}
 
-                    {hasNextPage && <div className='py-6'><SectionSpinner /></div> }
+                {hasNextPage && <div className='py-6'><SectionSpinner /></div> }
 
             </PageLayout.Content>
         </PageLayout>

@@ -1,10 +1,11 @@
-import { useNavigate } from 'react-router-dom';
 import { forwardRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 import Avatar from '@/components/common/Avatar';
 import ShareButton from '@/components/postcard/button/ShareButton';
 import PostBody from '@/components/postcard/PostBody';
 import type { Post } from '@/types/post';
+
 import { BookmarkButton, CommentButton, LikeButton } from './button';
 
 const PostCard = forwardRef<HTMLElement, { post: Post }>(({ post }, ref) => {

@@ -4,7 +4,6 @@ import { del, get, post, postFormData } from './api/client';
 
 export async function getPostsAll(cursor?: Cursor) {
     const searchParams = new URLSearchParams();
-    console.log(cursor);
     if (cursor) {
         searchParams.set('cursorDate', cursor.cursorDate);
         searchParams.set('cursorId', cursor.cursorId.toString());
