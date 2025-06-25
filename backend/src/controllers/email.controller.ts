@@ -1,7 +1,7 @@
 import bcrypt from 'bcryptjs';
 import type { Request, Response } from 'express';
 
-import { pool } from '../lib/db.ts';
+import { pool } from '../lib/db/index.ts';
 import { sendVerificationEmail } from '../lib/email.ts';
 import { redis } from '../lib/redis.ts';
 import { generateVerificationCode } from '../lib/util.ts';

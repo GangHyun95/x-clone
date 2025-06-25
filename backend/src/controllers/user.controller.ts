@@ -1,8 +1,9 @@
 import bcrypt from 'bcryptjs';
 import type { Request, Response } from 'express';
 
-import { pool } from '../lib/db.ts';
-import { buildUserDetail, buildUserSummary, uploadAndReplaceImage } from '../lib/util.ts';
+import { uploadAndReplaceImage } from '../lib/cloudinary.ts';
+import { pool } from '../lib/db/index.ts';
+import { buildUserDetail, buildUserSummary } from '../lib/util.ts';
 
 export const getMe = async (req: Request, res: Response): Promise<void> => {
     const user = req.user;

@@ -1,7 +1,7 @@
 import type { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
 
-import { pool } from '../lib/db.ts';
+import { pool } from '../lib/db/index.ts';
 
 export const protectRoute = async (
     req: Request,

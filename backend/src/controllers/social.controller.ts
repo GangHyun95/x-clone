@@ -1,6 +1,6 @@
 import type { Request, Response } from 'express';
 
-import { pool } from '../lib/db.ts';
+import { pool } from '../lib/db/index.ts';
 import { generateToken } from '../lib/util.ts';
 
 // social login

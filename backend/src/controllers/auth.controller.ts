@@ -2,7 +2,7 @@ import bcrypt from 'bcryptjs';
 import type { Request, Response } from 'express';
 import jwt from 'jsonwebtoken';
 
-import { pool } from '../lib/db.ts';
+import { pool } from '../lib/db/index.ts';
 import { redis } from '../lib/redis.ts';
 import { generateToken } from '../lib/util.ts';
 

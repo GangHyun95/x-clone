@@ -1,7 +1,8 @@
 import type { Request, Response } from 'express';
 
-import { pool } from '../lib/db.ts';
-import { deleteImage, getTweetLength, uploadAndReplaceImage } from '../lib/util.ts';
+import { deleteImage, uploadAndReplaceImage } from '../lib/cloudinary.ts';
+import { pool } from '../lib/db/index.ts';
+import { getTweetLength } from '../lib/util.ts';
 
 export const create = async (req: Request, res: Response): Promise<void> => {
     const userId = req.user?.id;

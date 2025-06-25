@@ -1,6 +1,6 @@
 import type { Request, Response } from 'express';
 
-import { pool } from '../lib/db.ts';
+import { pool } from '../lib/db/index.ts';
 
 export const getNotifications = async (req: Request, res: Response): Promise<void> => {
     if (!req.user) {
