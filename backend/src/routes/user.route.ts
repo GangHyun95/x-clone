@@ -4,7 +4,6 @@ import {
     changePassword,
     deleteAccount,
     getMe,
-    getPosts,
     getProfile,
     getSuggested,
     toggleFollow,
@@ -31,7 +30,6 @@ router.get('/:username/followers', getFollowers);
 router.get('/:username/following', getFollowing);
 router.post('/:id/follow', toggleFollow);
 
-router.get('/:username/posts', getPosts);
 router.get('/profile/:username', getProfile);
 
 

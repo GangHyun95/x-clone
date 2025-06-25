@@ -1,9 +1,20 @@
 import { get } from '@/service/api/client';
-import type { Notification } from '@/types/notification';
+import type { NotificationsResponse } from '@/types/notification';
+import type { Cursor } from '@/types/post';
 
-export async function getNotifications(type?: 'like' | 'follow' | 'all') {
-    const query = type && type !== 'all' ? `?type=${type}` : '';
-    const res = await get<{ notifications: Notification[] }>(`/api/notifications${query}`, { withAuth: true});
+export async function getNotifications(type: 'like' | 'follow' | 'all' = 'all', cursor?: Cursor) {
+    const searchParams = new URLSearchParams();
 
-    return res.data.notifications;
+    if (type !== 'all') {
+        searchParams.set('type', type);
+    }
+    
+    if (cursor) {
+        searchParams.set('cursorDate', cursor.cursorDate);
+        searchParams.set('cursorId', cursor.cursorId.toString());
+    }
+
+    const res = await get<NotificationsResponse>(`/api/notifications?${searchParams}`, { withAuth: true});
+
+    return res.data;
 }

@@ -1,7 +1,7 @@
 import { useSearchParams } from 'react-router-dom';
 
 import EmptyState from '@/components/common/EmptyState';
-import { SectionSpinner } from '@/components/common/Spinner';
+import { LoadMoreSpinner } from '@/components/common/Spinner';
 import StickyHeader from '@/components/common/StickyHeader';
 import Tabs from '@/components/common/Tabs';
 import PostEditorForm from '@/components/editor/PostEditorForm';
@@ -55,8 +55,7 @@ export default function HomePage() {
                     );
                 })}
 
-                {hasNextPage && <div className='py-6'><SectionSpinner /></div> }
-
+                {hasNextPage && <LoadMoreSpinner />}
             </PageLayout.Content>
         </PageLayout>
     );

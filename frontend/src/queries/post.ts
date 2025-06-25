@@ -1,6 +1,6 @@
 import { useInfiniteQuery, useMutation, useQuery } from '@tanstack/react-query';
 
-import { createPost, deletePost, getPostOne, getPostsAll, getPostsBookmarked, getPostsByParentId, getPostsFromFollowing, togglePostBookmark, togglePostLike,  } from '@/service/post';
+import { createPost, deletePost, getPostOne, getPostsAll, getPostsBookmarked, getPostsByParentId, getPostsByUsername, getPostsFromFollowing, getPostsLiked, togglePostBookmark, togglePostLike,  } from '@/service/post';
 import type { Cursor } from '@/types/post';
 
 
@@ -27,34 +27,58 @@ export function usePosts(tab: 'foryou' | 'following') {
     });
 }
 
+export function useChildrenPosts(postId: number) {
+    return useInfiniteQuery({
+        queryKey: ['posts', 'children', postId],
+        queryFn: ({ pageParam }) => getPostsByParentId(postId, pageParam),
+        initialPageParam: null as Cursor,
+        getNextPageParam: (lastPage) => lastPage.hasNextPage ? lastPage.nextCursor : undefined,
+        staleTime: 1000 * 60 * 5,
+        gcTime:    1000 * 60 * 10,
+        retry: false,
+    });
+}
+
+export function useBookmarked(keyword?: string) {
+    const trimmed = keyword?.trim() || '';
+    const isSearch = !!trimmed;
+
+    return useInfiniteQuery({
+        queryKey: ['posts', 'bookmarks', trimmed],
+        queryFn: ({ pageParam }) => getPostsBookmarked(trimmed, pageParam),
+        initialPageParam: null as Cursor,
+        getNextPageParam: (lastPage) => lastPage.hasNextPage ? lastPage.nextCursor : undefined,
+        staleTime: isSearch ? 0 : 1000 * 60 * 5,
+        gcTime:    isSearch ? 0 : 1000 * 60 * 10,
+        retry: false,
+    });
+}
+
+export function useUserPosts(username: string, tab: 'post' | 'like') {
+    const key = tab === 'like' ? 'like' : 'post';
+
+    return useInfiniteQuery({
+        queryKey: ['posts', username, key],
+        queryFn: ({ pageParam }) =>
+            tab === 'like'
+                ? getPostsLiked(username, pageParam)
+                : getPostsByUsername(username, pageParam),
+        initialPageParam: null as Cursor,
+        getNextPageParam: (lastPage) => lastPage.hasNextPage ? lastPage.nextCursor : undefined,
+        enabled: !!username,
+        staleTime: 1000 * 60 * 50,
+        gcTime:    1000 * 60 * 60,
+        retry: false,
+        refetchOnWindowFocus: false,
+    });
+}
+
 export function usePost(postId: number) {
     return useQuery({
         queryKey: ['post', postId],
         queryFn: () => getPostOne(postId),
         staleTime: 1000 * 60 * 50,
         gcTime: 1000 * 60 * 60,
-        retry: false,
-    });
-}
-
-export function useChildrenPosts(postId: number) {
-    return useQuery({
-        queryKey: ['posts', 'children', postId],
-        queryFn: () => getPostsByParentId(postId),
-        staleTime: 1000 * 60 * 5,
-        gcTime: 1000 * 60 * 10,
-        retry: false,
-    });
-}
-
-export function useBookmarked(keyword?: string) {
-    const isSearch = !!keyword?.trim();
-
-    return useQuery({
-        queryKey: ['posts', 'bookmarks', keyword?.trim() || ''],
-        queryFn: () => getPostsBookmarked(keyword),
-        staleTime: isSearch ? 0 : 1000 * 60 * 5,
-        gcTime: isSearch ? 0 : 1000 * 60 * 10,
         retry: false,
     });
 }

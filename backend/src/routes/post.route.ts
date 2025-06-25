@@ -4,6 +4,7 @@ import {
     create,
     getAll,
     getBookmarked,
+    getByUsername,
     getFromFollowing,
     getLiked,
     getOne,
@@ -15,11 +16,13 @@ import { upload } from '../middleware/upload.middleware.ts';
 
 const router = express.Router();
 
-router.get('/', getAll);
 router.get('/following', getFromFollowing);
-router.get('/likes/:username', getLiked);
+router.get('/likes', getLiked);
 router.get('/bookmarks', getBookmarked);
+router.get('/user', getByUsername);
+
 router.get('/:id', getOne);
+router.get('/', getAll);
 
 router.post('/', upload.single('img'), create);
 router.delete('/:id', remove);

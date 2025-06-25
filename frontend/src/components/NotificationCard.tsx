@@ -1,3 +1,4 @@
+import { forwardRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import Avatar from '@/components/common/Avatar';
@@ -6,7 +7,7 @@ import { useImageAspectRatio } from '@/hooks/useImageAspectRatio';
 import type { Notification } from '@/types/notification';
 import { formatTimeFromNow } from '@/utils/formatters';
 
-export default function NotificationCard(notification: Notification) {
+const NotificationCard = forwardRef<HTMLElement, { notification: Notification }>(({ notification }, ref) => {
     const { type, user, post, created_at } = notification;
     const navigate = useNavigate();
     const aspectRatio = useImageAspectRatio(post?.img);
@@ -20,7 +21,11 @@ export default function NotificationCard(notification: Notification) {
     const href = type === 'follow' ? `/profile/${user.username}` : `/post/${post?.id}`;
 
     return (
-        <article className='border-b border-base-300 px-4 py-3 hover:bg-base-300 cursor-pointer' onClick={() => navigate(href)}>
+        <article
+            ref={ref}
+            className='border-b border-base-300 px-4 py-3 hover:bg-base-300 cursor-pointer'
+            onClick={() => navigate(href)}
+        >
             <div className='flex'>
                 <div className='mr-2'>{iconMap[type]}</div>
                 <div className='flex flex-col grow pr-5 min-w-0'>
@@ -56,4 +61,6 @@ export default function NotificationCard(notification: Notification) {
             </div>
         </article>
     );
-}
+});
+
+export default NotificationCard;

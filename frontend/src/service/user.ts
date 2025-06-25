@@ -1,5 +1,4 @@
 
-import type { Post } from '@/types/post';
 import type { UpdatePasswordPayload, User, UserSummary } from '@/types/user';
 
 import { get, patch, patchFormData, post } from './api/client';
@@ -38,10 +37,6 @@ export async function getFollowing(username: string) {
 
 export async function getProfile(username: string) {
     return get<{ user: User }>(`/api/users/profile/${username}`, { withAuth: true });
-}
-
-export async function getPosts(username: string) {
-    return get<{ posts: Post[] }>(`/api/users/${username}/posts`, { withAuth: true });
 }
 
 export async function toggleFollow(payload: { userId: number }) {

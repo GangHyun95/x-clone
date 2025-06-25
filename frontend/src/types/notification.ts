@@ -1,3 +1,4 @@
+import type { Cursor } from '@/types/post';
 import type { UserSummary } from '@/types/user';
 
 export type Notification = {
@@ -11,4 +12,10 @@ export type Notification = {
         content: string;
         img: string;
     };
+};
+
+export type NotificationsResponse = {
+    notifications: Notification[];
+    hasNextPage: boolean;
+    nextCursor: Cursor;
 };

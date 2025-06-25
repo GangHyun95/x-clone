@@ -8,13 +8,18 @@ import PostCard from '@/components/postcard';
 import { SearchSvg } from '@/components/svgs';
 import { useDebounce } from '@/hooks/useDebounce';
 import { useBookmarked } from '@/queries/post';
+import { useInfiniteScroll } from '@/hooks/useInfiniteScroll';
+import { LoadMoreSpinner } from '@/components/common/Spinner';
 
 export default function BookmarkPage() {
     const navigate = useNavigate();
     const [input, setInput] = useState('');
     const debounced = useDebounce(input, 300);
 
-    const { data: bookmarkPosts = [], isLoading } = useBookmarked(debounced);
+    const { data = { pages: [], hasNextPage: false, nextCursor: null }, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } = useBookmarked(debounced);
+    const posts = data.pages.flatMap((page) => page.posts) ?? [];
+
+    const lastPostRef = useInfiniteScroll({hasNextPage, isFetchingNextPage, fetchNextPage});
     return (
         <PageLayout>
             <StickyHeader>
@@ -41,23 +46,31 @@ export default function BookmarkPage() {
             </section>
 
             <PageLayout.Content isLoading={isLoading}>
-                {!debounced && bookmarkPosts.length === 0 && (
+                {!debounced && posts.length === 0 && (
                     <EmptyState
                         title='Save posts for later'
                         description='Bookmark posts to easily find them again in the future.'
                     />
                 )}
 
-                {bookmarkPosts.length ? (
-                    bookmarkPosts.map((post) => (
-                        <PostCard key={post.id} post={post} />
-                    ))
+                {posts.length ? (
+                    posts.map((post, idx) => {
+                        const isLast = idx === posts.length - 1;
+                        return (
+                            <PostCard
+                                key={post.id}
+                                post={post}
+                                ref={isLast ? lastPostRef : undefined}
+                            />
+                        );
+                    })
                 ) : debounced && (
                     <EmptyState
                         title={`No results for ${debounced}`}
                         description='Try searching for something else, or check your Search settings to see if they’re protecting you from potentially sensitive content.'
                     />
                 )}
+            {hasNextPage && <LoadMoreSpinner />}
             </PageLayout.Content>
         </PageLayout>
     );

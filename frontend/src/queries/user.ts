@@ -1,8 +1,5 @@
 import { useMutation, useQuery } from '@tanstack/react-query';
-
-import { getPostsLikedByUsername } from '@/service/post';
 import {
-    getPosts,
     getProfile,
     getSuggestedUsers,
     toggleFollow,
@@ -63,22 +60,6 @@ export function useProfile(username: string, options?: { enabled?: boolean }) {
         retry: false,
         refetchOnWindowFocus: false,
         enabled: !!username && (options?.enabled ?? true),
-    });
-}
-
-export function usePosts(username: string, tab: 'post' | 'like') {
-    const key = tab === 'like' ? 'like' : 'post';
-    return useQuery({
-        queryKey: ['posts', username, key],
-        queryFn: async () => {
-            const res = tab === 'like' ? await getPostsLikedByUsername(username) : await getPosts(username);
-            return res.data.posts;
-        },
-        enabled: !!username,
-        staleTime: 1000 * 60 * 50,
-        gcTime: 1000 * 60 * 60,
-        retry: false,
-        refetchOnWindowFocus: false,
     });
 }
 

@@ -30,25 +30,50 @@ export async function getPostsFromFollowing(cursor?: Cursor) {
     return res.data;
 }
 
-export async function getPostsByParentId(postId: number) {
-    const res = await get<{ posts: Post[] }>(`/api/posts?parentId=${postId}`, { withAuth: true });
-    return res.data.posts;
+export async function getPostsByParentId(postId: number, cursor?: Cursor) {
+    const searchParams = new URLSearchParams({ parentId: postId.toString() });
+    if (cursor) {
+        searchParams.set('cursorDate', cursor.cursorDate);
+        searchParams.set('cursorId', cursor.cursorId.toString());
+    }
+    const res = await get<PostsResponse>(`/api/posts?${searchParams}`, { withAuth: true });
+    return res.data;
+}
+
+export async function getPostsBookmarked(q?: string, cursor?: Cursor) {
+    const searchParams = new URLSearchParams();
+    if (q?.trim()) searchParams.set('q', q.trim());
+    if (cursor) {
+        searchParams.set('cursorDate', cursor.cursorDate);
+        searchParams.set('cursorId', cursor.cursorId.toString());
+    }
+    const res = await get<PostsResponse>(`/api/posts/bookmarks?${searchParams}`, { withAuth: true });
+    return res.data;
+}
+
+export async function getPostsLiked(username: string, cursor?: Cursor) {
+    const searchParams = new URLSearchParams({ username });
+    if (cursor) {
+        searchParams.set('cursorDate', cursor.cursorDate);
+        searchParams.set('cursorId', cursor.cursorId.toString());
+    }
+    const res = await get<PostsResponse>(`/api/posts/likes?${searchParams}`, { withAuth: true });
+    return res.data;
+}
+
+export async function getPostsByUsername(username: string, cursor?: Cursor) {
+    const searchParams = new URLSearchParams({ username });
+    if (cursor) {
+        searchParams.set('cursorDate', cursor.cursorDate);
+        searchParams.set('cursorId', cursor.cursorId.toString());
+    }
+    const res = await get<PostsResponse>(`/api/posts/user?${searchParams}`, { withAuth: true });
+    return res.data
 }
 
 export async function getPostOne(postId: number) {
     const res = await get<{ post: Post }>(`/api/posts/${postId}`, { withAuth: true });
     return res.data.post;
-}
-
-
-export async function getPostsBookmarked(q?: string) {
-    const query = q?.trim() ? `?q=${encodeURIComponent(q)}` : '';
-    const res = await get<{ posts: Post[] }>(`/api/posts/bookmarks${query}`, { withAuth: true });
-    return res.data.posts;
-}
-
-export async function getPostsLikedByUsername(username: string) {
-    return get<{ posts: Post[] }>(`/api/posts/likes/${encodeURIComponent(username)}`, { withAuth: true });
 }
 
 export async function createPost(formData: FormData) {

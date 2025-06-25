@@ -6,8 +6,11 @@ import Tabs from '@/components/common/Tabs';
 import PageLayout from '@/components/layout/PageLayout';
 import PostCard from '@/components/postcard';
 import ProfileHeader from '@/components/profile/ProfileHeader';
-import { usePosts, useProfile } from '@/queries/user';
+import { useProfile } from '@/queries/user';
 import { getCurrentUser } from '@/store/authStore';
+import { useUserPosts } from '@/queries/post';
+import { useInfiniteScroll } from '@/hooks/useInfiniteScroll';
+import { LoadMoreSpinner } from '@/components/common/Spinner';
 
 export default function ProfilePage() {
     const { username = '' } = useParams();
@@ -23,10 +26,12 @@ export default function ProfilePage() {
         enabled: !isMe,
     });
 
-    console.log(user);
     const current = isMe ? me : user;
+    
+    const { data = { pages: [], hasNextPage: false, nextCursor: null }, isLoading: isPostLoading, fetchNextPage, hasNextPage, isFetchingNextPage } = useUserPosts(username, tab);
+    const posts = data.pages.flatMap((page) => page.posts) ?? [];
 
-    const { data: posts = [], isLoading: isPostLoading } = usePosts(username, tab);
+    const lastPostRef = useInfiniteScroll({hasNextPage, isFetchingNextPage, fetchNextPage});
 
     if (!current) {
         return (
@@ -78,10 +83,18 @@ export default function ProfilePage() {
                             }
                         />
                     )}
-                    {posts.map((post) => (
-                        <PostCard key={post.id} post={post} />
-                    ))}
+                    {posts.map((post, idx) => {
+                        const isLast = idx === posts.length - 1;
+                        return (
+                            <PostCard
+                                key={post.id}
+                                post={post}
+                                ref={isLast ? lastPostRef : undefined}
+                            />
+                        );
+                    })}
                 </section>
+                {hasNextPage && <LoadMoreSpinner />}
             </PageLayout.Content>
         </PageLayout>
     );

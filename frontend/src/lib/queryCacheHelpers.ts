@@ -1,11 +1,19 @@
+import type { InfiniteData } from '@tanstack/react-query';
+
 import { queryClient } from '@/lib/queryClient';
-import type { Post } from '@/types/post';
+import type { Post, PostsResponse } from '@/types/post';
 import type { User, UserSummary } from '@/types/user';
 
 export function updatePostCacheById(postId: number, updater: (post: Post) => Post) {
-    queryClient.setQueriesData<Post[]>({ queryKey: ['posts']}, (old) => {
+    queryClient.setQueriesData<InfiniteData<PostsResponse>>({ queryKey: ['posts']}, (old) => {
         if (!old) return old;
-        return old.map((post) => post.id === postId ? updater(post) : post);
+        return {
+            ...old,
+            pages: old.pages.map(page => ({
+                ...page,
+                posts: page.posts.map(p => p.id === postId ? updater(p) : p),
+            })),
+        }
     });
 }
 
@@ -17,31 +25,47 @@ export function updatePostDetailCache(postId: number, updater: (post: Post) => P
 }
 
 export function updatePostCacheByUserId(userId: number, updater: (post: Post) => Post) {
-    queryClient.setQueriesData<Post[]>({ queryKey: ['posts']}, (old) => {
+    queryClient.setQueriesData<InfiniteData<PostsResponse>>({ queryKey: ['posts'] }, (old) => {
         if (!old) return old;
-        return old.map((post) => post.user.id === userId ? updater(post) : post);
+        return {
+            ...old,
+            pages: old.pages.map(page => ({
+                ...page,
+                posts: page.posts.map(p => p.user.id === userId ? updater(p) : p),
+            })),
+        };
     });
 }
 
 export function prependPostToCache(newPost: Post) {
-    queryClient.setQueriesData<Post[]>({ queryKey: ['posts']}, (old) => {
-        if (!old) return [newPost];
-        return [newPost, ...old];
+    queryClient.setQueriesData<InfiniteData<PostsResponse>>({ queryKey: ['posts']}, (old) => {
+        if (!old) return old;
+        const [first, ...rest] = old.pages;
+        const updatedFirst = { ...first, posts: [newPost, ...first.posts] };
+        
+        return { ...old, pages: [updatedFirst, ...rest] };
     });
 }
 
 export function prependCommentToCache(postId: number, newComment: Post) {
-    queryClient.setQueryData<Post[]>(['posts', 'children', postId], (old) => {
-        if (!old) return [newComment];
-        return [newComment, ...old];
+    queryClient.setQueryData<InfiniteData<PostsResponse>>(['posts', 'children', postId], (old) => {
+        if (!old) return old;
+        const [first, ...rest] = old.pages;
+        const updatedFirst = { ...first, posts: [newComment, ...first.posts] };
+        return { ...old, pages: [updatedFirst, ...rest] };
     });
 }
 
-
 export function removePostFromCache(postId: number) {
-    queryClient.setQueriesData<Post[]>({ queryKey: ['posts'] }, (old) => {
+    queryClient.setQueriesData<InfiniteData<PostsResponse>>({ queryKey: ['posts'] }, (old) => {
         if (!old) return old;
-        return old.filter((post) => post.id !== postId);
+        return {
+            ...old,
+            pages: old.pages.map(page => ({
+                ...page,
+                posts: page.posts.filter(p => p.id !== postId),
+            })),
+        }
     });
 }
 

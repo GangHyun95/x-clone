@@ -423,13 +423,16 @@ export const getFromFollowing = async (req: Request, res: Response): Promise<voi
 };
 
 export const getLiked = async (req: Request, res: Response): Promise<void> => {
-    const { username } = req.params;
+    const { username } = req.query;
     const currentUserId = req.user?.id;
     if (!currentUserId) {
         res.status(401).json({ success: false, message: '사용자를 찾을 수 없습니다.' });
         return;
     }
-
+    const cursor =
+        req.query.cursorDate && req.query.cursorId
+            ? { cursorDate: new Date(req.query.cursorDate as string), cursorId: parseInt(req.query.cursorId as string, 10) }
+            : null;
     try {
         const userResult = await pool.query(
             `SELECT id FROM users WHERE username = $1`,
@@ -442,8 +445,9 @@ export const getLiked = async (req: Request, res: Response): Promise<void> => {
             return;
         }
 
-        const likedPostResult = await pool.query(
-            `SELECT
+        const values: (number | Date)[] = [currentUserId, targetUser.id];
+        let sql = `
+            SELECT
                 posts.id,
                 posts.content,
                 posts.img,
@@ -471,16 +475,14 @@ export const getLiked = async (req: Request, res: Response): Promise<void> => {
             JOIN posts ON post_likes.post_id = posts.id
             JOIN users ON users.id = posts.user_id
             WHERE post_likes.user_id = $2
-            ORDER BY posts.created_at DESC`,
-            [currentUserId, targetUser.id]
-        );
+        `;
+
+        const { items: posts, hasNextPage, nextCursor } = await paginate(sql, values, cursor, { order: ['posts.created_at', 'posts.id'] });
 
         res.status(200).json({
             success: true,
-            message: likedPostResult.rows.length
-                ? '좋아요한 게시물을 가져왔습니다.'
-                : '좋아요한 게시물이 없습니다.',
-            data: { posts: likedPostResult.rows },
+            message: posts.length ? '좋아요한 게시물을 가져왔습니다.' : '좋아요한 게시물이 없습니다.',
+            data: { posts, hasNextPage, nextCursor },
         });
     } catch (error) {
         console.error('Error in getLikedPosts:', error);
@@ -496,9 +498,12 @@ export const getBookmarked = async (req: Request, res: Response): Promise<void> 
         res.status(401).json({ success: false, message: '사용자를 찾을 수 없습니다.' });
         return;
     }
-
+    const cursor =
+        req.query.cursorDate && req.query.cursorId
+            ? { cursorDate: new Date(req.query.cursorDate as string), cursorId: parseInt(req.query.cursorId as string, 10) }
+            : null;
     try {
-        const values: (number | string)[] = [userId];
+        const values: (number | string | Date)[] = [userId];
         let sql = `
             SELECT
                 posts.id,
@@ -541,17 +546,80 @@ export const getBookmarked = async (req: Request, res: Response): Promise<void> 
             values.push(keyword);
         }
 
-        sql += ` ORDER BY posts.created_at DESC`;
-
-        const result = await pool.query(sql, values);
+        const { items: posts, hasNextPage, nextCursor } = await paginate(sql, values, cursor, { order: ['posts.created_at', 'posts.id'] });
 
         res.status(200).json({
             success: true,
-            message: result.rows.length ? '북마크한 게시물을 가져왔습니다.' : '북마크한 게시물이 없습니다.',
-            data: { posts: result.rows },
+            message: posts.length ? '북마크한 게시물을 가져왔습니다.' : '북마크한 게시물이 없습니다.',
+            data: { posts, hasNextPage, nextCursor },
         });
     } catch (error) {
         console.error('Error in getBookmarkedPosts:', error);
+        res.status(500).json({ success: false, message: '서버 오류가 발생했습니다.' });
+    }
+};
+
+export const getByUsername = async (req: Request, res: Response): Promise<void> => {
+    const { username } = req.query;
+    const currentUserId = req.user?.id;
+
+    if (!currentUserId) {
+        res.status(401).json({ success: false, message: '사용자를 찾을 수 없습니다.' });
+        return;
+    }
+    const cursor =
+        req.query.cursorDate && req.query.cursorId
+            ? { cursorDate: new Date(req.query.cursorDate as string), cursorId: parseInt(req.query.cursorId as string, 10) }
+            : null;
+    try {
+        const { rows } = await pool.query('SELECT id FROM users WHERE username = $1', [username]);
+        const user = rows[0];
+
+        if (!user) {
+            res.status(404).json({ success: false, message: '사용자를 찾을 수 없습니다.' });
+            return;
+        }
+
+        
+        const values: (number | Date)[] = [currentUserId, user.id];
+        let sql = `
+            SELECT
+                posts.id,
+                posts.content,
+                posts.img,
+                posts.parent_id,
+                posts.created_at,
+                posts.updated_at,
+                json_build_object(
+                    'id', users.id,
+                    'username', users.username,
+                    'full_name', users.full_name,
+                    'profile_img', users.profile_img,
+                    'is_following', EXISTS (
+                        SELECT 1 FROM user_follows WHERE from_user_id = $1 AND to_user_id = users.id
+                    )
+                ) AS user,
+                json_build_object(
+                    'like',    (SELECT COUNT(*) FROM post_likes WHERE post_id = posts.id),
+                    'comment', (SELECT COUNT(*) FROM posts      WHERE parent_id = posts.id)
+                ) AS counts,
+                EXISTS (SELECT 1 FROM post_likes      WHERE post_id = posts.id AND user_id = $1) AS is_liked,
+                EXISTS (SELECT 1 FROM post_bookmarks  WHERE post_id = posts.id AND user_id = $1) AS is_bookmarked
+            FROM posts
+            JOIN users ON users.id = posts.user_id
+            WHERE posts.user_id = $2
+                AND posts.parent_id IS NULL
+        `;
+
+        const { items: posts, hasNextPage, nextCursor } = await paginate(sql, values, cursor, { order: ['posts.created_at', 'posts.id'] });
+
+        res.status(200).json({
+            success: true,
+            message: posts.length ? '게시물 목록을 가져왔습니다.' : '게시물이 없습니다.',
+            data: { posts, hasNextPage, nextCursor },
+        });
+    } catch (error) {
+        console.error('Error in getByUsername:', error);
         res.status(500).json({ success: false, message: '서버 오류가 발생했습니다.' });
     }
 };

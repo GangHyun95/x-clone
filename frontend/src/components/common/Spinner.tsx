@@ -41,3 +41,11 @@ export function ListSpinner() {
         </div>
     );
 }
+
+export function LoadMoreSpinner() {
+    return (
+        <div className='w-full py-6 flex items-center justify-center'>
+            <SpinnerSvg className='size-6 text-primary animate-spin' />
+        </div>
+    );
+}

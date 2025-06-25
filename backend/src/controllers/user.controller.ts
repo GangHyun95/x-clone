@@ -43,62 +43,6 @@ export const getMe = async (req: Request, res: Response): Promise<void> => {
     }
 };
 
-export const getPosts = async (req: Request, res: Response): Promise<void> => {
-    const { username } = req.params;
-
-    try {
-        const userResult = await pool.query('SELECT id FROM users WHERE username = $1', [username]);
-        const user = userResult.rows[0];
-
-        if (!user) {
-            res.status(404).json({ success: false, message: '사용자를 찾을 수 없습니다.' });
-            return;
-        }
-
-        const postResult = await pool.query(
-            `SELECT
-                posts.id,
-                posts.content,
-                posts.img,
-                posts.created_at,
-                posts.updated_at,
-                json_build_object(
-                    'id', users.id,
-                    'username', users.username,
-                    'full_name', users.full_name,
-                    'profile_img', users.profile_img,
-                    'is_following', EXISTS (
-                        SELECT 1 FROM user_follows WHERE from_user_id = $1 AND to_user_id = users.id
-                    )
-                ) AS user,
-                json_build_object(
-                    'like', (SELECT COUNT(*) FROM post_likes WHERE post_id = posts.id),
-                    'comment', (SELECT COUNT(*) FROM posts WHERE parent_id = posts.id)
-                ) AS counts,
-                EXISTS (
-                    SELECT 1 FROM post_likes WHERE post_id = posts.id AND user_id = $1
-                ) AS is_liked,
-                EXISTS (
-                    SELECT 1 FROM post_bookmarks WHERE post_id = posts.id AND user_id = $1
-                ) AS is_bookmarked
-            FROM posts
-            JOIN users ON users.id = posts.user_id
-            WHERE posts.user_id = $2 AND posts.parent_id IS NULL
-            ORDER BY posts.created_at DESC`,
-            [req.user?.id, user.id]
-        );
-
-        res.status(200).json({
-            success: true,
-            message: postResult.rows.length ? '게시물 목록을 가져왔습니다.' : '게시물이 없습니다.',
-            data: { posts: postResult.rows },
-        });
-    } catch (error) {
-        console.error('Error in getUserPosts:', error);
-        res.status(500).json({ success: false, message: '서버 오류가 발생했습니다.' });
-    }
-};
-
 export const getProfile = async (req: Request, res: Response): Promise<void> => {
     const { username } = req.params;
 
@@ -206,6 +150,7 @@ export const getRecommended = async (req: Request, res: Response): Promise<void>
                     SELECT to_user_id FROM user_follows WHERE from_user_id = $1
                 )
             ORDER BY RANDOM()
+            LIMIT 50
             `,
             [userId]
         );

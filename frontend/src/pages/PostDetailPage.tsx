@@ -12,28 +12,32 @@ import ShareButton from '@/components/postcard/button/ShareButton';
 import { useImageAspectRatio } from '@/hooks/useImageAspectRatio';
 import { usePost, useChildrenPosts } from '@/queries/post';
 import { formatPostTimestamp } from '@/utils/formatters';
+import { useInfiniteScroll } from '@/hooks/useInfiniteScroll';
+import { LoadMoreSpinner } from '@/components/common/Spinner';
 
 export default function PostDetailPage() {
     const navigate = useNavigate();
     const postId = Number(useParams().postId ?? '');
 
-    const { data: post } = usePost(postId);
-    const { data: comments = [] } = useChildrenPosts(postId);
+    const { data: post, isLoading: isPostLoading } = usePost(postId);
+    const { data = { pages: [], hasNextPage: false, nextCursor: null }, isLoading: isCommentLoading, fetchNextPage, hasNextPage, isFetchingNextPage } = useChildrenPosts(postId);
+    const comments = data.pages.flatMap(page => page.posts);
+
+    const lastCommentRef = useInfiniteScroll({hasNextPage, isFetchingNextPage, fetchNextPage});
 
     const aspectRatio = useImageAspectRatio(post?.img);
     const formattedTime = useMemo(() => formatPostTimestamp(post?.created_at || ''), [post?.created_at]);
 
     if (!post) return null;
-
     const { user, content, img, counts, is_liked, is_bookmarked } = post;
-
+    
     return (
         <PageLayout>
             <StickyHeader>
                 <StickyHeader.Header onPrev={() => navigate(-1)}>Post</StickyHeader.Header>
             </StickyHeader>
 
-            <PageLayout.Content>
+            <PageLayout.Content className='grow-0' isLoading={isPostLoading} >
                 <article className='flex flex-col px-4 py-3 border-b border-base-300'>
                     <div className='flex'>
                         <div className='mr-2'>
@@ -76,13 +80,22 @@ export default function PostDetailPage() {
                     </div>
                 </article>
 
-                {!post.parent_id && (
-                    <PostEditorForm postId={postId} placeholder='Post your reply' />
-                )}
-
-                {comments.map((comment) => (
-                    <PostCard key={comment.id} post={comment} />
-                ))}
+            </PageLayout.Content>
+            {!post.parent_id && (
+                <PostEditorForm postId={postId} placeholder='Post your reply' />
+            )}
+            <PageLayout.Content isLoading={isCommentLoading}>
+                {comments.map((comment, idx) => {
+                    const isLast = idx === comments.length - 1;
+                    return (
+                        <PostCard
+                            key={comment.id}
+                            post={comment}
+                            ref={isLast ? lastCommentRef : undefined}
+                        />
+                    );
+                })}
+                {hasNextPage && <LoadMoreSpinner />}
             </PageLayout.Content>
         </PageLayout>
     );
