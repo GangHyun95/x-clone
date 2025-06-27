@@ -1,25 +1,18 @@
 import { Link, NavLink, useLocation } from 'react-router-dom';
 
 import ModalRouteBtn from '@/components/common/ModalRouteBtn';
-import { BellSvg, BookmarkSvg, HomeSvg, PostSvg, SettingsSvg, UserSvg, XSvg } from '@/components/svgs';
+import { PostSvg, XSvg } from '@/components/svgs';
 
+import { navItems } from '@/constants/navItems';
 import { getCurrentUser } from '@/store/authStore';
 
 import UserMenuBtn from './UserMenuBtn';
-
-const navItems = [
-    { name: 'home', label: 'Home', path: '/', icon: HomeSvg },
-    { name: 'notifications', label: 'Notifications', path: '/notifications', icon: BellSvg },
-    { name: 'bookmarks', label: 'Bookmarks', path: '/bookmarks', icon: BookmarkSvg },
-    { name: 'profile', label: 'Profile', path: '/profile', icon: UserSvg },
-    { name: 'settings', label: 'Settings', path: '/settings', icon: SettingsSvg },
-];
 
 export default function Sidebar() {
     const location = useLocation();
     const me = getCurrentUser();
     return (
-        <header className='flex flex-col items-end grow'>
+        <header className='hidden flex-col items-end grow xs:flex'>
             <div className='relative flex w-[68px] sm:w-[88px] xl:w-[275px] xl-plus:ml-[60px]'>
                 <div className='fixed top-0 flex h-full flex-col'>
                     <div className='flex flex-col justify-between h-full w-[68px] px-1 overflow-y-auto xl:w-[275px] sm:w-[88px] sm:px-2'>

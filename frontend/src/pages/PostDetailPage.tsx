@@ -2,6 +2,7 @@ import { useMemo } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 
 import Avatar from '@/components/common/Avatar';
+import { LoadMoreSpinner } from '@/components/common/Spinner';
 import StickyHeader from '@/components/common/StickyHeader';
 import PostEditorForm from '@/components/editor/PostEditorForm';
 import PageLayout from '@/components/layout/PageLayout';
@@ -10,10 +11,9 @@ import { BookmarkButton, CommentButton, LikeButton } from '@/components/postcard
 import PostMenuBtn from '@/components/postcard/button/PostMenuBtn';
 import ShareButton from '@/components/postcard/button/ShareButton';
 import { useImageAspectRatio } from '@/hooks/useImageAspectRatio';
+import { useInfiniteScroll } from '@/hooks/useInfiniteScroll';
 import { usePost, useChildrenPosts } from '@/queries/post';
 import { formatPostTimestamp } from '@/utils/formatters';
-import { useInfiniteScroll } from '@/hooks/useInfiniteScroll';
-import { LoadMoreSpinner } from '@/components/common/Spinner';
 
 export default function PostDetailPage() {
     const navigate = useNavigate();

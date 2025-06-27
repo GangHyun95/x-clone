@@ -6,6 +6,7 @@ import StickyHeader from '@/components/common/StickyHeader';
 import Tabs from '@/components/common/Tabs';
 import PostEditorForm from '@/components/editor/PostEditorForm';
 import PageLayout from '@/components/layout/PageLayout';
+import MobileTopBar from '@/components/mobile/MobileTopBar';
 import PostCard from '@/components/postcard';
 import { useInfiniteScroll } from '@/hooks/useInfiniteScroll';
 import { usePosts } from '@/queries/post';
@@ -26,6 +27,9 @@ export default function HomePage() {
     return (
         <PageLayout>
             <StickyHeader>
+                <div className='h-[53px] xs:hidden'>
+                    <MobileTopBar />
+                </div>
                 <Tabs tabs={tabs} />
             </StickyHeader>
             <PostEditorForm />

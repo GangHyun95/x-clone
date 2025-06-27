@@ -5,8 +5,8 @@ import StickyHeader from '@/components/common/StickyHeader';
 import Tabs from '@/components/common/Tabs';
 import PageLayout from '@/components/layout/PageLayout';
 import NotificationCard from '@/components/NotificationCard';
-import { useNotifications } from '@/queries/notification';
 import { useInfiniteScroll } from '@/hooks/useInfiniteScroll';
+import { useNotifications } from '@/queries/notification';
 
 export default function NotificationsPage() {
     const [searchParams, setSearchParams] = useSearchParams();

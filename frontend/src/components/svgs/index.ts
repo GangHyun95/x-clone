@@ -27,3 +27,4 @@ export { default as CarmeraSvg } from './Camera';
 export { default as KeySvg } from './Key';
 export { default as AlertSvg } from './Alert';
 export { default as RightArrowSvg } from './RightArrow';
+export { default as LogoutSvg } from './LogoutIcon'

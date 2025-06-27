@@ -63,7 +63,7 @@ export default function ProfileHeader({ user, isMe }: { user: User; isMe: boolea
 
                     <Link to={`/users/${user.username}?tab=follower`} className='mr-5 cursor-pointer hover:underline'>
                         <span className='font-bold text-black'>{user.status.follower} </span>
-                        <span className='text-gray-500'>Follower</span>
+                        <span className='text-gray-500'>Followers</span>
                     </Link>
                 </div>
             </div>

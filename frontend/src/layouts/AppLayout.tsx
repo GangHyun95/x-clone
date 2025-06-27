@@ -1,5 +1,6 @@
 import { Outlet } from 'react-router-dom';
 
+import BottomNav from '@/components/mobile/BottomNav';
 import Sidebar from '@/components/sidebar';
 import MainLayout from '@/layouts/MainLayout';
 import { getAccessToken } from '@/store/authStore';
@@ -16,6 +17,7 @@ export default function AppLayout() {
                         <Outlet />
                     </MainLayout>
                 </div>
+                <BottomNav />
             </div>
         );
     }

@@ -1,6 +1,7 @@
+import { useNavigate } from 'react-router-dom';
+
 import Avatar from '@/components/common/Avatar';
 import FollowButton from '@/components/common/FollowButton';
-import { useNavigate } from 'react-router-dom';
 
 type Props = {
     user: {
@@ -21,11 +22,11 @@ export default function UserListItem({ user }: Props) {
             onClick={() => navigate(`/profile/${user.username}`)}>
             <article className='flex'>
                 <Avatar username={user.username} src={user.profile_img} className='mr-2' />
-                <div className='flex grow items-center justify-between'>
-                    <div className='flex flex-col w-full'>
-                        <h3 className='font-bold'>{user.full_name}</h3>
-                        <span className='text-gray-500'>@{user.username}</span>
-                        {user.bio && <p className='text-sm mt-1 line-clamp-2'>{user.bio}</p>}
+                <div className='flex grow items-center justify-between min-w-0'>
+                    <div className='flex flex-col w-full min-w-0'>
+                        <h3 className='font-bold whitespace-nowrap truncate'>{user.full_name}</h3>
+                        <span className='text-gray-500 whitespace-nowrap truncate'>@{user.username}</span>
+                        {user.bio && <p className='text-sm mt-1 whitespace-nowrap truncate'>{user.bio}</p>}
                     </div>
                     <div className='ml-4' onClick={(e) => e.stopPropagation()}>
                         <FollowButton

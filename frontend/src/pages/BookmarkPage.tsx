@@ -2,14 +2,14 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import EmptyState from '@/components/common/EmptyState';
+import { LoadMoreSpinner } from '@/components/common/Spinner';
 import StickyHeader from '@/components/common/StickyHeader';
 import PageLayout from '@/components/layout/PageLayout';
 import PostCard from '@/components/postcard';
 import { SearchSvg } from '@/components/svgs';
 import { useDebounce } from '@/hooks/useDebounce';
-import { useBookmarked } from '@/queries/post';
 import { useInfiniteScroll } from '@/hooks/useInfiniteScroll';
-import { LoadMoreSpinner } from '@/components/common/Spinner';
+import { useBookmarked } from '@/queries/post';
 
 export default function BookmarkPage() {
     const navigate = useNavigate();

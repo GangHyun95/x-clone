@@ -1,16 +1,16 @@
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 
 import EmptyState from '@/components/common/EmptyState';
+import { LoadMoreSpinner } from '@/components/common/Spinner';
 import StickyHeader from '@/components/common/StickyHeader';
 import Tabs from '@/components/common/Tabs';
 import PageLayout from '@/components/layout/PageLayout';
 import PostCard from '@/components/postcard';
 import ProfileHeader from '@/components/profile/ProfileHeader';
+import { useInfiniteScroll } from '@/hooks/useInfiniteScroll';
+import { useUserPosts } from '@/queries/post';
 import { useProfile } from '@/queries/user';
 import { getCurrentUser } from '@/store/authStore';
-import { useUserPosts } from '@/queries/post';
-import { useInfiniteScroll } from '@/hooks/useInfiniteScroll';
-import { LoadMoreSpinner } from '@/components/common/Spinner';
 
 export default function ProfilePage() {
     const { username = '' } = useParams();
