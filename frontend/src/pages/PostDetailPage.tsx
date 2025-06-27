@@ -34,7 +34,7 @@ export default function PostDetailPage() {
     return (
         <PageLayout>
             <StickyHeader>
-                <StickyHeader.Header onPrev={() => navigate(-1)}>Post</StickyHeader.Header>
+                <StickyHeader.Header onPrev={() => navigate(-1)} showAvatarOnMobile={false}>Post</StickyHeader.Header>
             </StickyHeader>
 
             <PageLayout.Content className='grow-0' isLoading={isPostLoading} >

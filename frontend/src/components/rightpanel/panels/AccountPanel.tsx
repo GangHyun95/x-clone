@@ -11,7 +11,7 @@ export default function AccountPanel() {
 	
 	return (
 		<>
-			<StickyHeader.Header onPrev={() => navigate(-1)}>
+			<StickyHeader.Header onPrev={() => navigate(-1)} showAvatarOnMobile={false}>
 				<p className='text-xl font-bold'>Account information</p>
 			</StickyHeader.Header>
 

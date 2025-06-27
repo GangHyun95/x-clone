@@ -34,7 +34,7 @@ export default function PasswordPanel() {
 
     return (
         <form onSubmit={handleSubmit(onSubmit)}>
-            <StickyHeader.Header onPrev={() => navigate(-1)}>
+            <StickyHeader.Header onPrev={() => navigate(-1)} showAvatarOnMobile={false}>
                 <p className='text-xl font-bold'>Change your password</p>
             </StickyHeader.Header>
 

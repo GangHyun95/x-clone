@@ -23,13 +23,13 @@ export default function StickyHeader({ children }: { children: React.ReactNode }
     );
 }
 
-StickyHeader.Header = function Header({ children, onPrev }: { children: React.ReactNode; onPrev?: () => void }) {
+StickyHeader.Header = function Header({ children, onPrev, showAvatarOnMobile = true }: { children: React.ReactNode; onPrev?: () => void, showAvatarOnMobile?: boolean }) {
     const [open, setOpen] = useState(false);
     const me = getCurrentUser();
     return (
         <>
             <div className='flex items-center px-4 h-[53px]'>
-                <div className='block xs:hidden min-w-[53px]'>
+                <div className={`min-w-[53px] ${showAvatarOnMobile ? 'block xs:hidden' : 'hidden'}`}>
                     <button
                         onClick={() => setOpen(true)}
                         className='btn btn-ghost btn-circle min-w-6 min-h-6'
@@ -38,7 +38,7 @@ StickyHeader.Header = function Header({ children, onPrev }: { children: React.Re
                     </button>
                 </div>
                 {onPrev && (
-                    <div className='min-w-[53px] hidden xs:block'>
+                    <div className={`min-w-[53px] ${showAvatarOnMobile ? 'hidden xs:block' : ''}`}>
                         <button type='button' onClick={onPrev} className='btn btn-ghost btn-circle min-w-6 min-h-6 -m-2'>
                             <BackArrowSvg className='size-5' />
                         </button>

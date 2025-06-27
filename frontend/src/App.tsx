@@ -1,6 +1,7 @@
 import { Toaster } from 'react-hot-toast';
 import { Route, Routes, useLocation, useMatch } from 'react-router-dom';
 
+import ScrollToTop from '@/components/common/ScrollToTop';
 import { FullPageSpinner } from '@/components/common/Spinner';
 import { LoginModal, ResetPasswordModal, SignUpModal } from '@/components/modals/auth';
 import EditProfileModal from '@/components/modals/EditProfileModal';
@@ -24,6 +25,7 @@ function App() {
     if ((isAuthLoading && !accessToken) || (isMeLoading && !user)) return <FullPageSpinner />;
     return (
         <>
+            <ScrollToTop />
             <Routes location={state?.backgroundLocation || location}>
                 <Route path='/' element={<AppLayout />}>
                     <Route

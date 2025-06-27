@@ -31,9 +31,13 @@ export default function RightPanel() {
         'delete/confirm': <ConfirmDeletePanel />
     };
 
+    function isDesktop() {
+        return typeof window !== 'undefined' && window.matchMedia('(min-width: 1024px)').matches;
+    }
+    
     const key = pathname.replace('/settings/', '');
     const content = panelMap[key] ?? null;
-
+    if (!isDesktop()) return null;
     return (
         <div className='hidden lg:flex flex-col w-full max-w-[600px]'>
             <aside className='flex flex-col'>
