@@ -29,8 +29,7 @@ export const googleLogin = async (req: Request, res: Response): Promise<void> =>
             return;
         }
 
-        const tokenData = await tokenRes.json();
-        const { access_token } = tokenData;
+        const { access_token } = await tokenRes.json();
         if (!access_token) {
             res.status(400).json({ success: false, message: 'Google Access Token을 가져오지 못했습니다.' });
             return;
@@ -45,8 +44,7 @@ export const googleLogin = async (req: Request, res: Response): Promise<void> =>
             return;
         }
 
-        const userInfo = await userInfoRes.json();
-        const { sub: googleId, email, name, picture } = userInfo;
+        const { sub: googleId, email, name, picture } = await userInfoRes.json();
         if (!googleId || !email) {
             res.status(400).json({ success: false, message: 'Google 사용자 정보가 유효하지 않습니다.' });
             return;
@@ -62,7 +60,16 @@ export const googleLogin = async (req: Request, res: Response): Promise<void> =>
                 return;
             }
 
-            const username = email.split('@')[0];
+            const base = email.split('@')[0];
+            let username = base;
+
+            const { rows } = await pool.query('SELECT 1 FROM users WHERE username = $1', [username]);
+            if (rows.length > 0) {
+                const timestamp = Date.now().toString().slice(-4);
+                const rand = Math.floor(1000 + Math.random() * 9000);
+                username = `${base}${timestamp}${rand}`
+            }
+
             const insertResult = await pool.query(
                 `INSERT INTO users (email, full_name, username, google_id, profile_img)
                 VALUES ($1, $2, $3, $4, $5) RETURNING *`,

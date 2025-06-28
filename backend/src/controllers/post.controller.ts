@@ -2,8 +2,8 @@ import type { Request, Response } from 'express';
 
 import { deleteImage, uploadAndReplaceImage } from '../lib/cloudinary.ts';
 import { pool } from '../lib/db/index.ts';
-import { getTweetLength } from '../lib/util.ts';
 import { paginate } from '../lib/db/paginate.ts';
+import { getTweetLength } from '../lib/util.ts';
 
 export const create = async (req: Request, res: Response): Promise<void> => {
     const userId = req.user?.id;
@@ -371,9 +371,8 @@ export const getFromFollowing = async (req: Request, res: Response): Promise<voi
         }
 
         const values: (number | Date | number[])[] = [followingIds, userId];
-        let idx = 3;
 
-        let sql = `
+        const sql = `
             SELECT
                 posts.id,
                 posts.content,
@@ -446,7 +445,7 @@ export const getLiked = async (req: Request, res: Response): Promise<void> => {
         }
 
         const values: (number | Date)[] = [currentUserId, targetUser.id];
-        let sql = `
+        const sql = `
             SELECT
                 posts.id,
                 posts.content,
@@ -582,7 +581,7 @@ export const getByUsername = async (req: Request, res: Response): Promise<void> 
 
         
         const values: (number | Date)[] = [currentUserId, user.id];
-        let sql = `
+        const sql = `
             SELECT
                 posts.id,
                 posts.content,

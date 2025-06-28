@@ -64,19 +64,12 @@ body {
 }
 
 .modal {
-    transition: none ;
-    opacity: 1 ;
-    visibility: visible ;
-    pointer-events: auto ;
-    background-color: transparent ;
+    transition: none;
 }
 
-.modal.modal-open .modal-box,
-.modal[open] .modal-box,
-.modal:target .modal-box {
-    transform: none ;
-    translate: none ;
-    scale: none ;
-    opacity: 1 ;
-    transition: none ;
+.modal-box {
+    transform: none;
+    translate: none;
+    scale: none;
+    transition: none;
 }

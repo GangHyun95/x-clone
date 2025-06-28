@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import type { FieldValues, UseFormSetError } from 'react-hook-form'
 
-import { login, logout, signup, sendEmailCode, verifyEmailCode, checkEmailExists, resetPassword } from '@/service/auth';
+import { login, logout, signup, sendEmailCode, verifyEmailCode, checkEmailExists, resetPassword, googleLogin } from '@/service/auth';
 import type { LoginPayload, SignupPayload, SendCodePayload, VerifyCodePayload, ResetPasswordPayload } from '@/types/auth';
 import { handleFormErrors } from '@/utils/handleFormErrors';
 
@@ -27,7 +27,7 @@ type WithSetError<T extends FieldValues, D> = {
 
 type WithErrorHandler<T> = {
     onSuccess: (data: T) => void;
-    onError: () => void;
+    onError: (message?: string) => void;
 };
 
 export function useSignup({ setError, onSuccess }: WithSetError<SignupPayload, { accessToken: string }>) {
@@ -181,4 +181,31 @@ export function useCheckEmail({ onSuccess, setError }: WithSetError<{ email: str
     };
 
     return { checkEmail, isCheckingEmail };
+}
+
+export function useGoogleLoginAction({ onSuccess, onError }: WithErrorHandler<{ accessToken: string}>) {
+    const [isLoggingIn,setIsLoggingIn] = useState(false);
+
+    const loginWithGoogleCode = async (code: string) => {
+        setIsLoggingIn(true);
+        try {
+            const res = await googleLogin({ code })
+            onSuccess({ accessToken: res.data.accessToken });
+        } catch (error) {
+            let message = 'Unknown error';
+            if (error instanceof Error) {
+                try {
+                    const parsed = JSON.parse(error.message);
+                    message = parsed.message;
+                } catch(e) {
+                    console.error('Failed to parse error message from server', e);
+                }
+            }
+
+            onError(message);
+        } finally {
+            setIsLoggingIn(false);
+        }
+    };
+    return { loginWithGoogleCode, isLoggingIn};
 }
