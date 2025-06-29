@@ -7,7 +7,7 @@ CREATE TABLE users (
     email VARCHAR(255) UNIQUE NOT NULL,
     password TEXT,
     google_id TEXT UNIQUE,
-    apple_id TEXT UNIQUE,
+    kakao_id TEXT UNIQUE,
     profile_img TEXT DEFAULT '',
     cover_img TEXT DEFAULT '',
     bio TEXT DEFAULT '',

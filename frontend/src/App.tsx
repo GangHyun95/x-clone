@@ -9,6 +9,7 @@ import NewCommentModal from '@/components/modals/NewCommentModal';
 import NewPostModal from '@/components/modals/NewPostModal';
 import AppLayout from '@/layouts/AppLayout';
 import { AuthLandingPage, BookmarkPage, HomePage, NotificationsPage, PostDetailPage, ProfilePage, SettingsPage, UsersTabPage } from '@/pages';
+import KakaoCallbackPage from '@/pages/KakaoCallbackPage';
 import { useCheckAuth, useMe } from '@/queries/auth';
 import ProtectedRoute from '@/routes/ProtectedRoute';
 
@@ -32,6 +33,7 @@ function App() {
                         index
                         element={accessToken ? <HomePage /> : <AuthLandingPage />}
                     />
+                    <Route path='/oauth/kakao/callback' element={<KakaoCallbackPage />} />
                     <Route element={<ProtectedRoute isAllowed={!!accessToken} />}>
                         <Route path='notifications' element={<NotificationsPage />} />
                         <Route path='bookmarks' element={<BookmarkPage />} />

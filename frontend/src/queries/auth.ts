@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 
-import { getGoogleClientId, refreshAccessToken } from '@/service/auth';
+import { refreshAccessToken } from '@/service/auth';
 import { getMe } from '@/service/user';
 
 export function useCheckAuth() {
@@ -30,18 +30,4 @@ export function useMe(options?: { enabled?: boolean }) {
         enabled: options?.enabled ?? true,
         refetchOnWindowFocus: false,
     });
-}
-
-export function useGoogleClientId() {
-    return useQuery({
-        queryKey: ['google-client-id'],
-        queryFn: async () => {
-            const res = await getGoogleClientId();
-            return res.data.googleClientId;
-        },
-        staleTime: Infinity,
-        gcTime: Infinity,
-        refetchOnWindowFocus: false,
-        retry: false,
-    })
 }

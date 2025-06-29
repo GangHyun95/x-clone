@@ -29,12 +29,12 @@ export async function login(payload: LoginPayload) {
     );
 }
 
-export async function getGoogleClientId() {
-    return get<{ googleClientId: string}>('/api/auth/google');
-}
-
 export async function googleLogin(payload: { code: string }) {
     return post<{code: string}, { accessToken: string}>('/api/auth/google', payload);
+}
+
+export async function kakaoLogin(payload: { code: string }) {
+    return post<{ code: string }, { accessToken: string }>('/api/auth/kakao', payload);
 }
 
 export async function logout() {

@@ -1,14 +1,11 @@
 import { GoogleOAuthProvider } from '@react-oauth/google';
 
 import GoogleLoginButton from '@/components/auth/GoogleLoginButton';
+import KakaoLoginButton from '@/components/auth/kakaoLoginButton';
 import ModalRouteBtn from '@/components/common/ModalRouteBtn';
-import { FullPageSpinner } from '@/components/common/Spinner';
-import { AppleSvg, XSvg } from '@/components/svgs';
-import { useGoogleClientId } from '@/queries/auth';
+import { XSvg } from '@/components/svgs';
 
 export default function AuthLandingPage() {
-    const { data: googleClientId = '', isLoading } = useGoogleClientId();
-    if (isLoading) return <FullPageSpinner />
     return (
         <section className='flex-1 flex'>
             <div className='hidden flex-1 flex-col justify-center lg:flex'>
@@ -21,14 +18,11 @@ export default function AuthLandingPage() {
                 <h2 className='mb-5 text-2xl font-extrabold sm:text-3xl lg:mb-8'>Join today.</h2>
 
                 <section className='flex flex-col'>
-                    <GoogleOAuthProvider clientId={googleClientId}>
+                <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}>
                         <GoogleLoginButton />
                     </GoogleOAuthProvider>
 
-                    <button className='bn btn-circle btn-ghost border-gray-300 w-[300px]'>
-                        <AppleSvg className='mr-1 h-5 w-5' />
-                        <span>Sign up with Apple</span>
-                    </button>
+                    <KakaoLoginButton />
 
                     <div className='my-2 flex w-[300px] items-center gap-4'>
                         <div className='h-px flex-1 bg-gray-100'></div>

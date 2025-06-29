@@ -2,7 +2,7 @@ import express from 'express';
 
 import { signup, login, logout, refreshAccessToken } from '../controllers/auth.controller.ts';
 import { checkEmailExists, resetPassword, sendEmailCode, verifyEmailCode } from '../controllers/email.controller.ts';
-import { getGoogleClientId, googleLogin } from '../controllers/social.controller.ts';
+import { googleLogin, kakaoLogin } from '../controllers/social.controller.ts';
 
 const router = express.Router();
 
@@ -13,7 +13,7 @@ router.post('/logout', logout);
 router.post('/refresh', refreshAccessToken);
 
 router.post('/google', googleLogin);
-router.get('/google', getGoogleClientId);
+router.post('/kakao', kakaoLogin);
 
 router.post('/email-code', sendEmailCode);
 router.post('/email-code/verify', verifyEmailCode);
