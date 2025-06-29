@@ -67,7 +67,7 @@ export const googleLogin = async (req: Request, res: Response): Promise<void> =>
             if (rows.length > 0) {
                 const timestamp = Date.now().toString().slice(-4);
                 const rand = Math.floor(1000 + Math.random() * 9000);
-                username = `${base}${timestamp}${rand}`
+                username = `${base}_${timestamp}${rand}`
             }
 
             const insertResult = await pool.query(
@@ -175,7 +175,7 @@ if (!tokenRes.ok) {
             if (rows.length > 0) {
                 const timestamp = Date.now().toString().slice(-4);
                 const rand = Math.floor(1000 + Math.random() * 9000);
-                username = `${base}${timestamp}${rand}`
+                username = `${base}_${timestamp}${rand}`
             }
 
             const insertResult = await pool.query(

@@ -1,0 +1,22 @@
+{
+  "name": "x-clone",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "build":"npm install --prefix backend && npm install --prefix frontend && npm run build --prefix backend && npm run build --prefix frontend",
+    "start": "npm run start --prefix backend"
+  },
+  "devDependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/GangHyun95/x-clone.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/GangHyun95/x-clone/issues"
+  },
+  "homepage": "https://github.com/GangHyun95/x-clone#readme",
+  "description": ""
+}

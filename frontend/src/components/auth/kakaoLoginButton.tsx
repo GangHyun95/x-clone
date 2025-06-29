@@ -1,12 +1,13 @@
 import { KakaoSvg } from '@/components/svgs';
+import { env } from '@/lib/env';
 
 export default function KakaoLoginButton() {
 
     const handleKakaoLogin = () => {
-        const kakaoClientId = import.meta.env.VITE_KAKAO_CLIENT_ID;
-        const redirectUri = import.meta.env.VITE_KAKAO_REDIRECT_URI;
+        const clientId = env.KAKAO_CLIENT_ID;
+        const redirectUri = env.KAKAO_REDIRECT_URI;
 
-        const kakaoAuthUrl = `https://kauth.kakao.com/oauth/authorize?response_type=code&client_id=${kakaoClientId}&redirect_uri=${redirectUri}&prompt=login`;
+        const kakaoAuthUrl = `https://kauth.kakao.com/oauth/authorize?response_type=code&client_id=${clientId}&redirect_uri=${redirectUri}&prompt=login`;
         window.location.href = kakaoAuthUrl;
     };
 

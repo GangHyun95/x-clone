@@ -11,6 +11,9 @@ export default defineConfig({
             '/api': {
                 target: 'http://localhost:8000',
             },
+            '/env.js': {
+                target: 'http://localhost:8000',
+            },
         },
     },
     resolve: {

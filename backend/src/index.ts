@@ -1,3 +1,5 @@
+import path from 'path';
+
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
 import dotenv from 'dotenv';
@@ -15,6 +17,7 @@ dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 8000;
+const __dirname = path.resolve();
 
 app.use(express.json());
 app.use(cookieParser());
@@ -30,6 +33,25 @@ app.use('/api/auth', authRoutes);
 app.use('/api/users', protectRoute, userRoutes);
 app.use('/api/posts', protectRoute, postRoutes);
 app.use('/api/notifications', protectRoute, notificationRoutes);
+
+app.get('/env.js', (req, res) => {
+    res.setHeader('Content-Type', 'application/javascript');
+    res.send(`
+        window.__ENV__ = {
+            KAKAO_CLIENT_ID: "${process.env.KAKAO_CLIENT_ID}",
+            KAKAO_REDIRECT_URI: "${process.env.KAKAO_REDIRECT_URI}",
+            GOOGLE_CLIENT_ID: "${process.env.GOOGLE_CLIENT_ID}"
+        };
+    `);
+});
+
+if (process.env.NODE_ENV === 'production') {
+    app.use(express.static(path.join(__dirname, '../frontend/dist')));
+
+    app.get('/{*any}', (req, res) => {
+        res.sendFile(path.join(__dirname, '../frontend', 'dist', 'index.html'));
+    });
+}
 
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
