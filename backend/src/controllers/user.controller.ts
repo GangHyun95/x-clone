@@ -7,10 +7,6 @@ import { buildUserDetail, buildUserSummary } from '../lib/util.ts';
 
 export const getMe = async (req: Request, res: Response): Promise<void> => {
     const user = req.user;
-    if (!user) {
-        res.status(401).json({ success: false, message: '사용자를 찾을 수 없습니다.' });
-        return;
-    }
 
     try {
         const result = await pool.query(
@@ -74,7 +70,7 @@ export const getProfile = async (req: Request, res: Response): Promise<void> => 
                 ) AS status
             FROM users
             WHERE username = $2`,
-            [req.user?.id, username]
+            [req.user.id, username]
         );
 
         const user = userResult.rows[0];
@@ -94,11 +90,6 @@ export const getProfile = async (req: Request, res: Response): Promise<void> => 
 };
 
 export const getSuggested = async (req: Request, res: Response): Promise<void> => {
-    if (!req.user) {
-        res.status(401).json({ success: false, message: '사용자를 찾을 수 없습니다.' });
-        return;
-    }
-
     const userId = req.user.id;
     const excludedUsername = req.query.exclude as string | undefined;
 
@@ -134,11 +125,6 @@ export const getSuggested = async (req: Request, res: Response): Promise<void> =
 };
 
 export const getRecommended = async (req: Request, res: Response): Promise<void> => {
-    if (!req.user) {
-        res.status(401).json({ success: false, message: '사용자를 찾을 수 없습니다.' });
-        return;
-    }
-
     const userId = req.user.id;
     try {
         const randomUserResult = await pool.query(
@@ -169,7 +155,7 @@ export const getRecommended = async (req: Request, res: Response): Promise<void>
 
 export const getFollowers = async (req: Request, res: Response): Promise<void> => {
     const { username } = req.params;
-    const currentUserId = req.user?.id;
+    const currentUserId = req.user.id;
 
     try {
         const targetUserResult = await pool.query(`SELECT id FROM users WHERE username = $1`, [username]);
@@ -213,7 +199,7 @@ export const getFollowers = async (req: Request, res: Response): Promise<void> =
 
 export const getFollowing = async (req: Request, res: Response): Promise<void> => {
     const { username } = req.params;
-    const currentUserId = req.user?.id;
+    const currentUserId = req.user.id;
 
     try {
         const targetUserResult = await pool.query(`SELECT id FROM users WHERE username = $1`, [username]);
@@ -256,11 +242,6 @@ export const getFollowing = async (req: Request, res: Response): Promise<void> =
 };
 
 export const toggleFollow = async (req: Request, res: Response): Promise<void> => {
-    if (!req.user) {
-        res.status(401).json({ success: false, message: '사용자를 찾을 수 없습니다.' });
-        return;
-    }
-
     const currentUserId = req.user.id;
     const targetUserId = Number(req.params.id);
 
@@ -332,11 +313,6 @@ export const toggleFollow = async (req: Request, res: Response): Promise<void> =
 };
 
 export const updateProfile = async (req: Request, res: Response): Promise<void> => {
-    if (!req.user) {
-        res.status(401).json({ success: false, message: '사용자를 찾을 수 없습니다.' });
-        return;
-    }
-
     const { fullName, bio, link } = req.body;
     const userId = req.user.id;
 
@@ -439,11 +415,6 @@ export const updateProfile = async (req: Request, res: Response): Promise<void> 
 };
 
 export const updateUsername = async (req: Request, res: Response): Promise<void> => {
-    if (!req.user) {
-        res.status(401).json({ success: false, message: '사용자를 찾을 수 없습니다.' });
-        return;
-    }
-
     const userId = req.user.id;
     const { username } = req.body;
 
@@ -499,13 +470,8 @@ export const updateUsername = async (req: Request, res: Response): Promise<void>
 };
 
 export const changePassword = async (req: Request, res: Response): Promise<void> => {
-    if (!req.user) {
-        res.status(401).json({ success: false, message: '사용자를 찾을 수 없습니다.' });
-        return;
-    }
-
     const { currentPassword, newPassword, confirmPassword} = req.body;
-    const userId = req.user?.id;
+    const userId = req.user.id;
     const errors: { field: string; message: string}[] = [];
 
     if (!currentPassword) errors.push({ field: 'currentPassword', message: '현재 비밀번호를 입력해 주세요.'})
@@ -548,11 +514,6 @@ export const changePassword = async (req: Request, res: Response): Promise<void>
 };
 
 export const deleteAccount = async (req: Request, res: Response): Promise<void> => {
-    if (!req.user) {
-        res.status(401).json({ success: false, message: '사용자를 찾을 수 없습니다.' });
-        return;
-    }
-
     const userId = req.user.id;
     const { password: currentPassword } = req.body;
 

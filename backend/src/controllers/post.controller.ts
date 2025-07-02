@@ -6,14 +6,9 @@ import { paginate } from '../lib/db/paginate.ts';
 import { getTweetLength } from '../lib/util.ts';
 
 export const create = async (req: Request, res: Response): Promise<void> => {
-    const userId = req.user?.id;
+    const userId = req.user.id;
     const { text, parentId } = req.body;
     const file = req.file;
-
-    if (!userId) {
-        res.status(401).json({ success: false, message: '사용자를 찾을 수 없습니다.' });
-        return;
-    }
 
     if (!text && !file) {
         res.status(400).json({ success: false, message: '텍스트 또는 이미지를 입력해야 합니다.' });
@@ -74,13 +69,8 @@ export const create = async (req: Request, res: Response): Promise<void> => {
 };
 
 export const remove = async (req: Request, res: Response): Promise<void> => {
-    const userId = req.user?.id;
+    const userId = req.user.id;
     const postId = req.params.id;
-
-    if (!userId) {
-        res.status(401).json({ success: false, message: '사용자를 찾을 수 없습니다.' });
-        return;
-    }
 
     try {
         const result = await pool.query('SELECT * FROM posts WHERE id = $1', [postId]);
@@ -107,13 +97,8 @@ export const remove = async (req: Request, res: Response): Promise<void> => {
 };
 
 export const toggleLike = async (req: Request, res: Response): Promise<void> => {
-    const userId = req.user?.id;
+    const userId = req.user.id;
     const postId = req.params.id;
-
-    if (!userId) {
-        res.status(401).json({ success: false, message: '사용자를 찾을 수 없습니다.' });
-        return;
-    }
 
     try {
         const postResult = await pool.query('SELECT id, user_id, content, img, parent_id FROM posts WHERE id = $1', [postId]);
@@ -163,13 +148,8 @@ export const toggleLike = async (req: Request, res: Response): Promise<void> => 
 };
 
 export const toggleBookmark = async (req: Request, res: Response): Promise<void> => {
-    const userId = req.user?.id;
+    const userId = req.user.id;
     const postId = req.params.id;
-
-    if (!userId) {
-        res.status(401).json({ success: false, message: '사용자를 찾을 수 없습니다.' });
-        return;
-    }
 
     try {
         const postCheck = await pool.query('SELECT 1 FROM posts WHERE id = $1', [postId]);
@@ -210,11 +190,6 @@ export const toggleBookmark = async (req: Request, res: Response): Promise<void>
 };
 
 export const getAll = async (req: Request, res: Response): Promise<void> => {
-    if (!req.user) {
-        res.status(401).json({ success: false, message: '사용자를 찾을 수 없습니다.' });
-        return;
-    }
-
     const userId = req.user.id;
     const parentId = req.query.parentId ? parseInt(req.query.parentId as string, 10) : null;
     const cursor =
@@ -283,11 +258,6 @@ export const getAll = async (req: Request, res: Response): Promise<void> => {
 };
 
 export const getOne = async (req: Request, res: Response): Promise<void> => {
-    if (!req.user) {
-        res.status(401).json({ success: false, message: '사용자를 찾을 수 없습니다.' });
-        return;
-    }
-
     const userId = req.user.id;
     const postId = req.params.id;
 
@@ -346,12 +316,7 @@ export const getOne = async (req: Request, res: Response): Promise<void> => {
 };
 
 export const getFromFollowing = async (req: Request, res: Response): Promise<void> => {
-    const userId = req.user?.id;
-    if (!userId) {
-        res.status(401).json({ success: false, message: '사용자를 찾을 수 없습니다.' });
-        return;
-    }
-
+    const userId = req.user.id;
     const cursor =
         req.query.cursorDate && req.query.cursorId
             ? { cursorDate: new Date(req.query.cursorDate as string), cursorId: parseInt(req.query.cursorId as string, 10) }
@@ -423,11 +388,7 @@ export const getFromFollowing = async (req: Request, res: Response): Promise<voi
 
 export const getLiked = async (req: Request, res: Response): Promise<void> => {
     const { username } = req.query;
-    const currentUserId = req.user?.id;
-    if (!currentUserId) {
-        res.status(401).json({ success: false, message: '사용자를 찾을 수 없습니다.' });
-        return;
-    }
+    const currentUserId = req.user.id;
     const cursor =
         req.query.cursorDate && req.query.cursorId
             ? { cursorDate: new Date(req.query.cursorDate as string), cursorId: parseInt(req.query.cursorId as string, 10) }
@@ -490,13 +451,8 @@ export const getLiked = async (req: Request, res: Response): Promise<void> => {
 };
 
 export const getBookmarked = async (req: Request, res: Response): Promise<void> => {
-    const userId = req.user?.id;
+    const userId = req.user.id;
     const keyword = typeof req.query.q === 'string' ? req.query.q.trim() : '';
-
-    if (!userId) {
-        res.status(401).json({ success: false, message: '사용자를 찾을 수 없습니다.' });
-        return;
-    }
     const cursor =
         req.query.cursorDate && req.query.cursorId
             ? { cursorDate: new Date(req.query.cursorDate as string), cursorId: parseInt(req.query.cursorId as string, 10) }
@@ -560,12 +516,7 @@ export const getBookmarked = async (req: Request, res: Response): Promise<void> 
 
 export const getByUsername = async (req: Request, res: Response): Promise<void> => {
     const { username } = req.query;
-    const currentUserId = req.user?.id;
-
-    if (!currentUserId) {
-        res.status(401).json({ success: false, message: '사용자를 찾을 수 없습니다.' });
-        return;
-    }
+    const currentUserId = req.user.id;
     const cursor =
         req.query.cursorDate && req.query.cursorId
             ? { cursorDate: new Date(req.query.cursorDate as string), cursorId: parseInt(req.query.cursorId as string, 10) }

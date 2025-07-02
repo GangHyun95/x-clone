@@ -4,11 +4,6 @@ import { pool } from '../lib/db/index.ts';
 import { paginate } from '../lib/db/paginate.ts';
 
 export const getNotifications = async (req: Request, res: Response): Promise<void> => {
-    if (!req.user) {
-        res.status(401).json({ success: false, message: '사용자를 찾을 수 없습니다.' });
-        return;
-    }
-
     const userId = req.user.id;
     const type = req.query.type as string | undefined;
     const cursor =
