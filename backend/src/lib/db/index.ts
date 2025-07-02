@@ -4,11 +4,7 @@ import { Pool } from 'pg';
 config();
 
 export const pool = new Pool({
-    user: process.env.PG_USER,
-    host: process.env.PG_HOST,
-    database: 'xclone',
-    password: process.env.PG_PASSWORD,
-    port: Number(process.env.PG_PORT) || 5432,
+    connectionString: process.env.DATABASE_URL,
 });
 
 export const connectDB = async () => {

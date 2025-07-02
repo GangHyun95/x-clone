@@ -1,8 +1,7 @@
 import { KakaoSvg } from '@/components/svgs';
 import { env } from '@/lib/env';
 
-export default function KakaoLoginButton() {
-
+export default function KakaoLoginButton({ className } : { className?: string }) {
     const handleKakaoLogin = () => {
         const clientId = env.KAKAO_CLIENT_ID;
         const redirectUri = env.KAKAO_REDIRECT_URI;
@@ -13,7 +12,8 @@ export default function KakaoLoginButton() {
 
     return (
         <button
-            className='btn btn-circle btn-ghost border-gray-300 mb-4 w-[300px]'
+            type='button'
+            className={`btn btn-circle btn-ghost bg-[#FEE500] border-gray-300 mb-4 w-[300px] hover:brightness-95 ${className}`}
             onClick={handleKakaoLogin}
         >
             <KakaoSvg className='mr-1 h-[18px] w-[18px]' />

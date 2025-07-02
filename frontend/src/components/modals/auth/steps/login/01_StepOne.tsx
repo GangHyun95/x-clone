@@ -1,10 +1,13 @@
+import { GoogleOAuthProvider } from '@react-oauth/google';
 import { useForm } from 'react-hook-form';
 
 import AuthSubmitBtn from '@/components/auth/AuthSubmitBtn';
+import GoogleLoginButton from '@/components/auth/GoogleLoginButton';
+import KakaoLoginButton from '@/components/auth/kakaoLoginButton';
 import { TextInput } from '@/components/common/input';
 import ModalRouteBtn from '@/components/common/ModalRouteBtn';
-import { AppleSvg, GoogleSvg } from '@/components/svgs';
 import { useCheckEmail } from '@/hooks/auth/useAuth';
+import { env } from '@/lib/env';
 
 export default function StepOne({ onNext }: { onNext: (data: { email: string }) => void; }) {
     const form = useForm<{ email: string }>({
@@ -27,21 +30,10 @@ export default function StepOne({ onNext }: { onNext: (data: { email: string }) 
                     Sign in to X
                 </h1>
                 <section className='my-3'>
-                    <button
-                        type='button'
-                        className='bn btn-ghost btn-circle border-gray-300 mb-4 w-full'
-                    >
-                        <GoogleSvg className='mr-1 h-[18px] w-[18px]' />
-                        <span>Sign in with Google</span>
-                    </button>
-
-                    <button
-                        type='button'
-                        className='bn btn-ghost btn-circle border-gray-300 w-full'
-                    >
-                        <AppleSvg className='mr-1 h-5 w-5' />
-                        <span>Sign in with Apple</span>
-                    </button>
+                    <GoogleOAuthProvider clientId={env.GOOGLE_CLIENT_ID}>
+                        <GoogleLoginButton className='w-full'/>
+                    </GoogleOAuthProvider>
+                    <KakaoLoginButton className='w-full'/>
 
                     <div className='my-2 flex w-full items-center gap-2'>
                         <div className='h-px flex-1 bg-gray-300'></div>

@@ -20,7 +20,7 @@ export default function AuthLandingPage() {
                 <h2 className='mb-5 text-2xl font-extrabold sm:text-3xl lg:mb-8'>Join today.</h2>
 
                 <section className='flex flex-col'>
-                <GoogleOAuthProvider clientId={clientId}>
+                    <GoogleOAuthProvider clientId={clientId}>
                         <GoogleLoginButton />
                     </GoogleOAuthProvider>
 
