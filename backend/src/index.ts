@@ -18,13 +18,25 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 8000;
 const __dirname = path.resolve();
+const allowedOrigins = [
+    'https://x-clone.xyz',
+    'https://www.x-clone.xyz',
+    'http://localhost:5173',
+];
+
 
 app.use(express.json());
 app.use(cookieParser());
 app.use(express.urlencoded({ extended: true }));
 app.use(
     cors({
-        origin: 'http://localhost:5173',
+        origin: (origin, callback) => {
+            if (!origin || allowedOrigins.includes(origin)) {
+                callback(null, true);
+            } else {
+                callback(new Error('Not allowed by CORS'));
+            }
+        },
         credentials: true,
     })
 );
@@ -40,7 +52,8 @@ app.get('/env.js', (req, res) => {
         window.__ENV__ = {
             KAKAO_CLIENT_ID: "${process.env.KAKAO_CLIENT_ID}",
             KAKAO_REDIRECT_URI: "${process.env.KAKAO_REDIRECT_URI}",
-            GOOGLE_CLIENT_ID: "${process.env.GOOGLE_CLIENT_ID}"
+            GOOGLE_CLIENT_ID: "${process.env.GOOGLE_CLIENT_ID}",
+            GOOGLE_REDIRECT_URI: "${process.env.GOOGLE_REDIRECT_URI}",
         };
     `);
 });

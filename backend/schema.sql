@@ -59,13 +59,13 @@ CREATE TABLE notifications (
     read BOOLEAN DEFAULT false,
     created_at TIMESTAMP DEFAULT NOW(),
     updated_at TIMESTAMP DEFAULT NOW(),
-
-    CHECK (
-        (type IN ('like', 'comment_like') AND post_id IS NOT NULL)
-        OR
-        (type = 'follow' AND post_id IS NULL)
-    );
+    CONSTRAINT post_id_check
+        CHECK (
+            (type IN ('like', 'comment_like') AND post_id IS NOT NULL)
+            OR (type = 'follow' AND post_id IS NULL)
+        )
 );
+
 
 /*
     참고용 - notifications 테이블 ALTER 쿼리 모음
