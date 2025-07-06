@@ -1,6 +1,6 @@
 import toast from 'react-hot-toast';
 
-import { HeartSvg } from '@/components/svgs';
+import { HeartSvg, SpinnerSvg } from '@/components/svgs';
 import { updatePostCacheById, updatePostDetailCache } from '@/lib/queryCacheHelpers';
 import { useToggleLike } from '@/queries/post';
 import type { Post } from '@/types/post';
@@ -47,10 +47,18 @@ export default function LikeButton({ id: postId, is_liked, likeCount }: Props) {
             className='flex-1 flex items-center cursor-pointer group'
             onClick={handleToggleLike}
         >
-            <button className='btn btn-sm btn-ghost btn-circle border-0 group-hover:bg-red-500/10'>
-                <HeartSvg filled={is_liked} className={`h-5 group-hover:fill-red-500 ${is_liked ? 'fill-red-500' : 'fill-gray-500'}`} />
-            </button>
-            <span className={`text-sm px-1 ${is_liked ? 'text-red-500' : ''}`}>{likeCount}</span>
+            {isPending ? (
+                <div className='flex items-center'>
+                    <SpinnerSvg className='size-5 animate-spin text-red-500' />
+                </div>
+            ) : (
+                <>
+                    <button className='btn btn-sm btn-ghost btn-circle border-0 group-hover:bg-red-500/10' disabled>
+                        <HeartSvg filled={is_liked} className={`h-5 group-hover:fill-red-500 ${is_liked ? 'fill-red-500' : 'fill-gray-500'}`} />
+                    </button>
+                    <span className={`text-sm px-1 ${is_liked ? 'text-red-500' : ''}`}>{likeCount}</span>
+                </>
+            )}
         </div>
     );
 }
