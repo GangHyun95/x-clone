@@ -19,8 +19,8 @@ const app = express();
 const PORT = process.env.PORT || 8000;
 const __dirname = path.resolve();
 const allowedOrigins = [
-    'https://x-clone.xyz',
-    'https://www.x-clone.xyz',
+    'https://clone-x.xyz',
+    'https://www.clone-x.xyz',
     'http://localhost:5173',
 ];
 
