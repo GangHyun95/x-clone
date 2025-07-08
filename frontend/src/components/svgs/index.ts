@@ -1,7 +1,7 @@
 export { default as AppleSvg } from './Apple';
 export { default as GoogleSvg } from './Google';
 export { default as KakaoSvg } from './Kakao'
-export { default as XSvg } from './X';
+export { default as LogoSvg } from './Logo';
 export { default as HomeSvg } from './Home';
 export { default as BellSvg } from './Bell';
 export { default as UserSvg } from './User';

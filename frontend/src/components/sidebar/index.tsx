@@ -1,7 +1,7 @@
 import { Link, NavLink, useLocation } from 'react-router-dom';
 
 import ModalRouteBtn from '@/components/common/ModalRouteBtn';
-import { PostSvg, XSvg } from '@/components/svgs';
+import { PostSvg, LogoSvg } from '@/components/svgs';
 
 import { navItems } from '@/constants/navItems';
 import { getCurrentUser } from '@/store/authStore';
@@ -19,7 +19,7 @@ export default function Sidebar() {
                         <section className='flex flex-col items-center w-full xl:items-start'>
                             <div className='py-0.5'>
                                 <Link to='/' className='btn btn-ghost btn-circle min-w-[52px] min-h-[52px]'>
-                                    <XSvg className='w-6 h-[30px] grow' />
+                                    <LogoSvg className='w-6 h-[30px] grow' />
                                 </Link>
                             </div>
 

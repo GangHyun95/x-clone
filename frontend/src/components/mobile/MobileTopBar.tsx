@@ -2,7 +2,7 @@ import { useState } from 'react';
 
 import Avatar from '@/components/common/Avatar';
 import MobileSidebar from '@/components/mobile/MobileSidebar';
-import { XSvg } from '@/components/svgs';
+import { LogoSvg } from '@/components/svgs';
 import { getCurrentUser } from '@/store/authStore';
 
 
@@ -22,7 +22,7 @@ export default function MobileTopBar() {
                     </div>
                 </div>
                 <div className='flex flex-auto min-w-8 items-center'>
-                    <XSvg />
+                    <LogoSvg />
                 </div>
 
                 <div className='flex-1 basis-1/2 min-h-8' />

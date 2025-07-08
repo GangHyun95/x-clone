@@ -19,11 +19,11 @@ const app = express();
 const PORT = process.env.PORT || 8000;
 const __dirname = path.resolve();
 const allowedOrigins = [
-    'https://clone-x.xyz',
-    'https://www.clone-x.xyz',
+    'https://chirp-app.xyz',
+    'https://www.chirp-app.xyz',
     'http://localhost:5173',
+    'http://localhost:8000',
 ];
-
 
 app.use(express.json());
 app.use(cookieParser());

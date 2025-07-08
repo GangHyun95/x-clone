@@ -1,4 +1,4 @@
-import { CloseSvg, XSvg } from '@/components/svgs';
+import { CloseSvg, LogoSvg } from '@/components/svgs';
 import RouteModal from '@/layouts/RouteModal';
 
 export default function AuthModalLayout({ children }: { children: React.ReactNode; }) {
@@ -17,7 +17,7 @@ export default function AuthModalLayout({ children }: { children: React.ReactNod
                         </button>
                     </form>
                     <div className='flex flex-auto min-w-8 items-center'>
-                        <XSvg />
+                        <LogoSvg />
                     </div>
                     <div className='flex-1 basis-1/2 min-h-8' />
                 </header>

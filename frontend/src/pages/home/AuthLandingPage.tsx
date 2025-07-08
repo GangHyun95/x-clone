@@ -3,21 +3,27 @@ import { GoogleOAuthProvider } from '@react-oauth/google';
 import GoogleLoginButton from '@/components/auth/GoogleLoginButton';
 import KakaoLoginButton from '@/components/auth/kakaoLoginButton';
 import ModalRouteBtn from '@/components/common/ModalRouteBtn';
-import { XSvg } from '@/components/svgs';
 import { env } from '@/lib/env';
+import { LogoSvg } from '@/components/svgs';
 
 export default function AuthLandingPage() {
     const clientId = env.GOOGLE_CLIENT_ID;
     return (
         <section className='flex-1 flex'>
             <div className='hidden flex-1 flex-col justify-center lg:flex'>
-                <XSvg className='h-1/2 max-h-96 max-w-full' />
+                <LogoSvg className='h-1/2 max-h-96 max-w-full' />
             </div>
             <div className='mx-auto flex min-w-[45vw] max-w-2xl flex-col p-9 lg:justify-center'>
-                <XSvg className='block h-12 max-w-full self-start lg:hidden' />
+                <LogoSvg className='block h-12 max-w-full self-start lg:hidden' />
 
-                <h1 className='my-10 text-4xl font-bold sm:text-6xl lg:my-12'>Happening now</h1>
-                <h2 className='mb-5 text-2xl font-extrabold sm:text-3xl lg:mb-8'>Join today.</h2>
+                <h1 className='my-10 text-4xl font-bold sm:text-6xl lg:my-12'>Share your day</h1>
+                <div className="mb-5 text-xl text-base-content/60 font-bold sm:text-2xl lg:mb-8">
+                    <h2>
+                        This is a personal portfolio project.<br/>
+                    </h2>
+                    <h3>It is not an actual service or a commercial product.</h3>
+                </div>
+
 
                 <section className='flex flex-col'>
                     <GoogleOAuthProvider clientId={clientId}>
